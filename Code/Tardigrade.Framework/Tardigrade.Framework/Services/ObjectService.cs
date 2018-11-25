@@ -9,6 +9,9 @@ namespace Tardigrade.Framework.Services
     /// </summary>
     public class ObjectService<T, PK> : IObjectService<T, PK> where T : class
     {
+        /// <summary>
+        /// Repository associated with the service.
+        /// </summary>
         protected IRepository<T, PK> Repository { get; private set; }
 
         /// <summary>

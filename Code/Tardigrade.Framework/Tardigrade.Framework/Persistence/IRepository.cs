@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Tardigrade.Framework.Patterns.UnitOfWork;
 
 namespace Tardigrade.Framework.Persistence
 {
@@ -17,9 +18,9 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="obj">Instance to create.</param>
         /// <param name="unitOfWork">Unit of Work used to define the transaction boundary.</param>
         /// <returns>Instance created (including allocated unique identifier).</returns>
-        /// <exception cref="System.ArgumentNullException">The obj parameter is null.</exception>
+        /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error creating the object.</exception>
-        /// <exception cref="System.ComponentModel.DataAnnotations.ValidationException">Object to create contains invalid values.</exception>
+        /// <exception cref="Exceptions.ValidationException">Object to create contains invalid values.</exception>
         T Create(T obj, IUnitOfWork unitOfWork = null);
 
         /// <summary>
@@ -27,7 +28,7 @@ namespace Tardigrade.Framework.Persistence
         /// </summary>
         /// <param name="id">Unique identifier for the instance.</param>
         /// <param name="unitOfWork">Unit of Work used to define the transaction boundary.</param>
-        /// <exception cref="System.ArgumentNullException">The id parameter is null.</exception>
+        /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
         void Delete(PK id, IUnitOfWork unitOfWork = null);
 
@@ -36,7 +37,7 @@ namespace Tardigrade.Framework.Persistence
         /// </summary>
         /// <param name="obj">Instance to delete.</param>
         /// <param name="unitOfWork">Unit of Work used to define the transaction boundary.</param>
-        /// <exception cref="System.ArgumentNullException">The obj parameter is null.</exception>
+        /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
         void Delete(T obj, IUnitOfWork unitOfWork = null);
 
@@ -57,7 +58,7 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="id">Unique identifier for the instance.</param>
         /// <param name="includes">A dot-separated list of related objects to include in the query results.</param>
         /// <returns>Instance if found; null otherwise.</returns>
-        /// <exception cref="System.ArgumentNullException">The id parameter is null.</exception>
+        /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the object.</exception>
         T Retrieve(PK id, string[] includes = null);
 
@@ -66,9 +67,9 @@ namespace Tardigrade.Framework.Persistence
         /// </summary>
         /// <param name="obj">Instance to update.</param>
         /// <param name="unitOfWork">Unit of Work used to define the transaction boundary.</param>
-        /// <exception cref="System.ArgumentNullException">The obj parameter is null.</exception>
+        /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the object.</exception>
-        /// <exception cref="System.ComponentModel.DataAnnotations.ValidationException">Object to update contains invalid values.</exception>
+        /// <exception cref="Exceptions.ValidationException">Object to update contains invalid values.</exception>
         void Update(T obj, IUnitOfWork unitOfWork = null);
     }
 }

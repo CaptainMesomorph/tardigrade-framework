@@ -9,6 +9,9 @@ namespace Tardigrade.Framework.Exceptions
     [Serializable]
     public abstract class BaseException : Exception
     {
+        /// <summary>
+        /// Unique reference for the exception.
+        /// </summary>
         public string ExceptionReference { get; set; }
 
         /// <summary>

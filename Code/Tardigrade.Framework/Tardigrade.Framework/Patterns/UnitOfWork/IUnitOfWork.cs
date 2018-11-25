@@ -1,4 +1,4 @@
-﻿namespace Tardigrade.Framework.Persistence
+﻿namespace Tardigrade.Framework.Patterns.UnitOfWork
 {
     /// <summary>
     /// Interface used to define a Unit of Work (such as a transaction or session).

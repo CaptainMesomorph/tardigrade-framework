@@ -16,7 +16,7 @@ namespace Tardigrade.Framework.Services
         /// <returns>Instance created (including allocated unique identifier).</returns>
         /// <exception cref="System.ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="Exceptions.ServiceException">Error creating the object.</exception>
-        /// <exception cref="System.ComponentModel.DataAnnotations.ValidationException">Object to create contains invalid values.</exception>
+        /// <exception cref="Exceptions.ValidationException">Object to create contains invalid values.</exception>
         T Create(T obj);
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Tardigrade.Framework.Services
         /// <exception cref="System.ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="Exceptions.NotFoundException">Object to update does not exist.</exception>
         /// <exception cref="Exceptions.ServiceException">Error updating the object.</exception>
-        /// <exception cref="System.ComponentModel.DataAnnotations.ValidationException">Object to update contains invalid values.</exception>
+        /// <exception cref="Exceptions.ValidationException">Object to update contains invalid values.</exception>
         void Update(T obj);
     }
 }

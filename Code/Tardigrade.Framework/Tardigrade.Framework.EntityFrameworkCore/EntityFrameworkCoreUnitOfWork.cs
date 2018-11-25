@@ -1,15 +1,16 @@
-﻿using System;
-using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using System;
 using Tardigrade.Framework.Patterns.UnitOfWork;
 
-namespace Tardigrade.Framework.EntityFramework
+namespace Tardigrade.Framework.EntityFrameworkCore
 {
     /// <summary>
     /// <see cref="IUnitOfWork"/>
     /// </summary>
-    public sealed class EntityFrameworkUnitOfWork : IUnitOfWork, IDisposable
+    public sealed class EntityFrameworkCoreUnitOfWork : IUnitOfWork, IDisposable
     {
-        private DbContextTransaction transaction;
+        private IDbContextTransaction transaction;
         private int count = 0;
 
         /// <summary>
@@ -21,7 +22,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// Create an instance of this class.
         /// </summary>
         /// <param name="dbContext">Database context used to define a Unit of Work.</param>
-        public EntityFrameworkUnitOfWork(DbContext dbContext)
+        public EntityFrameworkCoreUnitOfWork(DbContext dbContext)
         {
             this.DbContext = dbContext;
         }
