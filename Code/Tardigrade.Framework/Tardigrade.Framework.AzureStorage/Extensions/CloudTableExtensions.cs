@@ -10,6 +10,14 @@ namespace Tardigrade.Framework.AzureStorage.Extensions
     /// </summary>
     public static class CloudTableExtensions
     {
+        /// <summary>
+        /// Extension for simplifying the execution of an asynchronous query.
+        /// </summary>
+        /// <typeparam name="T">Type of object associated with the query.</typeparam>
+        /// <param name="table">Storage table.</param>
+        /// <param name="query">Query to execute.</param>
+        /// <param name="cancellationToken">Token for handling operation cancellation.</param>
+        /// <returns>Result of the query.</returns>
         public static async Task<IList<T>> ExecuteQueryAsync<T>(
             this CloudTable table,
             TableQuery<T> query,

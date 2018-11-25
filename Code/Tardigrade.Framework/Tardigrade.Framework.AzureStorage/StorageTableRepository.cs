@@ -6,7 +6,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using Tardigrade.Framework.AzureStorage.Extensions;
+using Tardigrade.Framework.AzureStorage.Models;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Patterns.UnitOfWork;
 using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.AzureStorage
@@ -15,7 +17,7 @@ namespace Tardigrade.Framework.AzureStorage
     /// Repository layer that is based on Azure Storage Tables.
     /// <see cref="IRepository{T, PK}"/>
     /// </summary>
-    public class StorageTableRepository<T, PK> : IRepository<T, PK> where T : ITableEntity, new()
+    public class StorageTableRepository<T, PK> : IRepository<T, PK> where T : ITableEntity, new() where PK : ITableKey
     {
         private static readonly slf4net.ILogger log = slf4net.LoggerFactory.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -34,7 +36,7 @@ namespace Tardigrade.Framework.AzureStorage
         {
             if (string.IsNullOrWhiteSpace(tableName))
             {
-                throw new ArgumentNullException("tableName");
+                throw new ArgumentNullException(nameof(tableName));
             }
 
             this.storageConnectionString = storageConnectionString;
@@ -53,13 +55,14 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
+        /// The unitOfWork parameter has not been implemented.
         /// <see cref="IRepository{T, PK}.Create(T, IUnitOfWork)"/>
         /// </summary>
         public virtual T Create(T obj, IUnitOfWork unitOfWork = null)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             try
@@ -79,6 +82,10 @@ namespace Tardigrade.Framework.AzureStorage
                     throw new RepositoryException($"Error creating an object of type {typeof(T).Name} in Azure Storage Table {table.Name}. HTTP status code of {result.HttpStatusCode} was returned.");
                 }
             }
+            catch (RepositoryException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 throw new RepositoryException($"Error creating an object of type {typeof(T).Name} in Azure Storage Table {table.Name}.", e);
@@ -88,89 +95,92 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
+        /// The unitOfWork parameter has not been implemented.
         /// <see cref="IRepository{T, PK}.Delete(PK, IUnitOfWork)"/>
         /// </summary>
+        /// <exception cref="ArgumentException">The Partition and/or Row values of the primary key (id) parameter are either null or empty.</exception>
         public virtual void Delete(PK id, IUnitOfWork unitOfWork = null)
         {
             if (id == null)
             {
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(id.Partition))
+            {
+                throw new ArgumentException("The primary key does not specify a Partition value.", nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(id.Row))
+            {
+                throw new ArgumentException("The primary key does not specify a Row value.", nameof(id));
             }
 
             try
             {
-                // Construct the query operation for all objects where RowKey=id.
-                TableQuery<T> query = new TableQuery<T>()
-                    .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, id.ToString()));
-                T obj = table.ExecuteQueryAsync(query).GetAwaiter().GetResult().Single();
+                // Create a retrieve operation that expects partition and row keys.
+                TableOperation retrieveOperation = TableOperation.Retrieve<T>(id.Partition, id.Row);
 
-                // Create the Delete TableOperation.
-                if (obj == null)
+                // Execute the operation.
+                TableResult retrievedResult = table.ExecuteAsync(retrieveOperation).GetAwaiter().GetResult();
+
+                if (retrievedResult.HttpStatusCode == (int)HttpStatusCode.OK)
                 {
-                    if (log.IsWarnEnabled) log.Warn($"Object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of {id.ToString()} cannot be deleted as it does not exist.");
-                }
-                else
-                {
-                    TableOperation deleteOperation = TableOperation.Delete(obj);
+                    // Assign the result to be deleted.
+                    T deleteEntity = (T)retrievedResult.Result;
+
+                    // Create the Delete TableOperation.
+                    TableOperation deleteOperation = TableOperation.Delete(deleteEntity);
 
                     // Execute the operation.
                     table.ExecuteAsync(deleteOperation).GetAwaiter().GetResult();
                 }
+                else if (retrievedResult.HttpStatusCode == (int)HttpStatusCode.NotFound)
+                {
+                    if (log.IsWarnEnabled) log.Warn($"Object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of [Partition={id.Partition.ToString()},Row={id.Row.ToString()}] cannot be deleted as it does not exist.");
+                }
+                else
+                {
+                    throw new RepositoryException($"Error deleting an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of [Partition={id.Partition.ToString()},Row={id.Row.ToString()}]. HTTP status code of {retrievedResult.HttpStatusCode} was returned.");
+                }
+            }
+            catch (RepositoryException)
+            {
+                throw;
             }
             catch (Exception e)
             {
-                throw new RepositoryException($"Error deleting an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of {id.ToString()}.", e);
+                throw new RepositoryException($"Error deleting an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of [Partition={id.Partition.ToString()},Row={id.Row.ToString()}].", e);
             }
         }
 
         /// <summary>
+        /// The unitOfWork parameter has not been implemented.
         /// <see cref="IRepository{T, PK}.Delete(T, IUnitOfWork)"/>
         /// </summary>
         public virtual void Delete(T obj, IUnitOfWork unitOfWork = null)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             try
             {
-                // Create a retrieve operation that expects partition and row keys.
-                TableOperation retrieveOperation = TableOperation.Retrieve<T>(obj.PartitionKey, obj.RowKey);
+                TableOperation deleteOperation = TableOperation.Delete(obj);
 
                 // Execute the operation.
-                TableResult retrieveResult = table.ExecuteAsync(retrieveOperation).GetAwaiter().GetResult();
-
-                if (retrieveResult.HttpStatusCode == (int)HttpStatusCode.OK)
-                {
-                    T deleteObj = (T)retrieveResult.Result;
-
-                    // Create the Delete TableOperation.
-                    if (deleteObj == null)
-                    {
-                        if (log.IsWarnEnabled) log.Warn($"Object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of {obj.RowKey} cannot be deleted as it does not exist.");
-                    }
-                    else
-                    {
-                        TableOperation deleteOperation = TableOperation.Delete(deleteObj);
-
-                        // Execute the operation.
-                        table.ExecuteAsync(deleteOperation).GetAwaiter().GetResult();
-                    }
-                }
-                else
-                {
-                    throw new RepositoryException($"Error deleting an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of {obj.RowKey}. HTTP status code of {retrieveResult.HttpStatusCode} was returned.");
-                }
+                table.ExecuteAsync(deleteOperation).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
-                throw new RepositoryException($"Error deleting an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of {obj.RowKey}.", e);
+                throw new RepositoryException($"Error deleting an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of [Partition={obj.PartitionKey?.ToString()},Row={obj.RowKey?.ToString()}].", e);
             }
         }
 
         /// <summary>
         /// The predicate parameter is not used as it is not possible to query an Azure Storage Table using Linq.
+        /// The includes parameter is not applicable to Azure Storage Tables.
         /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
         /// </summary>
         public virtual IList<T> Retrieve(Expression<Func<T, bool>> predicate = null, int? pageIndex = null, int? pageSize = null, string[] includes = null)
@@ -182,6 +192,15 @@ namespace Tardigrade.Framework.AzureStorage
                 // Construct the query operation for all objects.
                 TableQuery<T> query = new TableQuery<T>();
                 objs = table.ExecuteQueryAsync(query).GetAwaiter().GetResult();
+
+                if ((pageIndex.HasValue && pageIndex.Value >= 0) && (pageSize.HasValue && pageSize.Value > 0))
+                {
+                    objs = objs.OrderByDescending(l => l.Timestamp).Skip(pageIndex.Value * pageSize.Value).Take(pageSize.Value).ToList();
+                }
+                else
+                {
+                    objs = objs.OrderByDescending(l => l.Timestamp).ToList();
+                }
             }
             catch (Exception e)
             {
@@ -194,55 +213,81 @@ namespace Tardigrade.Framework.AzureStorage
         /// <summary>
         /// <see cref="IRepository{T, PK}.Retrieve(PK, string[])"/>
         /// </summary>
+        /// <exception cref="ArgumentException">The Partition and/or Row values of the primary key (id) parameter are either null or empty.</exception>
         public virtual T Retrieve(PK id, string[] includes = null)
         {
             if (id == null)
             {
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
             }
 
-            T obj = default(T);
+            if (string.IsNullOrWhiteSpace(id.Partition))
+            {
+                throw new ArgumentException("The primary key does not specify a Partition value.", nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(id.Row))
+            {
+                throw new ArgumentException("The primary key does not specify a Row value.", nameof(id));
+            }
+
+            T obj;
 
             try
             {
-                // Construct the query operation for all objects where RowKey=id.
-                TableQuery<T> query = new TableQuery<T>().Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, id.ToString()));
-                IEnumerable<T> objs = table.ExecuteQueryAsync(query).GetAwaiter().GetResult();
+                // Create a retrieve operation that expects partition and row keys.
+                TableOperation retrieveOperation = TableOperation.Retrieve<T>(id.Partition, id.Row);
 
-                if (objs.Count() > 0)
+                // Execute the operation.
+                TableResult retrievedResult = table.ExecuteAsync(retrieveOperation).GetAwaiter().GetResult();
+
+                if (retrievedResult.HttpStatusCode == (int)HttpStatusCode.OK)
                 {
-                    obj = objs.Single();
+                    obj = (T)retrievedResult.Result;
                 }
+                else if (retrievedResult.HttpStatusCode == (int)HttpStatusCode.NotFound)
+                {
+                    obj = default(T);
+                }
+                else
+                {
+                    throw new RepositoryException($"Error retrieving an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of [Partition={id.Partition.ToString()},Row={id.Row.ToString()}]. HTTP status code of {retrievedResult.HttpStatusCode} was returned.");
+                }
+            }
+            catch (RepositoryException)
+            {
+                throw;
             }
             catch (Exception e)
             {
-                throw new RepositoryException($"Error retrieving an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of {id.ToString()}.", e);
+                throw new RepositoryException($"Error retrieving an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of [Partition={id.Partition.ToString()},Row={id.Row.ToString()}].", e);
             }
 
             return obj;
         }
 
         /// <summary>
+        /// The unitOfWork parameter has not been implemented.
         /// <see cref="IRepository{T, PK}.Update(T, IUnitOfWork)"/>
         /// </summary>
         public virtual void Update(T obj, IUnitOfWork unitOfWork = null)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             try
             {
                 // Create the InsertOrReplace TableOperation.
-                TableOperation insertOrReplaceOperation = TableOperation.InsertOrReplace(obj);
+                TableOperation insertOrReplaceOperation = TableOperation.Replace(obj);
 
                 // Execute the operation.
                 table.ExecuteAsync(insertOrReplaceOperation).GetAwaiter().GetResult();
             }
             catch (Exception e)
             {
-                throw new RepositoryException($"Error updating an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of {obj.RowKey}.", e);
+                throw new RepositoryException($"Error updating an object of type {typeof(T).Name} from Azure Storage Table {table.Name} with unique identifier of [Partition={obj.PartitionKey?.ToString()},Row={obj.RowKey?.ToString()}].", e);
             }
         }
     }

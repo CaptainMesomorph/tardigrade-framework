@@ -1,19 +1,18 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Validation;
 using System.Linq;
 using System.Linq.Expressions;
 using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Patterns.UnitOfWork;
 using Tardigrade.Framework.Persistence;
 
-namespace Tardigrade.Framework.EntityFramework
+namespace Tardigrade.Framework.EntityFrameworkCore
 {
     /// <summary>
     /// <see cref="IRepository{T, PK}"/>
     /// </summary>
-    public class EntityFrameworkRepository<T, PK> : IRepository<T, PK> where T : class
+    public class EntityFrameworkCoreRepository<T, PK> : IRepository<T, PK> where T : class
     {
         /// <summary>
         /// Database context.
@@ -24,12 +23,13 @@ namespace Tardigrade.Framework.EntityFramework
         /// Create an instance of this class.
         /// </summary>
         /// <param name="dbContext">Database context used to define a Unit of Work.</param>
-        public EntityFrameworkRepository(DbContext dbContext)
+        public EntityFrameworkCoreRepository(DbContext dbContext)
         {
             DbContext = dbContext;
         }
 
         /// <summary>
+        /// ValidationException currently not supported.
         /// <see cref="IRepository{T, PK}.Create(T, IUnitOfWork)"/>
         /// </summary>
         public virtual T Create(T obj, IUnitOfWork unitOfWork = null)
@@ -41,13 +41,9 @@ namespace Tardigrade.Framework.EntityFramework
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkUnitOfWork)?.DbContext ?? DbContext;
+                DbContext dbContext = (unitOfWork as EntityFrameworkCoreUnitOfWork)?.DbContext ?? DbContext;
                 dbContext.Set<T>().Add(obj);
                 dbContext.SaveChanges();
-            }
-            catch (DbEntityValidationException e)
-            {
-                throw new ValidationException($"Error creating an object of type {typeof(T).Name} as it contains invalid values.", e);
             }
             catch (Exception e)
             {
@@ -69,7 +65,7 @@ namespace Tardigrade.Framework.EntityFramework
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkUnitOfWork)?.DbContext ?? DbContext;
+                DbContext dbContext = (unitOfWork as EntityFrameworkCoreUnitOfWork)?.DbContext ?? DbContext;
                 T obj = dbContext.Set<T>().Find(id);
                 dbContext.Set<T>().Remove(obj);
                 dbContext.SaveChanges();
@@ -92,7 +88,7 @@ namespace Tardigrade.Framework.EntityFramework
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkUnitOfWork)?.DbContext ?? DbContext;
+                DbContext dbContext = (unitOfWork as EntityFrameworkCoreUnitOfWork)?.DbContext ?? DbContext;
 
                 if (dbContext.Entry(obj).State == EntityState.Detached)
                 {
@@ -117,15 +113,6 @@ namespace Tardigrade.Framework.EntityFramework
 
             try
             {
-                if (includes == null)
-                {
-                    DbContext.Configuration.ProxyCreationEnabled = true;
-                }
-                else
-                {
-                    DbContext.Configuration.ProxyCreationEnabled = false;
-                }
-
                 IQueryable<T> query = DbContext.Set<T>();
 
                 if (predicate != null)
@@ -170,22 +157,13 @@ namespace Tardigrade.Framework.EntityFramework
 
             try
             {
-                if (includes == null)
-                {
-                    DbContext.Configuration.ProxyCreationEnabled = true;
-                }
-                else
-                {
-                    DbContext.Configuration.ProxyCreationEnabled = false;
-                }
-
-                IDbSet<T> query = DbContext.Set<T>();
+                DbSet<T> query = DbContext.Set<T>();
 
                 if (includes != null)
                 {
                     foreach (string include in includes)
                     {
-                        query = (IDbSet<T>)query.Include(include);
+                        query = (DbSet<T>)query.Include(include);
                     }
                 }
 
@@ -200,6 +178,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
+        /// ValidationException currently not supported.
         /// <see cref="IRepository{T, PK}.Update(T, IUnitOfWork)"/>
         /// </summary>
         public virtual void Update(T obj, IUnitOfWork unitOfWork = null)
@@ -211,14 +190,9 @@ namespace Tardigrade.Framework.EntityFramework
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkUnitOfWork)?.DbContext ?? DbContext;
-                dbContext.Set<T>().Attach(obj);
-                dbContext.Entry(obj).State = EntityState.Modified;
+                DbContext dbContext = (unitOfWork as EntityFrameworkCoreUnitOfWork)?.DbContext ?? DbContext;
+                dbContext.Set<T>().Update(obj);
                 dbContext.SaveChanges();
-            }
-            catch (DbEntityValidationException e)
-            {
-                throw new ValidationException($"Error updating an object of type {typeof(T).Name} as it contains invalid values.", e);
             }
             catch (Exception e)
             {

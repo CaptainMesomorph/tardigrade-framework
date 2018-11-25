@@ -12,6 +12,9 @@ namespace Tardigrade.Framework.RestSharp
     /// </summary>
     public class RestSharpClient : Rest.IRestClient
     {
+        /// <summary>
+        /// Underlying REST client.
+        /// </summary>
         protected RestClient RestClient { get; private set; }
 
         /// <summary>
@@ -27,7 +30,7 @@ namespace Tardigrade.Framework.RestSharp
         }
 
         /// <summary>
-        /// <see cref="IRestClient{T, PK}.Delete(string)"/>
+        /// <see cref="Rest.IRestClient.Delete(string)"/>
         /// </summary>
         public Response Delete(string resource)
         {
@@ -46,7 +49,7 @@ namespace Tardigrade.Framework.RestSharp
         }
 
         /// <summary>
-        /// <see cref="IRestClient{T, PK}.Get{Result}(string)"/>
+        /// <see cref="Rest.IRestClient.Get{Result}(string)"/>
         /// </summary>
         public Response<Result> Get<Result>(string resource) where Result : new()
         {
@@ -65,7 +68,7 @@ namespace Tardigrade.Framework.RestSharp
         }
 
         /// <summary>
-        /// <see cref="IRestClient{T, PK}.Get()"/>
+        /// <see cref="Rest.IRestClient.Get()"/>
         /// </summary>
         public Response<IList<Result>> Get<Result>()
         {
@@ -83,7 +86,7 @@ namespace Tardigrade.Framework.RestSharp
         }
 
         /// <summary>
-        /// <see cref="IRestClient.Post{Payload, Result}(Payload, string)"/>
+        /// <see cref="Rest.IRestClient.Post{Payload, Result}(Payload, string)"/>
         /// </summary>
         public Response<Result> Post<Payload, Result>(Payload payload, string resource = null) where Result : new()
         {
@@ -108,7 +111,7 @@ namespace Tardigrade.Framework.RestSharp
         }
 
         /// <summary>
-        /// <see cref="IRestClient.Post{Payload}(Payload, string)"/>
+        /// <see cref="Rest.IRestClient.Post{Payload}(Payload, string)"/>
         /// </summary>
         public Response<string> Post<Payload>(Payload payload, string resource = null)
         {
@@ -133,7 +136,7 @@ namespace Tardigrade.Framework.RestSharp
         }
 
         /// <summary>
-        /// <see cref="IRestClient.Put{Payload}(Payload, string)"/>
+        /// <see cref="Rest.IRestClient.Put{Payload}(Payload, string)"/>
         /// </summary>
         public Response Put<Payload>(Payload obj, string resource)
         {

@@ -3,13 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2000
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework", "Tardigrade.Framework\Tardigrade.Framework.csproj", "{6879932A-09D8-4F6F-99B3-52DF1349EE4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework", "Tardigrade.Framework\Tardigrade.Framework.csproj", "{6879932A-09D8-4F6F-99B3-52DF1349EE4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.AzureStorage", "Tardigrade.Framework.AzureStorage\Tardigrade.Framework.AzureStorage.csproj", "{DBC7D72F-C15E-4C4A-885B-71586CE84706}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AzureStorage", "Tardigrade.Framework.AzureStorage\Tardigrade.Framework.AzureStorage.csproj", "{DBC7D72F-C15E-4C4A-885B-71586CE84706}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.EntityFramework", "Tardigrade.Framework.EntityFramework\Tardigrade.Framework.EntityFramework.csproj", "{9DFF1CF7-6CBF-4E21-80B2-FC307D8F3A61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.EntityFramework", "Tardigrade.Framework.EntityFramework\Tardigrade.Framework.EntityFramework.csproj", "{9DFF1CF7-6CBF-4E21-80B2-FC307D8F3A61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.RestSharp", "Tardigrade.Framework.RestSharp\Tardigrade.Framework.RestSharp.csproj", "{879CC6C7-B1AF-4FBD-86B2-817B11DF4A6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.RestSharp", "Tardigrade.Framework.RestSharp\Tardigrade.Framework.RestSharp.csproj", "{879CC6C7-B1AF-4FBD-86B2-817B11DF4A6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.EntityFrameworkCore", "Tardigrade.Framework.EntityFrameworkCore\Tardigrade.Framework.EntityFrameworkCore.csproj", "{C98BD217-AB86-45E8-9F0F-949EC8911B4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.SimpleInjector", "Tardigrade.Framework.SimpleInjector\Tardigrade.Framework.SimpleInjector.csproj", "{6029CF54-1C03-46EE-849B-A7369A41E0CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{879CC6C7-B1AF-4FBD-86B2-817B11DF4A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{879CC6C7-B1AF-4FBD-86B2-817B11DF4A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{879CC6C7-B1AF-4FBD-86B2-817B11DF4A6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C98BD217-AB86-45E8-9F0F-949EC8911B4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C98BD217-AB86-45E8-9F0F-949EC8911B4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C98BD217-AB86-45E8-9F0F-949EC8911B4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C98BD217-AB86-45E8-9F0F-949EC8911B4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
