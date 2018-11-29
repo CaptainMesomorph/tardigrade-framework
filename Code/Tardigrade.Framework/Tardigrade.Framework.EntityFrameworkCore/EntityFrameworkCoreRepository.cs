@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Tardigrade.Framework.Exceptions;
-using Tardigrade.Framework.Patterns.UnitOfWork;
 using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.EntityFrameworkCore
@@ -29,21 +28,35 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// ValidationException currently not supported.
-        /// <see cref="IRepository{T, PK}.Create(T, IUnitOfWork)"/>
+        /// <see cref="IRepository{T, PK}.Count()"/>
         /// </summary>
-        public virtual T Create(T obj, IUnitOfWork unitOfWork = null)
+        public virtual int Count()
+        {
+            try
+            {
+                return DbContext.Set<T>().Count();
+            }
+            catch (Exception e)
+            {
+                throw new RepositoryException($"Error calculating the number of objects of type {typeof(T).Name}.", e);
+            }
+        }
+
+        /// <summary>
+        /// ValidationException currently not supported.
+        /// <see cref="ICrudRepository{T, PK}.Create(T)"/>
+        /// </summary>
+        public virtual T Create(T obj)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkCoreUnitOfWork)?.DbContext ?? DbContext;
-                dbContext.Set<T>().Add(obj);
-                dbContext.SaveChanges();
+                DbContext.Set<T>().Add(obj);
+                DbContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -54,21 +67,20 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(PK, IUnitOfWork)"/>
+        /// <see cref="ICrudRepository{T, PK}.Delete(PK)"/>
         /// </summary>
-        public virtual void Delete(PK id, IUnitOfWork unitOfWork = null)
+        public virtual void Delete(PK id)
         {
             if (id == null)
             {
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
             }
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkCoreUnitOfWork)?.DbContext ?? DbContext;
-                T obj = dbContext.Set<T>().Find(id);
-                dbContext.Set<T>().Remove(obj);
-                dbContext.SaveChanges();
+                T obj = DbContext.Set<T>().Find(id);
+                DbContext.Set<T>().Remove(obj);
+                DbContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -77,26 +89,24 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(T, IUnitOfWork)"/>
+        /// <see cref="ICrudRepository{T, PK}.Delete(T)"/>
         /// </summary>
-        public virtual void Delete(T obj, IUnitOfWork unitOfWork = null)
+        public virtual void Delete(T obj)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkCoreUnitOfWork)?.DbContext ?? DbContext;
-
-                if (dbContext.Entry(obj).State == EntityState.Detached)
+                if (DbContext.Entry(obj).State == EntityState.Detached)
                 {
-                    dbContext.Set<T>().Attach(obj);
+                    DbContext.Set<T>().Attach(obj);
                 }
 
-                dbContext.Set<T>().Remove(obj);
-                dbContext.SaveChanges();
+                DbContext.Set<T>().Remove(obj);
+                DbContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -105,7 +115,27 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
+        /// <see cref="IRepository{T, PK}.Exists(PK)"/>
+        /// </summary>
+        public virtual bool Exists(PK id)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            try
+            {
+                return DbContext.Set<T>().Find(id) != null;
+            }
+            catch (Exception e)
+            {
+                throw new RepositoryException($"Error determing whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="ICrudRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
         /// </summary>
         public virtual IList<T> Retrieve(Expression<Func<T, bool>> predicate = null, int? pageIndex = null, int? pageSize = null, string[] includes = null)
         {
@@ -144,13 +174,13 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(PK, string[])"/>
+        /// <see cref="ICrudRepository{T, PK}.Retrieve(PK, string[])"/>
         /// </summary>
         public virtual T Retrieve(PK id, string[] includes = null)
         {
             if (id == null)
             {
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
             }
 
             T obj = default(T);
@@ -179,9 +209,9 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
         /// <summary>
         /// ValidationException currently not supported.
-        /// <see cref="IRepository{T, PK}.Update(T, IUnitOfWork)"/>
+        /// <see cref="ICrudRepository{T, PK}.Update(T)"/>
         /// </summary>
-        public virtual void Update(T obj, IUnitOfWork unitOfWork = null)
+        public virtual void Update(T obj)
         {
             if (obj == null)
             {
@@ -190,9 +220,8 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkCoreUnitOfWork)?.DbContext ?? DbContext;
-                dbContext.Set<T>().Update(obj);
-                dbContext.SaveChanges();
+                DbContext.Set<T>().Update(obj);
+                DbContext.SaveChanges();
             }
             catch (Exception e)
             {

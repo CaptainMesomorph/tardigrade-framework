@@ -8,7 +8,6 @@ using System.Net;
 using Tardigrade.Framework.AzureStorage.Extensions;
 using Tardigrade.Framework.AzureStorage.Models;
 using Tardigrade.Framework.Exceptions;
-using Tardigrade.Framework.Patterns.UnitOfWork;
 using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.AzureStorage
@@ -55,10 +54,19 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// The unitOfWork parameter has not been implemented.
-        /// <see cref="IRepository{T, PK}.Create(T, IUnitOfWork)"/>
+        /// Not implemented.
+        /// <see cref="IRepository{T, PK}.Count()"/>
         /// </summary>
-        public virtual T Create(T obj, IUnitOfWork unitOfWork = null)
+        public virtual int Count()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// ValidationException currently not supported.
+        /// <see cref="ICrudRepository{T, PK}.Create(T)"/>
+        /// </summary>
+        public virtual T Create(T obj)
         {
             if (obj == null)
             {
@@ -95,11 +103,10 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// The unitOfWork parameter has not been implemented.
-        /// <see cref="IRepository{T, PK}.Delete(PK, IUnitOfWork)"/>
+        /// <see cref="ICrudRepository{T, PK}.Delete(PK)"/>
         /// </summary>
         /// <exception cref="ArgumentException">The Partition and/or Row values of the primary key (id) parameter are either null or empty.</exception>
-        public virtual void Delete(PK id, IUnitOfWork unitOfWork = null)
+        public virtual void Delete(PK id)
         {
             if (id == null)
             {
@@ -155,10 +162,9 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// The unitOfWork parameter has not been implemented.
-        /// <see cref="IRepository{T, PK}.Delete(T, IUnitOfWork)"/>
+        /// <see cref="ICrudRepository{T, PK}.Delete(T)"/>
         /// </summary>
-        public virtual void Delete(T obj, IUnitOfWork unitOfWork = null)
+        public virtual void Delete(T obj)
         {
             if (obj == null)
             {
@@ -179,9 +185,17 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
+        /// <see cref="IRepository{T, PK}.Exists(PK)"/>
+        /// </summary>
+        public virtual bool Exists(PK id)
+        {
+            return Retrieve(id) != null;
+        }
+
+        /// <summary>
         /// The predicate parameter is not used as it is not possible to query an Azure Storage Table using Linq.
         /// The includes parameter is not applicable to Azure Storage Tables.
-        /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
+        /// <see cref="ICrudRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
         /// </summary>
         public virtual IList<T> Retrieve(Expression<Func<T, bool>> predicate = null, int? pageIndex = null, int? pageSize = null, string[] includes = null)
         {
@@ -211,7 +225,8 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(PK, string[])"/>
+        /// The includes parameter is not applicable to Azure Storage Tables.
+        /// <see cref="ICrudRepository{T, PK}.Retrieve(PK, string[])"/>
         /// </summary>
         /// <exception cref="ArgumentException">The Partition and/or Row values of the primary key (id) parameter are either null or empty.</exception>
         public virtual T Retrieve(PK id, string[] includes = null)
@@ -267,10 +282,10 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// The unitOfWork parameter has not been implemented.
-        /// <see cref="IRepository{T, PK}.Update(T, IUnitOfWork)"/>
+        /// ValidationException currently not supported.
+        /// <see cref="ICrudRepository{T, PK}.Update(T)"/>
         /// </summary>
-        public virtual void Update(T obj, IUnitOfWork unitOfWork = null)
+        public virtual void Update(T obj)
         {
             if (obj == null)
             {
