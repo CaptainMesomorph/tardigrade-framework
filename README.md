@@ -4,7 +4,7 @@ Framework for supporting coding best practices.
 
 ##Version control history
 
-**Nov 28, 2018 - 2.0.0 Updated the design of the repository interfaces**
+**Nov 30, 2018 - 2.0.0 Updated the design of the repository interfaces**
 
 - Updated the design of the repository interfaces.
 
