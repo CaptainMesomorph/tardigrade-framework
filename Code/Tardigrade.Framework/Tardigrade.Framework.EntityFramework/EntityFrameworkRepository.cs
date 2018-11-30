@@ -5,7 +5,6 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Linq.Expressions;
 using Tardigrade.Framework.Exceptions;
-using Tardigrade.Framework.Patterns.UnitOfWork;
 using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.EntityFramework
@@ -30,20 +29,34 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Create(T, IUnitOfWork)"/>
+        /// <see cref="IRepository{T, PK}.Count()"/>
         /// </summary>
-        public virtual T Create(T obj, IUnitOfWork unitOfWork = null)
+        public virtual int Count()
+        {
+            try
+            {
+                return DbContext.Set<T>().Count();
+            }
+            catch (Exception e)
+            {
+                throw new RepositoryException($"Error calculating the number of objects of type {typeof(T).Name}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="ICrudRepository{T, PK}.Create(T)"/>
+        /// </summary>
+        public virtual T Create(T obj)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkUnitOfWork)?.DbContext ?? DbContext;
-                dbContext.Set<T>().Add(obj);
-                dbContext.SaveChanges();
+                DbContext.Set<T>().Add(obj);
+                DbContext.SaveChanges();
             }
             catch (DbEntityValidationException e)
             {
@@ -58,21 +71,20 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(PK, IUnitOfWork)"/>
+        /// <see cref="ICrudRepository{T, PK}.Delete(PK)"/>
         /// </summary>
-        public virtual void Delete(PK id, IUnitOfWork unitOfWork = null)
+        public virtual void Delete(PK id)
         {
             if (id == null)
             {
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
             }
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkUnitOfWork)?.DbContext ?? DbContext;
-                T obj = dbContext.Set<T>().Find(id);
-                dbContext.Set<T>().Remove(obj);
-                dbContext.SaveChanges();
+                T obj = DbContext.Set<T>().Find(id);
+                DbContext.Set<T>().Remove(obj);
+                DbContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -81,26 +93,24 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(T, IUnitOfWork)"/>
+        /// <see cref="ICrudRepository{T, PK}.Delete(T)"/>
         /// </summary>
-        public virtual void Delete(T obj, IUnitOfWork unitOfWork = null)
+        public virtual void Delete(T obj)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkUnitOfWork)?.DbContext ?? DbContext;
-
-                if (dbContext.Entry(obj).State == EntityState.Detached)
+                if (DbContext.Entry(obj).State == EntityState.Detached)
                 {
-                    dbContext.Set<T>().Attach(obj);
+                    DbContext.Set<T>().Attach(obj);
                 }
 
-                dbContext.Set<T>().Remove(obj);
-                dbContext.SaveChanges();
+                DbContext.Set<T>().Remove(obj);
+                DbContext.SaveChanges();
             }
             catch (Exception e)
             {
@@ -109,7 +119,27 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
+        /// <see cref="IRepository{T, PK}.Exists(PK)"/>
+        /// </summary>
+        public virtual bool Exists(PK id)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            try
+            {
+                return DbContext.Set<T>().Find(id) != null;
+            }
+            catch (Exception e)
+            {
+                throw new RepositoryException($"Error determing whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="ICrudRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
         /// </summary>
         public virtual IList<T> Retrieve(Expression<Func<T, bool>> predicate = null, int? pageIndex = null, int? pageSize = null, string[] includes = null)
         {
@@ -117,15 +147,6 @@ namespace Tardigrade.Framework.EntityFramework
 
             try
             {
-                if (includes == null)
-                {
-                    DbContext.Configuration.ProxyCreationEnabled = true;
-                }
-                else
-                {
-                    DbContext.Configuration.ProxyCreationEnabled = false;
-                }
-
                 IQueryable<T> query = DbContext.Set<T>();
 
                 if (predicate != null)
@@ -135,7 +156,8 @@ namespace Tardigrade.Framework.EntityFramework
 
                 if ((pageIndex.HasValue && pageIndex.Value >= 0) && (pageSize.HasValue && pageSize.Value > 0))
                 {
-                    query = query.Skip(pageIndex.Value * pageSize.Value).Take(pageSize.Value);
+                    // https://visualstudiomagazine.com/articles/2016/12/06/skip-take-entity-framework-lambda.aspx
+                    query = query.Skip(() => pageIndex.Value * pageSize.Value).Take(() => pageSize.Value);
                 }
 
                 if (includes != null)
@@ -157,28 +179,19 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(PK, string[])"/>
+        /// <see cref="ICrudRepository{T, PK}.Retrieve(PK, string[])"/>
         /// </summary>
         public virtual T Retrieve(PK id, string[] includes = null)
         {
             if (id == null)
             {
-                throw new ArgumentNullException("id");
+                throw new ArgumentNullException(nameof(id));
             }
 
             T obj = default(T);
 
             try
             {
-                if (includes == null)
-                {
-                    DbContext.Configuration.ProxyCreationEnabled = true;
-                }
-                else
-                {
-                    DbContext.Configuration.ProxyCreationEnabled = false;
-                }
-
                 IDbSet<T> query = DbContext.Set<T>();
 
                 if (includes != null)
@@ -200,21 +213,20 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Update(T, IUnitOfWork)"/>
+        /// <see cref="ICrudRepository{T, PK}.Update(T)"/>
         /// </summary>
-        public virtual void Update(T obj, IUnitOfWork unitOfWork = null)
+        public virtual void Update(T obj)
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             try
             {
-                DbContext dbContext = (unitOfWork as EntityFrameworkUnitOfWork)?.DbContext ?? DbContext;
-                dbContext.Set<T>().Attach(obj);
-                dbContext.Entry(obj).State = EntityState.Modified;
-                dbContext.SaveChanges();
+                DbContext.Set<T>().Attach(obj);
+                DbContext.Entry(obj).State = EntityState.Modified;
+                DbContext.SaveChanges();
             }
             catch (DbEntityValidationException e)
             {

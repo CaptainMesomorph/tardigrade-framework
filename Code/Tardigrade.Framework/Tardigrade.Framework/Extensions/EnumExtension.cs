@@ -7,7 +7,7 @@ namespace Tardigrade.Framework.Extensions
     /// <summary>
     /// This static class contains extension methods for the enum type.
     /// </summary>
-    public static class EnumExtensions
+    public static class EnumExtension
     {
         /// <summary>
         /// Get the Description value of the Display attribute associated with the enumerated type (if exists).
