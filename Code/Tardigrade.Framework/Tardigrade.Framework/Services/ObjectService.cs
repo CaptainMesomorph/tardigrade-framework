@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.Services
@@ -20,6 +24,21 @@ namespace Tardigrade.Framework.Services
         public ObjectService(IRepository<T, PK> repository)
         {
             Repository = repository;
+        }
+
+        /// <summary>
+        /// <see cref="IObjectService{T, PK}.Count(Expression{Func{T, bool}})"/>
+        /// </summary>
+        public virtual int Count(Expression<Func<T, bool>> filter = null)
+        {
+            try
+            {
+                return Repository.Count(filter);
+            }
+            catch (Exception e)
+            {
+                throw new ServiceException($"Error calculating the number of objects of type {typeof(T).Name}.", e);
+            }
         }
 
         /// <summary>
@@ -72,22 +91,33 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Retrieve(int?, int?)"/>
+        /// <see cref="IObjectService{T, PK}.Exists(PK)"/>
         /// </summary>
-        public virtual IList<T> Retrieve(int? pageIndex = null, int? pageSize = null)
+        public virtual bool Exists(PK id)
         {
-            IList<T> objs = new List<T>();
-
             try
             {
-                objs = Repository.Retrieve(pageIndex: pageIndex, pageSize: pageSize);
+                return Repository.Exists(id);
+            }
+            catch (Exception e)
+            {
+                throw new ServiceException($"Error determing whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IObjectService{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}})"/>
+        /// </summary>
+        public virtual IEnumerable<T> Retrieve(Expression<Func<T, bool>> filter = null, PagingContext pagingContext = null, Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null)
+        {
+            try
+            {
+                return Repository.Retrieve(filter, pagingContext, sortCondition);
             }
             catch (RepositoryException e)
             {
                 throw new ServiceException($"Error retrieving objects of type {typeof(T).Name}.", e);
             }
-
-            return objs;
         }
 
         /// <summary>

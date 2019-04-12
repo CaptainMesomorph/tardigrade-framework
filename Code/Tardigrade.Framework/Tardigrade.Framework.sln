@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.Entity
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.RestSharp", "Tardigrade.Framework.RestSharp\Tardigrade.Framework.RestSharp.csproj", "{879CC6C7-B1AF-4FBD-86B2-817B11DF4A6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.EntityFrameworkCore", "Tardigrade.Framework.EntityFrameworkCore\Tardigrade.Framework.EntityFrameworkCore.csproj", "{C98BD217-AB86-45E8-9F0F-949EC8911B4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.EntityFrameworkCore", "Tardigrade.Framework.EntityFrameworkCore\Tardigrade.Framework.EntityFrameworkCore.csproj", "{C98BD217-AB86-45E8-9F0F-949EC8911B4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.SimpleInjector", "Tardigrade.Framework.SimpleInjector\Tardigrade.Framework.SimpleInjector.csproj", "{6029CF54-1C03-46EE-849B-A7369A41E0CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.SimpleInjector", "Tardigrade.Framework.SimpleInjector\Tardigrade.Framework.SimpleInjector.csproj", "{6029CF54-1C03-46EE-849B-A7369A41E0CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.Serialization", "Tardigrade.Framework.Serialization\Tardigrade.Framework.Serialization.csproj", "{B26EDDCC-5AA4-46DC-A529-F7C7F233972E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B26EDDCC-5AA4-46DC-A529-F7C7F233972E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B26EDDCC-5AA4-46DC-A529-F7C7F233972E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B26EDDCC-5AA4-46DC-A529-F7C7F233972E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B26EDDCC-5AA4-46DC-A529-F7C7F233972E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

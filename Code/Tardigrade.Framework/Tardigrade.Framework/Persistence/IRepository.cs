@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 
 namespace Tardigrade.Framework.Persistence
 {
@@ -12,9 +13,10 @@ namespace Tardigrade.Framework.Persistence
         /// <summary>
         /// Calculate the number of objects in the repository.
         /// </summary>
+        /// <param name="filter">Filter condition.</param>
         /// <returns>Number of objects in the repository.</returns>
         /// <exception cref="Exceptions.RepositoryException">Error calculating the number of objects.</exception>
-        int Count();
+        int Count(Expression<Func<T, bool>> filter = null);
 
         /// <summary>
         /// Check for existence of an instance by unique identifier.
