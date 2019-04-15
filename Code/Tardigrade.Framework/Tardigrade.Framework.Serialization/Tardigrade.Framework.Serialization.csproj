@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Rafidzal Rafiq</Authors>
+    <Company>Rafidzal RafiqRafidzal Rafiq</Company>
+    <Product>Tardigrade Framework Library (Serialisation package)</Product>
+    <Description>Software framework for supporting coding best practices.</Description>
+    <PackageProjectUrl>https://github.com/CaptainMesomorph/tardigrade-framework</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/CaptainMesomorph/tardigrade-framework</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
