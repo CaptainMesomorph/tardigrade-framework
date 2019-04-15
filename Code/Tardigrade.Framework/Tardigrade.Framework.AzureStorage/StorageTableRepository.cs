@@ -8,6 +8,7 @@ using System.Net;
 using Tardigrade.Framework.AzureStorage.Extensions;
 using Tardigrade.Framework.AzureStorage.Models;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.AzureStorage
@@ -57,7 +58,7 @@ namespace Tardigrade.Framework.AzureStorage
         /// Not implemented.
         /// <see cref="IRepository{T, PK}.Count()"/>
         /// </summary>
-        public virtual int Count()
+        public virtual int Count(Expression<Func<T, bool>> filter = null)
         {
             throw new NotImplementedException();
         }
@@ -193,11 +194,16 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// The predicate parameter is not used as it is not possible to query an Azure Storage Table using Linq.
+        /// The filter parameter is not used as it is not possible to query an Azure Storage Table using Linq.
+        /// The sortCondition parameter has not been implemented and instead been defaulted to Timestamp (descending).
         /// The includes parameter is not applicable to Azure Storage Tables.
-        /// <see cref="ICrudRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
+        /// <see cref="ICrudRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public virtual IList<T> Retrieve(Expression<Func<T, bool>> predicate = null, int? pageIndex = null, int? pageSize = null, string[] includes = null)
+        public virtual IEnumerable<T> Retrieve(
+            Expression<Func<T, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            params Expression<Func<T, object>>[] includes)
         {
             IList<T> objs = new List<T>();
 
@@ -207,9 +213,13 @@ namespace Tardigrade.Framework.AzureStorage
                 TableQuery<T> query = new TableQuery<T>();
                 objs = table.ExecuteQueryAsync(query).GetAwaiter().GetResult();
 
-                if ((pageIndex.HasValue && pageIndex.Value >= 0) && (pageSize.HasValue && pageSize.Value > 0))
+                if (pagingContext?.PageSize > 0)
                 {
-                    objs = objs.OrderByDescending(l => l.Timestamp).Skip(pageIndex.Value * pageSize.Value).Take(pageSize.Value).ToList();
+                    objs = objs
+                        .OrderByDescending(l => l.Timestamp)
+                        .Skip((int)(pagingContext.PageIndex * pagingContext.PageSize))
+                        .Take((int)pagingContext.PageSize)
+                        .ToList();
                 }
                 else
                 {

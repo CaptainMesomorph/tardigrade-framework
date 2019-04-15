@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Extensions;
+using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.EntityFrameworkCore
@@ -28,13 +30,20 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Count()"/>
+        /// <see cref="IRepository{T, PK}.Count(Expression{Func{T, bool}})"/>
         /// </summary>
-        public virtual int Count()
+        public virtual int Count(Expression<Func<T, bool>> filter = null)
         {
             try
             {
-                return DbContext.Set<T>().Count();
+                if (filter == null)
+                {
+                    return DbContext.Set<T>().Count();
+                }
+                else
+                {
+                    return DbContext.Set<T>().Count(filter);
+                }
             }
             catch (Exception e)
             {
@@ -135,32 +144,45 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="ICrudRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, int?, int?, string[])"/>
+        /// <see cref="ICrudRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public virtual IList<T> Retrieve(Expression<Func<T, bool>> predicate = null, int? pageIndex = null, int? pageSize = null, string[] includes = null)
+        public virtual IEnumerable<T> Retrieve(
+            Expression<Func<T, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            params Expression<Func<T, object>>[] includes)
         {
+            if (pagingContext != null && sortCondition == null)
+            {
+                throw new ArgumentException($"{nameof(sortCondition)} is required if {nameof(pagingContext)} is provided.");
+            }
+
             IList<T> objs = new List<T>();
 
             try
             {
                 IQueryable<T> query = DbContext.Set<T>();
 
-                if (predicate != null)
+                if (filter != null)
                 {
-                    query = query.Where(predicate);
+                    query = query.Where(filter);
                 }
 
-                if ((pageIndex.HasValue && pageIndex.Value >= 0) && (pageSize.HasValue && pageSize.Value > 0))
+                if (sortCondition != null)
                 {
-                    query = query.Skip(pageIndex.Value * pageSize.Value).Take(pageSize.Value);
-                }
+                    query = sortCondition(query);
 
-                if (includes != null)
-                {
-                    foreach (string include in includes)
+                    if (pagingContext?.PageSize > 0)
                     {
-                        query = query.Include(include);
+                        query = query
+                            .Skip((int)(pagingContext.PageIndex * pagingContext.PageSize))
+                            .Take((int)pagingContext.PageSize);
                     }
+                }
+
+                foreach (Expression<Func<T, object>> include in includes.OrEmptyIfNull())
+                {
+                    query = query.Include(include);
                 }
 
                 objs = query.ToList();
@@ -189,12 +211,9 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             {
                 DbSet<T> query = DbContext.Set<T>();
 
-                if (includes != null)
+                foreach (string include in includes.OrEmptyIfNull())
                 {
-                    foreach (string include in includes)
-                    {
-                        query = (DbSet<T>)query.Include(include);
-                    }
+                    query = (DbSet<T>)query.Include(include);
                 }
 
                 obj = query.Find(id);
