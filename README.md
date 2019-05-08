@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ##Version control history
 
+**May 7, 2019 - 3.1.0 Resolve an EF/LINQ issue with the repository layer**
+
+- Updated the EntityFramework 6 and EntityFramework Core projects to resolve an EF/LINQ issue with casting from a uint calculation result to an int.
+
 **Apr 15, 2019 - 3.0.0 Enhanced the paging implementation of the repository layer**
 
 - Enhanced the paging implementation of the repository layer.

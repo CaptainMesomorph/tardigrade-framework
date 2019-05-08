@@ -178,9 +178,12 @@ namespace Tardigrade.Framework.EntityFramework
 
                     if (pagingContext?.PageSize > 0)
                     {
+                        // Using a variable rather than a calculation in the EF/LINQ query is required as (for some
+                        // unknown reason) the calculation result does not properly cast to an int.
+                        int skip = (int)(pagingContext.PageIndex * pagingContext.PageSize);
                         // https://visualstudiomagazine.com/articles/2016/12/06/skip-take-entity-framework-lambda.aspx
                         query = query
-                            .Skip(() => (int)(pagingContext.PageIndex * pagingContext.PageSize))
+                            .Skip(() => skip)
                             .Take(() => (int)pagingContext.PageSize);
                     }
                 }
