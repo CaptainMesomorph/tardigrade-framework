@@ -157,8 +157,6 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                 throw new ArgumentException($"{nameof(sortCondition)} is required if {nameof(pagingContext)} is provided.");
             }
 
-            IList<T> objs = new List<T>();
-
             try
             {
                 IQueryable<T> query = DbContext.Set<T>();
@@ -188,14 +186,12 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                     query = query.Include(include);
                 }
 
-                objs = query.ToList();
+                return query.ToList();
             }
             catch (Exception e)
             {
                 throw new RepositoryException($"Error retrieving objects of type {typeof(T).Name}.", e);
             }
-
-            return objs;
         }
 
         /// <summary>
@@ -208,8 +204,6 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(id));
             }
 
-            T obj = default(T);
-
             try
             {
                 DbSet<T> query = DbContext.Set<T>();
@@ -219,14 +213,12 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                     query = (DbSet<T>)query.Include(include);
                 }
 
-                obj = query.Find(id);
+                return query.Find(id);
             }
             catch (Exception e)
             {
                 throw new RepositoryException($"Error retrieving an object of type {typeof(T).Name} with unique identifier of {id}.", e);
             }
-
-            return obj;
         }
 
         /// <summary>
