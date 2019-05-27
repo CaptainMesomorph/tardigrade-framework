@@ -10,7 +10,7 @@
     <PackageTags></PackageTags>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/CaptainMesomorph/tardigrade-framework</RepositoryUrl>
-    <Version>3.1.0</Version>
+    <Version>3.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
