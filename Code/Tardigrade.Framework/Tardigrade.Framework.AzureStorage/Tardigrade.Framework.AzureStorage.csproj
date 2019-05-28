@@ -11,6 +11,10 @@
     <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\RafRafiq\Source\tardigrade-framework\Code\Tardigrade.Framework\Tardigrade.Framework.AzureStorage\Tardigrade.Framework.AzureStorage.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="slf4net" Version="0.1.32.1" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />

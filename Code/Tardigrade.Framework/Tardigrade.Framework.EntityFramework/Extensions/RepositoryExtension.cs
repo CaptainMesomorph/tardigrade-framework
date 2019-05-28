@@ -22,7 +22,7 @@ namespace Tardigrade.Framework.EntityFramework.Extensions
         /// <exception cref="RepositoryException">Error creating the object.</exception>
         /// <exception cref="ValidationException">Object to create contains invalid values.</exception>
         public static T Create<T, PK>(
-            this ICrudRepository<T, PK> repository,
+            this IRepository<T, PK> repository,
             T obj,
             EntityFrameworkUnitOfWork unitOfWork) where T : class
         {
@@ -62,7 +62,7 @@ namespace Tardigrade.Framework.EntityFramework.Extensions
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="RepositoryException">Error deleting the object.</exception>
         public static void Delete<T, PK>(
-            this ICrudRepository<T, PK> repository,
+            this IRepository<T, PK> repository,
             PK id,
             EntityFrameworkUnitOfWork unitOfWork) where T : class
         {
@@ -97,7 +97,7 @@ namespace Tardigrade.Framework.EntityFramework.Extensions
         /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="RepositoryException">Error deleting the object.</exception>
         public static void Delete<T, PK>(
-            this ICrudRepository<T, PK> repository,
+            this IRepository<T, PK> repository,
             T obj,
             EntityFrameworkUnitOfWork unitOfWork) where T : class
         {
@@ -137,7 +137,7 @@ namespace Tardigrade.Framework.EntityFramework.Extensions
         /// <exception cref="RepositoryException">Error updating the object.</exception>
         /// <exception cref="ValidationException">Object to update contains invalid values.</exception>
         public static void Update<T, PK>(
-            this ICrudRepository<T, PK> repository,
+            this IRepository<T, PK> repository,
             T obj,
             EntityFrameworkUnitOfWork unitOfWork) where T : class
         {

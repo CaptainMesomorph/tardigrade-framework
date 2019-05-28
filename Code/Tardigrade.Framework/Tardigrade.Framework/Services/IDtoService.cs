@@ -17,13 +17,13 @@ namespace Tardigrade.Framework.Services
     {
         /// <summary>
         /// Alternate count method that is based upon the Model type instead of the Data Transfer Object type.
-        /// <see cref="IObjectService{Dto, DtoPk}.Count(Expression{Func{Dto, bool}})"/>
+        /// <see cref="IObjectService{Model, ModelPk}.Count(Expression{Func{Model, bool}})"/>
         /// </summary>
         int Count(Expression<Func<Model, bool>> filter = null);
 
         /// <summary>
         /// Alternate retrieve method that filters on the Model type instead of the Data Transfer Object type.
-        /// <see cref="IObjectService{Dto, DtoPk}.Retrieve(Expression{Func{Dto, bool}}, PagingContext, Func{IQueryable{Dto}, IOrderedQueryable{Dto}}, Expression{Func{Dto, object}}[])"/>
+        /// <see cref="IObjectService{Model, ModelPk}.Retrieve(Expression{Func{Model, bool}}, PagingContext, Func{IQueryable{Model}, IOrderedQueryable{Model}}, Expression{Func{Model, object}}[])"/>
         /// </summary>
         IEnumerable<Dto> Retrieve(
             Expression<Func<Model, bool>> filter = null,

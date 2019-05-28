@@ -53,7 +53,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
         /// <summary>
         /// ValidationException currently not supported.
-        /// <see cref="ICrudRepository{T, PK}.Create(T)"/>
+        /// <see cref="IRepository{T, PK}.Create(T)"/>
         /// </summary>
         public virtual T Create(T obj)
         {
@@ -76,7 +76,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="ICrudRepository{T, PK}.Delete(PK)"/>
+        /// <see cref="IRepository{T, PK}.Delete(PK)"/>
         /// </summary>
         public virtual void Delete(PK id)
         {
@@ -98,7 +98,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="ICrudRepository{T, PK}.Delete(T)"/>
+        /// <see cref="IRepository{T, PK}.Delete(T)"/>
         /// </summary>
         public virtual void Delete(T obj)
         {
@@ -144,7 +144,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="ICrudRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
+        /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
         /// </summary>
         public virtual IEnumerable<T> Retrieve(
             Expression<Func<T, bool>> filter = null,
@@ -195,7 +195,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="ICrudRepository{T, PK}.Retrieve(PK, string[])"/>
+        /// <see cref="IRepository{T, PK}.Retrieve(PK, string[])"/>
         /// </summary>
         public virtual T Retrieve(PK id, string[] includes = null)
         {
@@ -223,7 +223,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
         /// <summary>
         /// ValidationException currently not supported.
-        /// <see cref="ICrudRepository{T, PK}.Update(T)"/>
+        /// <see cref="IRepository{T, PK}.Update(T)"/>
         /// </summary>
         public virtual void Update(T obj)
         {
