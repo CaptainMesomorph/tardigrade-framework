@@ -9,6 +9,8 @@
     <PackageProjectUrl>https://github.com/CaptainMesomorph/tardigrade-framework</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CaptainMesomorph/tardigrade-framework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
+    <Copyright>Copyright © 2019</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
