@@ -63,13 +63,15 @@ namespace Tardigrade.Framework.Services
         /// <param name="filter">Filter condition.</param>
         /// <param name="pagingContext">Paging parameters.</param>
         /// <param name="sortCondition">Condition used to define sorting.</param>
+        /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>All instances if any; empty collection otherwise.</returns>
         /// <exception cref="ArgumentException">A pagingContext is specified but no sortCondition.</exception>"
         /// <exception cref="Exceptions.ServiceException">Error retrieving the objects.</exception>
         IEnumerable<T> Retrieve(
             Expression<Func<T, bool>> filter = null,
             PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null);
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            params Expression<Func<T, object>>[] includes);
 
         /// <summary>
         /// Retrieve an instance by unique identifier.

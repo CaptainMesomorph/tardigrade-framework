@@ -9,10 +9,15 @@
     <PackageProjectUrl>https://github.com/CaptainMesomorph/tardigrade-framework</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CaptainMesomorph/tardigrade-framework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
+    <Version>1.0.1</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\RafRafiq\Source\tardigrade-framework\Code\Tardigrade.Framework\Tardigrade.Framework.Serialization\Tardigrade.Framework.Serialization.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
 </Project>

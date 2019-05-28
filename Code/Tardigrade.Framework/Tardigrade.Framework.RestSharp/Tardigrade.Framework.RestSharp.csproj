@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Rafidzal Rafiq</Authors>
     <Product>Tardigrade Framework Library (RestSharp Integration)</Product>
     <Description>Software framework for supporting coding best practices.</Description>
@@ -11,9 +11,13 @@
     <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\RafRafiq\Source\tardigrade-framework\Code\Tardigrade.Framework\Tardigrade.Framework.RestSharp\Tardigrade.Framework.RestSharp.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="RestSharp" Version="106.5.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="RestSharp" Version="106.6.9" />
   </ItemGroup>
 
   <ItemGroup>

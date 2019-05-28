@@ -35,7 +35,7 @@ namespace Tardigrade.Framework.Services
             {
                 return Repository.Count(filter);
             }
-            catch (Exception e)
+            catch (RepositoryException e)
             {
                 throw new ServiceException($"Error calculating the number of objects of type {typeof(T).Name}.", e);
             }
@@ -46,18 +46,14 @@ namespace Tardigrade.Framework.Services
         /// </summary>
         public virtual T Create(T obj)
         {
-            T createdObj;
-
             try
             {
-                createdObj = Repository.Create(obj);
+                return Repository.Create(obj);
             }
             catch (RepositoryException e)
             {
                 throw new ServiceException($"Error creating an object of type {typeof(T).Name}.", e);
             }
-
-            return createdObj;
         }
 
         /// <summary>
@@ -106,13 +102,17 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}})"/>
+        /// <see cref="IObjectService{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public virtual IEnumerable<T> Retrieve(Expression<Func<T, bool>> filter = null, PagingContext pagingContext = null, Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null)
+        public virtual IEnumerable<T> Retrieve(
+            Expression<Func<T, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            params Expression<Func<T, object>>[] includes)
         {
             try
             {
-                return Repository.Retrieve(filter, pagingContext, sortCondition);
+                return Repository.Retrieve(filter, pagingContext, sortCondition, includes);
             }
             catch (RepositoryException e)
             {
@@ -125,18 +125,14 @@ namespace Tardigrade.Framework.Services
         /// </summary>
         public virtual T Retrieve(PK id)
         {
-            T obj = default(T);
-
             try
             {
-                obj = Repository.Retrieve(id);
+                return Repository.Retrieve(id);
             }
             catch (RepositoryException e)
             {
                 throw new ServiceException($"Error retrieving an object of type {typeof(T).Name} with a unique identifier of {id}.", e);
             }
-
-            return obj;
         }
 
         /// <summary>

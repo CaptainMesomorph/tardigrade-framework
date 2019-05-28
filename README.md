@@ -4,6 +4,12 @@ Framework for supporting coding best practices.
 
 ##Version control history
 
+**May 28, 2019 - 4.0.0 Created a DTO service and enhanced the repository layer**
+
+- Created a Data Transfer Object (DTO) service.
+- Merged the ICrudRepository interface into IRepository and removed it to simplify usage.
+- Configured the generation of XML documentation on build.
+
 **May 7, 2019 - 3.1.0 Resolve an EF/LINQ issue with the repository layer**
 
 - Updated the EntityFramework 6 and EntityFramework Core projects to resolve an EF/LINQ issue with casting from a uint calculation result to an int.

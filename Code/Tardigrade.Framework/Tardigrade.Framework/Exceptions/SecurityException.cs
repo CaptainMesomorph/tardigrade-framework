@@ -1,0 +1,25 @@
+﻿using System;
+
+namespace Tardigrade.Framework.Exceptions
+{
+    /// <summary>
+    /// This exception is associated with application security errors.
+    /// </summary>
+    [Serializable]
+    public class SecurityException : BaseException
+    {
+        /// <summary>
+        /// <see cref="BaseException(string)"/>
+        /// </summary>
+        public SecurityException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        /// <see cref="BaseException(string, Exception)"/>
+        /// </summary>
+        public SecurityException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+    }
+}
