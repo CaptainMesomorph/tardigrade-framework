@@ -1,25 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Version>4.0.0</Version>
     <Authors>Rafidzal Rafiq</Authors>
-    <Company />
     <Product>Tardigrade Framework Library</Product>
     <Description>Software framework for supporting coding best practices.</Description>
+    <Copyright>Copyright © 2019</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/CaptainMesomorph/tardigrade-framework</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CaptainMesomorph/tardigrade-framework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Copyright>Copyright © 2019</Copyright>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\RafRafiq\Source\tardigrade-framework\Code\Tardigrade.Framework\Tardigrade.Framework\Tardigrade.Framework.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Users\RafRafiq\Source\tardigrade-framework\Code\Tardigrade.Framework\Tardigrade.Framework\Tardigrade.Framework.xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

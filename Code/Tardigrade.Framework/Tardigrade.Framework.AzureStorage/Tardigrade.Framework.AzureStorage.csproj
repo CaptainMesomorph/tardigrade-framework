@@ -6,15 +6,12 @@
     <Authors>Rafidzal Rafiq</Authors>
     <Product>Tardigrade Framework Library (Azure Storage Integration)</Product>
     <Description>Software framework for supporting coding best practices.</Description>
+    <Copyright>Copyright © 2019</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/CaptainMesomorph/tardigrade-framework</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CaptainMesomorph/tardigrade-framework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <Copyright>Copyright © 2019</Copyright>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>C:\Users\RafRafiq\Source\tardigrade-framework\Code\Tardigrade.Framework\Tardigrade.Framework.AzureStorage\Tardigrade.Framework.AzureStorage.xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
