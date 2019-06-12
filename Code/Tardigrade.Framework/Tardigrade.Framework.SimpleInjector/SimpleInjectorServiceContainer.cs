@@ -1,0 +1,108 @@
+﻿using SimpleInjector;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using Tardigrade.Framework.Patterns.DependencyInjection;
+
+namespace Tardigrade.Framework.SimpleInjector
+{
+    /// <summary>
+    /// Service container based the SimpleInjector Dependency Injection framework.
+    /// </summary>
+    public abstract class SimpleInjectorServiceContainer : IServiceContainer
+    {
+        // TODO: Replace with ILogger.
+        //private static readonly slf4net.ILogger log = slf4net.LoggerFactory.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// SimpleInjector services container.
+        /// </summary>
+        protected static Container Container { get; private set; }
+
+        /// <summary>
+        /// Create an instance of this service container.
+        /// </summary>
+        public SimpleInjectorServiceContainer()
+        {
+            // Create the services container.
+            Container = new Container();
+
+            try
+            {
+                // Register types.
+                ConfigureServices(Container);
+            }
+            catch (Exception e)
+            {
+                string errorMessage = ProcessLoadException(e);
+
+                if (errorMessage == null)
+                {
+                    //if (log.IsErrorEnabled) log.Error(e, e.GetBaseException().Message);
+                }
+                else
+                {
+                    //if (log.IsErrorEnabled) log.Error(e, errorMessage);
+                }
+
+                throw;
+            }
+
+            Container.Verify();
+        }
+
+        /// <summary>
+        /// <see cref="IServiceContainer.GetService{T}"/>
+        /// </summary>
+        public T GetService<T>() where T : class
+        {
+            return Container.GetInstance<T>();
+        }
+
+        /// <summary>
+        /// Add services to the service container.
+        /// </summary>
+        /// <param name="container">Services container.</param>
+        public abstract void ConfigureServices(Container container);
+
+        /// <summary>
+        /// Generate an informative message for errors associated with type (class) loading.
+        /// </summary>
+        /// <param name="exception">Exception to process.</param>
+        /// <returns>Informative message if the error is associated with type loading; null otherwise.</returns>
+        private static string ProcessLoadException(Exception exception)
+        {
+            string message = null;
+
+            if (exception is ReflectionTypeLoadException)
+            {
+                ReflectionTypeLoadException typeLoadException = exception as ReflectionTypeLoadException;
+                StringBuilder stringBuilder = new StringBuilder();
+
+                foreach (Exception loaderException in typeLoadException.LoaderExceptions)
+                {
+                    stringBuilder.AppendLine(loaderException.Message);
+
+                    if (loaderException is FileNotFoundException fileNotFoundException)
+                    {
+                        if (!string.IsNullOrEmpty(fileNotFoundException.FusionLog))
+                        {
+                            stringBuilder.AppendLine($"Fusion Log: {fileNotFoundException.FusionLog}");
+                        }
+                    }
+
+                    stringBuilder.AppendLine();
+                }
+
+                message = stringBuilder.ToString();
+            }
+            else if (exception.InnerException != null)
+            {
+                message = ProcessLoadException(exception.InnerException);
+            }
+
+            return message;
+        }
+    }
+}

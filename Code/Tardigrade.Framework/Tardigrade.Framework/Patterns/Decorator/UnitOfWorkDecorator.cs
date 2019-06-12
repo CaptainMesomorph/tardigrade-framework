@@ -6,8 +6,8 @@ namespace Tardigrade.Framework.Patterns.Decorator
 {
     /// <summary>
     /// Decorator class (based on Command Handlers) for managing the Unit of Work pattern.
-    /// <see cref="!:https://simpleinjector.readthedocs.io/en/latest/aop.html">Aspect-Oriented Programming</see>
-    /// <see cref="!:https://cuttingedge.it/blogs/steven/pivot/entry.php?id=91">Meanwhile... on the command side of my architecture</see>
+    /// <a href="https://simpleinjector.readthedocs.io/en/latest/aop.html">Aspect-Oriented Programming</a>
+    /// <a href="https://cuttingedge.it/blogs/steven/pivot/entry.php?id=91">Meanwhile... on the command side of my architecture</a>
     /// </summary>
     /// <typeparam name="TCommand">Type of (data) object associated with the Command Handler.</typeparam>
     public class UnitOfWorkDecorator<TCommand> : ICommandHandler<TCommand>
