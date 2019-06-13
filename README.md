@@ -4,6 +4,15 @@ Framework for supporting coding best practices.
 
 ##Version control history
 
+**June 13, 2019 - 5.0.0 Enhanced the repository layer to include async methods**
+
+- Enhanced the repository layer to incorporate asynchronous equivalents to existing methods.
+- Updated the repository interface to include NotFound (when deleting or updating) and AlreadyExists (when creating) exceptions.
+- Created an xUnit test project for the AzureStorage project.
+- Created a basic interface to manage Dependency Injection frameworks from Microsoft and SimpleInjector.
+- Cleaned up Project (csproj) files and resolved XML documentation generation issues.
+- Updated project licences.
+
 **May 28, 2019 - 4.0.0 Created a DTO service and enhanced the repository layer**
 
 - Created a Data Transfer Object (DTO) service.

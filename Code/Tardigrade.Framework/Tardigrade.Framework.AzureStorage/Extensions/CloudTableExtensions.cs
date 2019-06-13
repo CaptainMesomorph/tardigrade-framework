@@ -1,4 +1,5 @@
 ﻿using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,12 +19,18 @@ namespace Tardigrade.Framework.AzureStorage.Extensions
         /// <param name="query">Query to execute.</param>
         /// <param name="cancellationToken">Token for handling operation cancellation.</param>
         /// <returns>Result of the query.</returns>
+        /// <exception cref="ArgumentNullException">The query parameter is null.</exception>
         public static async Task<IList<T>> ExecuteQueryAsync<T>(
             this CloudTable table,
             TableQuery<T> query,
             CancellationToken cancellationToken = default(CancellationToken))
             where T : ITableEntity, new()
         {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             TableQuery<T> runningQuery = new TableQuery<T>()
             {
                 FilterString = query.FilterString,
