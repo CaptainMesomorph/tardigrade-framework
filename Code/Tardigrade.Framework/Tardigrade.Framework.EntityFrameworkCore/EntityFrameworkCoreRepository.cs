@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EFCore.BulkExtensions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,6 +85,21 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             {
                 throw new RepositoryException($"Count failed; more than {int.MaxValue} objects of type {typeof(T).Name} exist.", e);
             }
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
+        /// </summary>
+        public IEnumerable<T> Create(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.BulkInsert((IList<T>)objs);
+
+            return objs;
         }
 
         /// <summary>

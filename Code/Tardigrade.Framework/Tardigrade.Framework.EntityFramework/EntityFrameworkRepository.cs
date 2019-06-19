@@ -89,6 +89,15 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
+        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">Not currently implemented.</exception>
+        public IEnumerable<T> Create(IEnumerable<T> objs)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// <see cref="IRepository{T, PK}.Create(T)"/>
         /// </summary>
         public virtual T Create(T obj)

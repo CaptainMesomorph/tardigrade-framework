@@ -37,6 +37,15 @@ namespace Tardigrade.Framework.Persistence
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
+        /// Create multiple instances of the object type.
+        /// </summary>
+        /// <param name="objs">Instances to create.</param>
+        /// <returns>Instances created (including allocated unique identifiers).</returns>
+        /// <exception cref="ArgumentNullException">The objs parameter is null.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
+        IEnumerable<T> Create(IEnumerable<T> objs);
+
+        /// <summary>
         /// Create an instance of the object type.
         /// </summary>
         /// <param name="obj">Instance to create.</param>
@@ -82,6 +91,7 @@ namespace Tardigrade.Framework.Persistence
         /// </summary>
         /// <param name="id">Unique identifier for the instance.</param>
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
@@ -92,6 +102,7 @@ namespace Tardigrade.Framework.Persistence
         /// </summary>
         /// <param name="obj">Instance to delete.</param>
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
@@ -193,6 +204,7 @@ namespace Tardigrade.Framework.Persistence
         /// </summary>
         /// <param name="obj">Instance to update.</param>
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the object.</exception>

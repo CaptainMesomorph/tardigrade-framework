@@ -95,6 +95,15 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
+        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">Not currently implemented.</exception>
+        public IEnumerable<T> Create(IEnumerable<T> objs)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// <see cref="IRepository{T, PK}.Create(T)"/>
         /// </summary>
         /// <exception cref="ValidationException">Not supported.</exception>

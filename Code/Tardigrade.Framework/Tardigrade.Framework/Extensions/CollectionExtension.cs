@@ -9,6 +9,17 @@ namespace Tardigrade.Framework.Extensions
     public static class CollectionExtension
     {
         /// <summary>
+        /// Check whether the specified source is null or contains no items.
+        /// </summary>
+        /// <typeparam name="T">Type associated with the collection.</typeparam>
+        /// <param name="source">The collection to check.</param>
+        /// <returns>True if the colection is null or contains no items; false otherwise.</returns>
+        public static bool IsNulOrEmpty<T>(this IEnumerable<T> source)
+        {
+            return (source == null ? true : (source.Count() == 0));
+        }
+
+        /// <summary>
         /// If the specified collection is null, return an empty collection. If not, return the collection as is.
         /// Example usage:
         /// <code>foreach (UserProfile userProfile in userProfiles.OrEmptyIfNull())</code>
