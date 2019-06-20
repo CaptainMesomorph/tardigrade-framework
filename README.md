@@ -4,6 +4,21 @@ Framework for supporting coding best practices.
 
 ##Version control history
 
+**June 20, 2019 - 6.0.0 Enhanced the repository layer to include async methods**
+
+- Created application user interfaces to "wrap" ASP.NET and ASP.NET Core Identity services.
+- Created new ASP.NET and ASP.NET Core specific projects for the application user implementations.
+- Created a service for managing JSON Web Tokens.
+- Created a common object definition to standardise API responses.
+- Created a generic ObjectController based upon ASP.NET Core.
+- Converted the Tardigrade.Framework.EntityFramework project from .NET Standard to .NET Framework.
+- Converted the Tardigrade.Framework.EntityFrameworkCore project from .NET Standard to .NET Core.
+- Extended the ApplicationUserManager to include additional operations.
+- Merged the Tardigrade.Framework.Serialization project into Tardigrade.Framework and then removed it.
+- Added a method for bulk creation in the repository layer.
+- Extended the service layer to add corresponding asynchronous methods.
+
+
 **June 13, 2019 - 5.0.0 Enhanced the repository layer to include async methods**
 
 - Enhanced the repository layer to incorporate asynchronous equivalents to existing methods.
