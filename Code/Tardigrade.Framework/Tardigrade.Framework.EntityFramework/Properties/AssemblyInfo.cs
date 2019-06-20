@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Tardigrade.Framework.EntityFramework")]
+[assembly: AssemblyTitle("Tardigrade Framework Library (Entity Framework Integration)")]
 [assembly: AssemblyDescription("Software framework for supporting coding best practices.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Rafidzal Rafiq")]
-[assembly: AssemblyProduct("Tardigrade Framework Library (Entity Framework Integration)")]
+[assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("Copyright © 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
