@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Tardigrade.Framework.Models.Persistence;
 
 namespace Tardigrade.Framework.Services
@@ -22,6 +24,14 @@ namespace Tardigrade.Framework.Services
         int Count(Expression<Func<Model, bool>> filter = null);
 
         /// <summary>
+        /// Alternate count method that is based upon the Model type instead of the Data Transfer Object type.
+        /// <see cref="IObjectService{Model, ModelPk}.CountAsync(Expression{Func{Model, bool}}, CancellationToken)"/>
+        /// </summary>
+        Task<int> CountAsync(
+            Expression<Func<Model, bool>> filter = null,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// Alternate retrieve method that filters on the Model type instead of the Data Transfer Object type.
         /// <see cref="IObjectService{Model, ModelPk}.Retrieve(Expression{Func{Model, bool}}, PagingContext, Func{IQueryable{Model}, IOrderedQueryable{Model}}, Expression{Func{Model, object}}[])"/>
         /// </summary>
@@ -29,6 +39,17 @@ namespace Tardigrade.Framework.Services
             Expression<Func<Model, bool>> filter = null,
             PagingContext pagingContext = null,
             Func<IQueryable<Model>, IOrderedQueryable<Model>> sortCondition = null,
+            params Expression<Func<Model, object>>[] includes);
+
+        /// <summary>
+        /// Alternate retrieve method that filters on the Model type instead of the Data Transfer Object type.
+        /// <see cref="IObjectService{Model, ModelPk}.RetrieveAsync(Expression{Func{Model, bool}}, PagingContext, Func{IQueryable{Model}, IOrderedQueryable{Model}}, CancellationToken, Expression{Func{Model, object}}[])"/>
+        /// </summary>
+        Task<IEnumerable<Dto>> RetrieveAsync(
+            Expression<Func<Model, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<Model>, IOrderedQueryable<Model>> sortCondition = null,
+            CancellationToken cancellationToken = default(CancellationToken),
             params Expression<Func<Model, object>>[] includes);
     }
 }

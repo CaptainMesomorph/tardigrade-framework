@@ -90,7 +90,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <summary>
         /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
         /// </summary>
-        public IEnumerable<T> Create(IEnumerable<T> objs)
+        public virtual IEnumerable<T> Create(IEnumerable<T> objs)
         {
             if (objs.IsNulOrEmpty())
             {
@@ -105,7 +105,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <summary>
         /// <see cref="IRepository{T, PK}.Create(T)"/>
         /// </summary>
-        /// <exception cref="ValidationException">Not implemented.</exception>
+        /// <exception cref="ValidationException">Not supported.</exception>
         public virtual T Create(T obj)
         {
             if (obj == null)
@@ -133,9 +133,28 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
+        /// <see cref="IRepository{T, PK}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        /// <param name="objs">Instances to create.</param>
+        /// <param name="cancellationToken">Not supported.</param>
+        public virtual async Task<IEnumerable<T>> CreateAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            await DbContext.BulkInsertAsync((IList<T>)objs);
+
+            return objs;
+        }
+
+        /// <summary>
         /// <see cref="IRepository{T, PK}.CreateAsync(T, CancellationToken)"/>
         /// </summary>
-        /// <exception cref="ValidationException">Not implemented.</exception>
+        /// <param name="obj">Instance to create.</param>
+        /// <param name="cancellationToken">Not supported.</param>
+        /// <exception cref="ValidationException">Not supported.</exception>
         public virtual async Task<T> CreateAsync(
             T obj,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -439,7 +458,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <see cref="IRepository{T, PK}.Update(T)"/>
         /// </summary>
         /// <exception cref="ArgumentNullException">The obj parameter (or associated primary key) is null.</exception>
-        /// <exception cref="ValidationException">Not implemented.</exception>
+        /// <exception cref="ValidationException">Not supported.</exception>
         public virtual void Update(T obj)
         {
             if (obj == null)
@@ -468,7 +487,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <see cref="IRepository{T, PK}.Update(T)"/>
         /// </summary>
         /// <exception cref="ArgumentNullException">The obj parameter (or associated primary key) is null.</exception>
-        /// <exception cref="ValidationException">Not implemented.</exception>
+        /// <exception cref="ValidationException">Not supported.</exception>
         public virtual async Task UpdateAsync(T obj, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (obj == null)

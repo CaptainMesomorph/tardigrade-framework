@@ -57,6 +57,18 @@ namespace Tardigrade.Framework.Persistence
         T Create(T obj);
 
         /// <summary>
+        /// Create multiple instances of the object type.
+        /// </summary>
+        /// <param name="objs">Instances to create.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Instances created (including allocated unique identifiers).</returns>
+        /// <exception cref="ArgumentNullException">The objs parameter is null.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
+        Task<IEnumerable<T>> CreateAsync(
+            IEnumerable<T> objs,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// Create an instance of the object type.
         /// </summary>
         /// <param name="obj">Instance to create.</param>
@@ -206,7 +218,7 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
         /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
-        /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
+        /// <exception cref="Exceptions.NotFoundException">Object to update does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the object.</exception>
         /// <exception cref="Exceptions.ValidationException">Object to update contains invalid values.</exception>
         Task UpdateAsync(T obj, CancellationToken cancellationToken = default(CancellationToken));
