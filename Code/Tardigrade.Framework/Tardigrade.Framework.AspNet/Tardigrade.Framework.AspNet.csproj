@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{43161900-684A-493A-90E4-0B46A4F9684F}</ProjectGuid>
+    <ProjectGuid>{9C9B442E-6CC9-4E34-A282-1B51133744E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tardigrade.Framework.EntityFramework</RootNamespace>
-    <AssemblyName>Tardigrade.Framework.EntityFramework</AssemblyName>
+    <RootNamespace>Tardigrade.Framework.AspNet</RootNamespace>
+    <AssemblyName>Tardigrade.Framework.AspNet</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,29 +41,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\ApplicationDbContext.cs" />
-    <Compile Include="EntityFrameworkRepository.cs" />
-    <Compile Include="EntityFrameworkUnitOfWork.cs" />
-    <Compile Include="Extensions\RepositoryExtension.cs" />
+    <Compile Include="Models\Identity\ApplicationUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Identity\ApplicationUserManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EntityFramework">
-      <Version>6.2.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework">
-      <Version>2.2.2</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Tardigrade.Framework.AspNet\Tardigrade.Framework.AspNet.csproj">
-      <Project>{9c9b442e-6cc9-4e34-a282-1b51133744e1}</Project>
-      <Name>Tardigrade.Framework.AspNet</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Tardigrade.Framework\Tardigrade.Framework.csproj">
       <Project>{6879932a-09d8-4f6f-99b3-52df1349ee4c}</Project>
       <Name>Tardigrade.Framework</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <Version>2.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNet.Identity.Owin">
+      <Version>2.2.2</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

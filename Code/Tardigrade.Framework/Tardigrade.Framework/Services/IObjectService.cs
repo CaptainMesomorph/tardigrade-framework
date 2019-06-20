@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Tardigrade.Framework.Models.Persistence;
 
 namespace Tardigrade.Framework.Services
@@ -22,6 +24,26 @@ namespace Tardigrade.Framework.Services
         int Count(Expression<Func<T, bool>> filter = null);
 
         /// <summary>
+        /// Calculate the number of objects of this type.
+        /// </summary>
+        /// <param name="filter">Filter condition.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Number of objects of this type.</returns>
+        /// <exception cref="Exceptions.ServiceException">Error calculating the number of objects.</exception>
+        Task<int> CountAsync(
+            Expression<Func<T, bool>> filter = null,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Create multiple instances of the object type.
+        /// </summary>
+        /// <param name="objs">Instances to create.</param>
+        /// <returns>Instances created (including allocated unique identifiers).</returns>
+        /// <exception cref="ArgumentNullException">The objs parameter is null.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
+        IEnumerable<T> Create(IEnumerable<T> objs);
+
+        /// <summary>
         /// Create an instance of the object type.
         /// </summary>
         /// <param name="obj">Instance to create.</param>
@@ -32,7 +54,30 @@ namespace Tardigrade.Framework.Services
         T Create(T obj);
 
         /// <summary>
-        /// Delete an instance using their unique identifier.
+        /// Create multiple instances of the object type.
+        /// </summary>
+        /// <param name="objs">Instances to create.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Instances created (including allocated unique identifiers).</returns>
+        /// <exception cref="ArgumentNullException">The objs parameter is null.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
+        Task<IEnumerable<T>> CreateAsync(
+            IEnumerable<T> objs,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Create an instance of the object type.
+        /// </summary>
+        /// <param name="obj">Instance to create.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Instance created (including allocated unique identifier).</returns>
+        /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
+        /// <exception cref="Exceptions.ServiceException">Error creating the object.</exception>
+        /// <exception cref="Exceptions.ValidationException">Object to create contains invalid values.</exception>
+        Task<T> CreateAsync(T obj, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Delete an instance by unique identifier.
         /// </summary>
         /// <param name="id">Unique identifier for the instance.</param>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
@@ -48,6 +93,28 @@ namespace Tardigrade.Framework.Services
         void Delete(T obj);
 
         /// <summary>
+        /// Delete an instance by unique identifier.
+        /// </summary>
+        /// <param name="id">Unique identifier for the instance.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
+        /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
+        Task DeleteAsync(PK id, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Delete an instance.
+        /// </summary>
+        /// <param name="obj">Instance to delete.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
+        /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
+        Task DeleteAsync(T obj, CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
         /// Check for existence of an instance by unique identifier.
         /// </summary>
         /// <param name="id">Unique identifier for the instance.</param>
@@ -55,6 +122,16 @@ namespace Tardigrade.Framework.Services
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.ServiceException">Error checking for existence of an object.</exception>
         bool Exists(PK id);
+
+        /// <summary>
+        /// Check for existence of an instance by unique identifier.
+        /// </summary>
+        /// <param name="id">Unique identifier for the instance.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>True if the instance exists; false otherwise.</returns>
+        /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error checking for existence of an object.</exception>
+        Task<bool> ExistsAsync(PK id, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Retrieve all instances of the object type. If paging parameters are provided, a range of objects is
@@ -77,10 +154,44 @@ namespace Tardigrade.Framework.Services
         /// Retrieve an instance by unique identifier.
         /// </summary>
         /// <param name="id">Unique identifier for the instance.</param>
+        /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Instance if found; null otherwise.</returns>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.ServiceException">Error retrieving the object.</exception>
-        T Retrieve(PK id);
+        T Retrieve(PK id, params Expression<Func<T, object>>[] includes);
+
+        /// <summary>
+        /// Retrieve all instances of the object type. If paging parameters are provided, a range of objects is
+        /// returned.
+        /// </summary>
+        /// <param name="filter">Filter condition.</param>
+        /// <param name="pagingContext">Paging parameters.</param>
+        /// <param name="sortCondition">Condition used to define sorting.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <param name="includes">A list of related objects to include in the query results.</param>
+        /// <returns>All instances if any; empty collection otherwise.</returns>
+        /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>"
+        /// <exception cref="Exceptions.RepositoryException">Error retrieving the objects.</exception>
+        Task<IEnumerable<T>> RetrieveAsync(
+            Expression<Func<T, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            CancellationToken cancellationToken = default(CancellationToken),
+            params Expression<Func<T, object>>[] includes);
+
+        /// <summary>
+        /// Retrieve an instance by unique identifier.
+        /// </summary>
+        /// <param name="id">Unique identifier for the instance.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <param name="includes">A list of related objects to include in the query results.</param>
+        /// <returns>Instance if found; null otherwise.</returns>
+        /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error retrieving the object.</exception>
+        Task<T> RetrieveAsync(
+            PK id,
+            CancellationToken cancellationToken = default(CancellationToken),
+            params Expression<Func<T, object>>[] includes);
 
         /// <summary>
         /// Update an instance.
@@ -91,5 +202,17 @@ namespace Tardigrade.Framework.Services
         /// <exception cref="Exceptions.ServiceException">Error updating the object.</exception>
         /// <exception cref="Exceptions.ValidationException">Object to update contains invalid values.</exception>
         void Update(T obj);
+
+        /// <summary>
+        /// Update an instance.
+        /// </summary>
+        /// <param name="obj">Instance to update.</param>
+        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
+        /// <exception cref="Exceptions.NotFoundException">Object to update does not exist.</exception>
+        /// <exception cref="Exceptions.RepositoryException">Error updating the object.</exception>
+        /// <exception cref="Exceptions.ValidationException">Object to update contains invalid values.</exception>
+        Task UpdateAsync(T obj, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

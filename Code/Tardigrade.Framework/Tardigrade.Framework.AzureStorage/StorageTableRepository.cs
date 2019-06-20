@@ -87,9 +87,18 @@ namespace Tardigrade.Framework.AzureStorage
         /// <see cref="IRepository{T, PK}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
         /// </summary>
         /// <exception cref="NotImplementedException">Not currently implmented.</exception>
-        public Task<int> CountAsync(
+        public virtual Task<int> CountAsync(
             Expression<Func<T, bool>> filter = null,
             CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">Not currently implemented.</exception>
+        public virtual IEnumerable<T> Create(IEnumerable<T> objs)
         {
             throw new NotImplementedException();
         }
@@ -139,6 +148,15 @@ namespace Tardigrade.Framework.AzureStorage
             }
 
             return obj;
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">Not currently implemented.</exception>
+        public virtual Task<IEnumerable<T>> CreateAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

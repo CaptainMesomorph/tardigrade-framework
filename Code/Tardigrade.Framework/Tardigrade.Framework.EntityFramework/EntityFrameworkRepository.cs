@@ -21,6 +21,8 @@ namespace Tardigrade.Framework.EntityFramework
     /// </summary>
     public class EntityFrameworkRepository<T, PK> : IRepository<T, PK> where T : class
     {
+        private const int BatchSize = 1000;
+
         /// <summary>
         /// Database context.
         /// </summary>
@@ -89,6 +91,47 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
+        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
+        /// </summary>
+        public virtual IEnumerable<T> Create(IEnumerable<T> objs)
+        {
+            if (objs == null)
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Configuration.AutoDetectChangesEnabled = false;
+            int count = 0;
+
+            try
+            {
+                foreach (T obj in objs)
+                {
+                    ++count;
+                    DbContext.Set<T>().Add(obj);
+
+                    if ((count % BatchSize) == 0)
+                    {
+                        DbContext.SaveChanges();
+                    }
+                }
+
+                DbContext.SaveChanges();
+            }
+            catch (Exception e) when (
+                e is DbUpdateException ||
+                e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is ObjectDisposedException ||
+                e is InvalidOperationException)
+            {
+                throw new RepositoryException($"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
+            }
+
+            return objs;
+        }
+
+        /// <summary>
         /// <see cref="IRepository{T, PK}.Create(T)"/>
         /// </summary>
         public virtual T Create(T obj)
@@ -130,6 +173,47 @@ namespace Tardigrade.Framework.EntityFramework
             }
 
             return obj;
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        public virtual async Task<IEnumerable<T>> CreateAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs == null)
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Configuration.AutoDetectChangesEnabled = false;
+            int count = 0;
+
+            try
+            {
+                foreach (T obj in objs)
+                {
+                    ++count;
+                    DbContext.Set<T>().Add(obj);
+
+                    if ((count % BatchSize) == 0)
+                    {
+                        await DbContext.SaveChangesAsync(cancellationToken);
+                    }
+                }
+
+                await DbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (Exception e) when (
+                e is DbUpdateException ||
+                e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is ObjectDisposedException ||
+                e is InvalidOperationException)
+            {
+                throw new RepositoryException($"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
+            }
+
+            return objs;
         }
 
         /// <summary>
