@@ -64,6 +64,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
                 throw new IdentityException($"Create user failed; unable to create user with email {user.Email}.", errors);
             }
+
             return user;
         }
 
@@ -75,6 +76,38 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             return await userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.GenerateTwoFactorTokenAsync(T, string)"/>
+        /// </summary>
+        public async Task<string> GenerateTwoFactorTokenAsync(ApplicationUser user, string tokenProvider)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(tokenProvider)) throw new ArgumentNullException(nameof(tokenProvider));
+
+            return await userManager.GenerateTwoFactorTokenAsync(user, tokenProvider);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.RetrieveAsync(string)"/>
+        /// </summary>
+        public async Task<ApplicationUser> RetrieveAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentNullException(nameof(userId));
+
+            return await userManager.FindByIdAsync(userId);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.RetrieveByEmailAsync(string)"/>
+        /// </summary>
+        public async Task<ApplicationUser> RetrieveByEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException(nameof(email));
+
+            return await userManager.FindByEmailAsync(email);
         }
 
         /// <summary>
@@ -120,6 +153,24 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
                 {
                     throw new IdentityException($"Sign-in failed; for reasons unknown, not able to sign-in user {user.Email}.");
                 }
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.UpdateAsync(T)"/>
+        /// </summary>
+        public async Task UpdateAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            IdentityResult result = await userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                IEnumerable<Framework.Models.Errors.IdentityError> errors =
+                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                throw new IdentityException($"Update user failed; unable to update user with email {user.Email}.", errors);
             }
         }
     }

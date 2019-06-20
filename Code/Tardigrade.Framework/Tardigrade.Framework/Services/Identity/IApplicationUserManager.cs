@@ -37,6 +37,31 @@ namespace Tardigrade.Framework.Services.Identity
         Task<string> GenerateEmailConfirmationTokenAsync(IApplicationUser user);
 
         /// <summary>
+        /// Generate a two factor authentication token for the specified user.
+        /// </summary>
+        /// <param name="user">Application user the token is for.</param>
+        /// <param name="tokenProvider">Provider which will generate the token (as defined in the application start-up configuration).</param>
+        /// <returns>A two factor authentication token for the user.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null, or tokenProvider is null or empty.</exception>
+        Task<string> GenerateTwoFactorTokenAsync(IApplicationUser user, string tokenProvider);
+
+        /// <summary>
+        /// Retrieve an application user with the specified unique identifier.
+        /// </summary>
+        /// <param name="userId">Unique identifier for the application user.</param>
+        /// <returns>Application user matching the specified unique identifier if it exists; null otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">userId is null or empty.</exception>
+        Task<IApplicationUser> RetrieveAsync(string userId);
+
+        /// <summary>
+        /// Retrieve the application user associated with the specified email address.
+        /// </summary>
+        /// <param name="email">Email address of the user.</param>
+        /// <returns>Application user if found; null otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">email is null or empty.</exception>
+        Task<IApplicationUser> RetrieveByEmailAsync(string email);
+
+        /// <summary>
         /// Retrieve an application user by username.
         /// </summary>
         /// <param name="username">Username to search for.</param>
@@ -62,5 +87,14 @@ namespace Tardigrade.Framework.Services.Identity
             string password,
             bool isPersistent = false,
             bool lockoutOnFailure = true);
+
+        /// <summary>
+        /// Update the specified user.
+        /// </summary>
+        /// <param name="user">Application user to update.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        /// <exception cref="Exceptions.IdentityException">User update failed due to an unknown reason.</exception>
+        Task UpdateAsync(IApplicationUser user);
     }
 }

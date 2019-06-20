@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
@@ -17,22 +16,18 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
     /// </summary>
     public class ApplicationUserManager : IApplicationUserManager<ApplicationUser>
     {
-        private readonly IMapper mapper;
         private readonly SignInManager<ApplicationUser, string> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
 
         /// <summary>
         /// Create an instance of this class.
         /// </summary>
-        /// <param name="mapper">Object mapper.</param>
         /// <param name="signInManager">Service for managing application user sign-in.</param>
         /// <param name="userManager">Service for managing an application user.</param>
         public ApplicationUserManager(
-            IMapper mapper,
             SignInManager<ApplicationUser, string> signInManager,
             UserManager<ApplicationUser> userManager)
         {
-            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             this.signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
@@ -66,6 +61,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
                 throw new IdentityException($"Create user failed; unable to create user with email {user.Email}.", errors);
             }
+
             return user;
         }
 
@@ -77,6 +73,38 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             return await userManager.GenerateEmailConfirmationTokenAsync(user.Id);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.GenerateTwoFactorTokenAsync(T, string)"/>
+        /// </summary>
+        public async Task<string> GenerateTwoFactorTokenAsync(ApplicationUser user, string tokenProvider)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(tokenProvider)) throw new ArgumentNullException(nameof(tokenProvider));
+
+            return await userManager.GenerateTwoFactorTokenAsync(user.Id, tokenProvider);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.RetrieveAsync(string)"/>
+        /// </summary>
+        public async Task<ApplicationUser> RetrieveAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentNullException(nameof(userId));
+
+            return await userManager.FindByIdAsync(userId);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.RetrieveByEmailAsync(string)"/>
+        /// </summary>
+        public async Task<ApplicationUser> RetrieveByEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException(nameof(email));
+
+            return await userManager.FindByEmailAsync(email);
         }
 
         /// <summary>
@@ -122,6 +150,23 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
                 case SignInStatus.Success:
                 default:
                     break;
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.UpdateAsync(T)"/>
+        /// </summary>
+        public async Task UpdateAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            IdentityResult result = await userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                IEnumerable<IdentityError> errors = result.Errors.Select(e => new IdentityError("UpateFailed", e));
+
+                throw new IdentityException($"Update user failed; unable to update user with email {user.Email}.", errors);
             }
         }
     }
