@@ -9,6 +9,16 @@ namespace Tardigrade.Framework.Services.Identity
     public interface IApplicationUserManager<IApplicationUser>
     {
         /// <summary>
+        /// Add the password to the specified user only if the user does not already have a password.
+        /// </summary>
+        /// <param name="user">Application user whose password should be set.</param>
+        /// <param name="password">Password to set.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null, or password is null or empty.</exception>
+        /// <exception cref="Exceptions.IdentityException">Add password failed due to an unknown reason.</exception>
+        Task AddPasswordAsync(IApplicationUser user, string password);
+
+        /// <summary>
         /// Check whether the given password is valid for the specified application user.
         /// </summary>
         /// <param name="user">Application user whose password should be validated.</param>
@@ -18,8 +28,17 @@ namespace Tardigrade.Framework.Services.Identity
         Task<bool> CheckPasswordAsync(IApplicationUser user, string password);
 
         /// <summary>
+        /// Validate that an email confirmation token matches the specified user.
+        /// </summary>
+        /// <param name="user">Application user to validate the token against.</param>
+        /// <param name="token">Email confirmation token to validate.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null, or token is null or empty.</exception>
+        /// <exception cref="Exceptions.IdentityException">Confirm email failed due to an unknown reason.</exception>
+        Task ConfirmEmailAsync(IApplicationUser user, string token);
+
+        /// <summary>
         /// Create the specified application user with the password provided.
-        /// TODO: Create a wrapper for IdentityResult.
         /// </summary>
         /// <param name="user">Application user to create.</param>
         /// <param name="password">Password for the application user.</param>
@@ -37,6 +56,14 @@ namespace Tardigrade.Framework.Services.Identity
         Task<string> GenerateEmailConfirmationTokenAsync(IApplicationUser user);
 
         /// <summary>
+        /// Generate a password reset token for the specified user.
+        /// </summary>
+        /// <param name="user">Application user to generate a password reset token for.</param>
+        /// <returns>Password reset token for the specified user.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        Task<string> GeneratePasswordResetTokenAsync(IApplicationUser user);
+
+        /// <summary>
         /// Generate a two factor authentication token for the specified user.
         /// </summary>
         /// <param name="user">Application user the token is for.</param>
@@ -44,6 +71,51 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>A two factor authentication token for the user.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or tokenProvider is null or empty.</exception>
         Task<string> GenerateTwoFactorTokenAsync(IApplicationUser user, string tokenProvider);
+
+        /// <summary>
+        /// Retrieve the current number of failed accesses for the given user.
+        /// </summary>
+        /// <param name="user">Application user whose access failed count should be retrieved for.</param>
+        /// <returns>Current failed access count for the user.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        Task<int> GetAccessFailedCountAsync(IApplicationUser user);
+
+        /// <summary>
+        /// Check whether the email address for the specified user has been verified.
+        /// </summary>
+        /// <param name="user">Application user whose email confirmation status should be returned.</param>
+        /// <returns>True if the email address is verified; false otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        Task<bool> IsEmailConfirmedAsync(IApplicationUser user);
+
+        /// <summary>
+        /// Check whether the specified user's telephone number has been confirmed.
+        /// </summary>
+        /// <param name="user">Application user whose phone number confirmation status should be returned.</param>
+        /// <returns>True if the specified user has a confirmed telephone number; false otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        Task<bool> IsPhoneNumberConfirmedAsync(IApplicationUser user);
+
+        /// <summary>
+        /// Remove an application user's password.
+        /// </summary>
+        /// <param name="user">Application user whose password should be removed.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        /// <exception cref="Exceptions.IdentityException">Remove password failed due to an unknown reason.</exception>
+        Task RemovePasswordAsync(IApplicationUser user);
+
+        /// <summary>
+        /// Reset the application user's password to the specified new password after validating the given password
+        /// reset token.
+        /// </summary>
+        /// <param name="user">Application user whose password should be reset.</param>
+        /// <param name="token">Password reset token to verify.</param>
+        /// <param name="newPassword">New password to set if reset token verification succeeds.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null, or token null or empty, or newPassword null or empty.</exception>
+        /// <exception cref="Exceptions.IdentityException">Reset password failed due to an unknown reason.</exception>
+        Task ResetPasswordAsync(IApplicationUser user, string token, string newPassword);
 
         /// <summary>
         /// Retrieve an application user with the specified unique identifier.
@@ -72,6 +144,16 @@ namespace Tardigrade.Framework.Services.Identity
         /// <summary>
         /// Sign in the specified user.
         /// </summary>
+        /// <param name="user">Application user to sign-in.</param>
+        /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
+        /// <param name="authenticationMethod">Name of the method used to authenticate the user.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        Task SignInAsync(IApplicationUser user, bool isPersistent = false, string authenticationMethod = null);
+
+        /// <summary>
+        /// Sign in the specified user.
+        /// </summary>
         /// <param name="user">User to sign-in.</param>
         /// <param name="password">Password to attempt sign-in with.</param>
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
@@ -89,6 +171,12 @@ namespace Tardigrade.Framework.Services.Identity
             bool lockoutOnFailure = true);
 
         /// <summary>
+        /// Signs the current user out of the application.
+        /// </summary>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        Task SignOutAsync();
+
+        /// <summary>
         /// Update the specified user.
         /// </summary>
         /// <param name="user">Application user to update.</param>
@@ -96,5 +184,14 @@ namespace Tardigrade.Framework.Services.Identity
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         /// <exception cref="Exceptions.IdentityException">User update failed due to an unknown reason.</exception>
         Task UpdateAsync(IApplicationUser user);
+
+        /// <summary>
+        /// Regenerate the security stamp for the specified user.
+        /// </summary>
+        /// <param name="user">Application user whose security stamp should be regenerated.</param>
+        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        /// <exception cref="Exceptions.IdentityException">User update failed due to an unknown reason.</exception>
+        Task UpdateSecurityStampAsync(IApplicationUser user);
     }
 }
