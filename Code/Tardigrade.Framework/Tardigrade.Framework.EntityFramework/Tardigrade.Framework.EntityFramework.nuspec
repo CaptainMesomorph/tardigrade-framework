@@ -1,16 +1,16 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <package >
   <metadata>
     <id>Tardigrade.Framework.EntityFramework</id>
-    <version>5.0.0</version>
+    <version>5.0.1</version>
     <title>Tardigrade Framework Library (Entity Framework Integration)</title>
     <authors>Rafidzal Rafiq</authors>
     <owners>Rafidzal Rafiq</owners>
-    <licenseUrl>https://licenses.nuget.org/Apache-2.0</licenseUrl>
+    <license type="expression">Apache-2.0</license>
     <projectUrl>https://github.com/CaptainMesomorph/tardigrade-framework</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Software framework for supporting coding best practices.</description>
-    <copyright>Copyright � 2019</copyright>
+    <copyright>Copyright © 2019</copyright>
     <repository type="Git" url="https://github.com/CaptainMesomorph/tardigrade-framework" />
   </metadata>
 </package>

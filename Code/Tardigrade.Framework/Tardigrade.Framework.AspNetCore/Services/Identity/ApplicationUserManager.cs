@@ -35,6 +35,26 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IApplicationUserManager{T}.AddPasswordAsync(T, string)"/>
+        /// </summary>
+        public async Task AddPasswordAsync(ApplicationUser user, string password)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
+
+            IdentityResult result = await userManager.AddPasswordAsync(user, password);
+
+            if (!result.Succeeded)
+            {
+                IEnumerable<Framework.Models.Errors.IdentityError> errors =
+                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                throw new IdentityException($"Add password failed; unable to add password for {user.UserName}.", errors);
+            }
+        }
+
+        /// <summary>
         /// <see cref="IApplicationUserManager{T}.CheckPasswordAsync(T, string)"/>
         /// </summary>
         public async Task<bool> CheckPasswordAsync(ApplicationUser user, string password)
@@ -44,6 +64,26 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
             return await userManager.CheckPasswordAsync(user, password);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.ConfirmEmailAsync(T, string)"/>
+        /// </summary>
+        public async Task ConfirmEmailAsync(ApplicationUser user, string token)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
+
+            IdentityResult result = await userManager.ConfirmEmailAsync(user, token);
+
+            if (!result.Succeeded)
+            {
+                IEnumerable<Framework.Models.Errors.IdentityError> errors =
+                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                throw new IdentityException($"Confirm email failed; unable to confirm email for {user.UserName}.", errors);
+            }
         }
 
         /// <summary>
@@ -79,6 +119,16 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IApplicationUserManager{T}.GeneratePasswordResetTokenAsync(T)"/>
+        /// </summary>
+        public async Task<string> GeneratePasswordResetTokenAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            return await userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        /// <summary>
         /// <see cref="IApplicationUserManager{T}.GenerateTwoFactorTokenAsync(T, string)"/>
         /// </summary>
         public async Task<string> GenerateTwoFactorTokenAsync(ApplicationUser user, string tokenProvider)
@@ -88,6 +138,76 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
             if (string.IsNullOrWhiteSpace(tokenProvider)) throw new ArgumentNullException(nameof(tokenProvider));
 
             return await userManager.GenerateTwoFactorTokenAsync(user, tokenProvider);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.GetAccessFailedCountAsync(T)"/>
+        /// </summary>
+        public async Task<int> GetAccessFailedCountAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            return await userManager.GetAccessFailedCountAsync(user);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.IsEmailConfirmedAsync(T)"/>
+        /// </summary>
+        public async Task<bool> IsEmailConfirmedAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            return await userManager.IsEmailConfirmedAsync(user);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.IsPhoneNumberConfirmedAsync(T)"/>
+        /// </summary>
+        public async Task<bool> IsPhoneNumberConfirmedAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            return await userManager.IsPhoneNumberConfirmedAsync(user);
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.RemovePasswordAsync(T)"/>
+        /// </summary>
+        public async Task RemovePasswordAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            IdentityResult result = await userManager.RemovePasswordAsync(user);
+
+            if (!result.Succeeded)
+            {
+                IEnumerable<Framework.Models.Errors.IdentityError> errors =
+                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                throw new IdentityException($"Remove password failed; unable to remove password for {user.UserName}.", errors);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.ResetPasswordAsync(T, string, string)"/>
+        /// </summary>
+        public async Task ResetPasswordAsync(ApplicationUser user, string token, string newPassword)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
+
+            if (string.IsNullOrWhiteSpace(newPassword)) throw new ArgumentNullException(nameof(newPassword));
+
+            IdentityResult result = await userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (!result.Succeeded)
+            {
+                IEnumerable<Framework.Models.Errors.IdentityError> errors =
+                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                throw new IdentityException($"Reset password failed; unable to reset password for {user.UserName}.", errors);
+            }
         }
 
         /// <summary>
@@ -121,6 +241,19 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IApplicationUserManager{T}.SignInAsync(T, bool, string)"/>
+        /// </summary>
+        public async Task SignInAsync(
+            ApplicationUser user,
+            bool isPersistent = false,
+            string authenticationMethod = null)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            await signInManager.SignInAsync(user, isPersistent, authenticationMethod);
+        }
+
+        /// <summary>
         /// <see cref="IApplicationUserManager{T}.SignInAsync(T, string, bool, bool)"/>
         /// </summary>
         public async Task SignInAsync(
@@ -151,9 +284,17 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
                 }
                 else
                 {
-                    throw new IdentityException($"Sign-in failed; for reasons unknown, not able to sign-in user {user.Email}.");
+                    throw new IdentityException($"Sign-in failed; for reasons unknown, not able to sign-in user {user.UserName}.");
                 }
             }
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.SignOutAsync()"/>
+        /// </summary>
+        public async Task SignOutAsync()
+        {
+            await signInManager.SignOutAsync();
         }
 
         /// <summary>
@@ -170,7 +311,25 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
                 IEnumerable<Framework.Models.Errors.IdentityError> errors =
                     mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
-                throw new IdentityException($"Update user failed; unable to update user with email {user.Email}.", errors);
+                throw new IdentityException($"Update user failed; unable to update user {user.UserName}.", errors);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IApplicationUserManager{T}.UpdateSecurityStampAsync(T)"/>
+        /// </summary>
+        public async Task UpdateSecurityStampAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            IdentityResult result = await userManager.UpdateSecurityStampAsync(user);
+
+            if (!result.Succeeded)
+            {
+                IEnumerable<Framework.Models.Errors.IdentityError> errors =
+                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                throw new IdentityException($"Update security stamp failed; unable to update security stamp for {user.UserName}.", errors);
             }
         }
     }

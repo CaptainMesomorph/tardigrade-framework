@@ -13,10 +13,10 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 {
     /// <summary>
     /// REST API Controller based on a specific object type.
-    /// TODO: Update to use async service methods.
     /// TODO: Reflect new exceptions raised from service methods, e.g. AlreadyExistsException.
     /// TODO: Add status code 409 Conflict to the Post method once implemented in service layer.
     /// TODO: Standardise to use ResponseObject.
+    /// TODO: Need to specify paging parameters for GET.
     /// </summary>
     /// <typeparam name="T">Object type associated with the API Controller.</typeparam>
     /// <typeparam name="PK">Unique identifier type for the object type.</typeparam>
@@ -52,7 +52,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                service.Delete(id);
+                await service.DeleteAsync(id);
                 result = Ok();
             }
             catch (ServiceException e)
@@ -81,7 +81,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                IEnumerable<T> models = service.Retrieve();
+                IEnumerable<T> models = await service.RetrieveAsync();
 
                 if (models?.Count() == 0)
                 {
@@ -114,7 +114,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                T model = service.Retrieve(id);
+                T model = await service.RetrieveAsync(id);
 
                 if (model == null)
                 {
@@ -152,7 +152,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                T createdObj = service.Create(model);
+                T createdObj = await service.CreateAsync(model);
                 result = CreatedAtAction(nameof(Get), new { id = createdObj.Id }, createdObj);
             }
             catch (ServiceException e)
@@ -193,7 +193,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                service.Update(model);
+                await service.UpdateAsync(model);
                 result = NoContent();
             }
             catch (NotFoundException)
