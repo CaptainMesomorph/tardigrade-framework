@@ -23,10 +23,19 @@ namespace Tardigrade.Framework.SimpleInjector
         /// <summary>
         /// Create an instance of this service container.
         /// </summary>
-        public SimpleInjectorServiceContainer()
+        /// <param name="container">Existing service container to use. If null, a new service container instance is created.</param>
+        /// <param name="verifyImmediately">If true, verify services during instantiation. If false, defer verification with a call to Verify().</param>
+        public SimpleInjectorServiceContainer(Container container = null, bool verifyImmediately = true)
         {
             // Create the services container.
-            Container = new Container();
+            if (container == null)
+            {
+                Container = new Container();
+            }
+            else
+            {
+                Container = container;
+            }
 
             try
             {
@@ -49,7 +58,10 @@ namespace Tardigrade.Framework.SimpleInjector
                 throw;
             }
 
-            Container.Verify();
+            if (verifyImmediately)
+            {
+                Container.Verify();
+            }
         }
 
         /// <summary>
@@ -103,6 +115,15 @@ namespace Tardigrade.Framework.SimpleInjector
             }
 
             return message;
+        }
+
+        /// <summary>
+        /// Verifies the services in this service container.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Registration of instances was invalid.</exception>
+        public void Verify()
+        {
+            Container.Verify();
         }
     }
 }
