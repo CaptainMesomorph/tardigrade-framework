@@ -4,6 +4,12 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**June 27, 2019 - 7.0.0 Redesigned the Identity services to make them easier to use**
+
+- Standardised the Identity user framework to make it more intuitive and easier to implement based upon Microsoft conventions.
+- Added paging and sorting parameters to the GET action of ObjectController.
+- Modified SimpleInjectorServiceContainer to enable basic chaining.
+
 **June 21, 2019 - 6.1.0 Enhanced the ApplicationUserManager**
 
 - Extended the ApplicationUserManager to include additional operations.
