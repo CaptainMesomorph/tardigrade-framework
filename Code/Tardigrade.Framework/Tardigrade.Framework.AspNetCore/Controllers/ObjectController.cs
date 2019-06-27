@@ -6,7 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tardigrade.Framework.AspNetCore.Extensions;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Extensions;
 using Tardigrade.Framework.Models.Domain;
+using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Services;
 
 namespace Tardigrade.Framework.AspNetCore.Controllers
@@ -46,7 +48,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
         /// <param name="id">Unique identifier of the object to delete.</param>
         /// <returns>Result of the delete action.</returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(PK id)
+        public virtual async Task<IActionResult> Delete(PK id)
         {
             ActionResult result;
 
@@ -75,13 +77,35 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<T>>> Get()
+        public virtual async Task<ActionResult<IEnumerable<T>>> Get(
+            uint? pageSize = null,
+            uint? pageIndex = 0,
+            string sortBy = null)
         {
+            PagingContext pagingContext = null;
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null;
+
+            if (pageSize.HasValue)
+            {
+                pagingContext = new PagingContext { PageIndex = pageIndex.Value, PageSize = pageSize.Value };
+
+                if (string.IsNullOrWhiteSpace(sortBy))
+                {
+                    sortCondition = (q => q.OrderBy(o => o.Id));
+                }
+
+            }
+
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                sortCondition = (q => q.OrderBy(sortBy));
+            }
+
             ActionResult result;
 
             try
             {
-                IEnumerable<T> models = await service.RetrieveAsync();
+                IEnumerable<T> models = await service.RetrieveAsync(pagingContext: pagingContext, sortCondition: sortCondition);
 
                 if (models?.Count() == 0)
                 {
@@ -108,7 +132,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
         /// <param name="id">Unique identifier of the object to retrieve.</param>
         /// <returns>Object with a matching unique identifier.</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<T>> Get(PK id)
+        public virtual async Task<ActionResult<T>> Get(PK id)
         {
             ActionResult result;
 
@@ -141,7 +165,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
         /// <param name="model">Object to create.</param>
         /// <returns>Object created (including allocated unique identifier).</returns>
         [HttpPost]
-        public async Task<ActionResult<T>> Post(T model)
+        public virtual async Task<ActionResult<T>> Post(T model)
         {
             if (model == null)
             {
@@ -178,7 +202,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
         /// <param name="model">Object to update.</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(PK id, T model)
+        public virtual async Task<IActionResult> Put(PK id, T model)
         {
             if (model == null)
             {

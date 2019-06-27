@@ -1,12 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Tardigrade.Framework.Services.Identity
 {
     /// <summary>
     /// Interface that defines operations associated with application users.
     /// </summary>
-    /// <typeparam name="IApplicationUser">Type associated with the application user definition.</typeparam>
-    public interface IApplicationUserManager<IApplicationUser>
+    /// <typeparam name="TUser">Type associated with the application user definition.</typeparam>
+    public interface IIdentityUserManager<TUser> : IDisposable
     {
         /// <summary>
         /// Add the password to the specified user only if the user does not already have a password.
@@ -16,7 +17,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or password is null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">Add password failed due to an unknown reason.</exception>
-        Task AddPasswordAsync(IApplicationUser user, string password);
+        Task AddPasswordAsync(TUser user, string password);
 
         /// <summary>
         /// Check whether the given password is valid for the specified application user.
@@ -25,7 +26,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="password">Password to validate.</param>
         /// <returns>True if the specified password matches the one stored; false otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or password is null or empty.</exception>
-        Task<bool> CheckPasswordAsync(IApplicationUser user, string password);
+        Task<bool> CheckPasswordAsync(TUser user, string password);
 
         /// <summary>
         /// Validate that an email confirmation token matches the specified user.
@@ -35,7 +36,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or token is null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">Confirm email failed due to an unknown reason.</exception>
-        Task ConfirmEmailAsync(IApplicationUser user, string token);
+        Task ConfirmEmailAsync(TUser user, string token);
 
         /// <summary>
         /// Create the specified application user with the password provided.
@@ -45,7 +46,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>True if the application user is successfully created; false otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or password is null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">Error creating the application user.</exception>
-        Task<IApplicationUser> CreateAsync(IApplicationUser user, string password);
+        Task<TUser> CreateAsync(TUser user, string password);
 
         /// <summary>
         /// Generate an email confirmation token for the specified user.
@@ -53,7 +54,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="user">Application user to generate an email confirmation token for.</param>
         /// <returns>An email confirmation token.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
-        Task<string> GenerateEmailConfirmationTokenAsync(IApplicationUser user);
+        Task<string> GenerateEmailConfirmationTokenAsync(TUser user);
 
         /// <summary>
         /// Generate a password reset token for the specified user.
@@ -61,7 +62,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="user">Application user to generate a password reset token for.</param>
         /// <returns>Password reset token for the specified user.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
-        Task<string> GeneratePasswordResetTokenAsync(IApplicationUser user);
+        Task<string> GeneratePasswordResetTokenAsync(TUser user);
 
         /// <summary>
         /// Generate a two factor authentication token for the specified user.
@@ -70,7 +71,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="tokenProvider">Provider which will generate the token (as defined in the application start-up configuration).</param>
         /// <returns>A two factor authentication token for the user.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or tokenProvider is null or empty.</exception>
-        Task<string> GenerateTwoFactorTokenAsync(IApplicationUser user, string tokenProvider);
+        Task<string> GenerateTwoFactorTokenAsync(TUser user, string tokenProvider);
 
         /// <summary>
         /// Retrieve the current number of failed accesses for the given user.
@@ -78,7 +79,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="user">Application user whose access failed count should be retrieved for.</param>
         /// <returns>Current failed access count for the user.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
-        Task<int> GetAccessFailedCountAsync(IApplicationUser user);
+        Task<int> GetAccessFailedCountAsync(TUser user);
 
         /// <summary>
         /// Check whether the email address for the specified user has been verified.
@@ -86,7 +87,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="user">Application user whose email confirmation status should be returned.</param>
         /// <returns>True if the email address is verified; false otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
-        Task<bool> IsEmailConfirmedAsync(IApplicationUser user);
+        Task<bool> IsEmailConfirmedAsync(TUser user);
 
         /// <summary>
         /// Check whether the specified user's telephone number has been confirmed.
@@ -94,7 +95,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="user">Application user whose phone number confirmation status should be returned.</param>
         /// <returns>True if the specified user has a confirmed telephone number; false otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
-        Task<bool> IsPhoneNumberConfirmedAsync(IApplicationUser user);
+        Task<bool> IsPhoneNumberConfirmedAsync(TUser user);
 
         /// <summary>
         /// Remove an application user's password.
@@ -103,7 +104,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         /// <exception cref="Exceptions.IdentityException">Remove password failed due to an unknown reason.</exception>
-        Task RemovePasswordAsync(IApplicationUser user);
+        Task RemovePasswordAsync(TUser user);
 
         /// <summary>
         /// Reset the application user's password to the specified new password after validating the given password
@@ -115,7 +116,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or token null or empty, or newPassword null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">Reset password failed due to an unknown reason.</exception>
-        Task ResetPasswordAsync(IApplicationUser user, string token, string newPassword);
+        Task ResetPasswordAsync(TUser user, string token, string newPassword);
 
         /// <summary>
         /// Retrieve an application user with the specified unique identifier.
@@ -123,7 +124,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="userId">Unique identifier for the application user.</param>
         /// <returns>Application user matching the specified unique identifier if it exists; null otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">userId is null or empty.</exception>
-        Task<IApplicationUser> RetrieveAsync(string userId);
+        Task<TUser> RetrieveAsync(string userId);
 
         /// <summary>
         /// Retrieve the application user associated with the specified email address.
@@ -131,7 +132,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="email">Email address of the user.</param>
         /// <returns>Application user if found; null otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">email is null or empty.</exception>
-        Task<IApplicationUser> RetrieveByEmailAsync(string email);
+        Task<TUser> RetrieveByEmailAsync(string email);
 
         /// <summary>
         /// Retrieve an application user by username.
@@ -139,7 +140,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="username">Username to search for.</param>
         /// <returns>Application user matching the specified username if found; null otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">username is null or empty.</exception>
-        Task<IApplicationUser> RetrieveByNameAsync(string username);
+        Task<TUser> RetrieveByNameAsync(string username);
 
         /// <summary>
         /// Sign in the specified user.
@@ -149,7 +150,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="authenticationMethod">Name of the method used to authenticate the user.</param>
         /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
-        Task SignInAsync(IApplicationUser user, bool isPersistent = false, string authenticationMethod = null);
+        Task SignInAsync(TUser user, bool isPersistent = false, string authenticationMethod = null);
 
         /// <summary>
         /// Sign in the specified user.
@@ -165,7 +166,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <exception cref="Exceptions.NotAllowedException">Sign-in failed because user is not allowed to sign-in.</exception>
         /// <exception cref="Exceptions.TwoFactorRequiredException">Sign-in failed because it requires two-factor authentication.</exception>
         Task SignInAsync(
-            IApplicationUser user,
+            TUser user,
             string password,
             bool isPersistent = false,
             bool lockoutOnFailure = true);
@@ -183,7 +184,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         /// <exception cref="Exceptions.IdentityException">User update failed due to an unknown reason.</exception>
-        Task UpdateAsync(IApplicationUser user);
+        Task UpdateAsync(TUser user);
 
         /// <summary>
         /// Regenerate the security stamp for the specified user.
@@ -192,6 +193,6 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>Task object representing the asynchronous operation.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         /// <exception cref="Exceptions.IdentityException">User update failed due to an unknown reason.</exception>
-        Task UpdateSecurityStampAsync(IApplicationUser user);
+        Task UpdateSecurityStampAsync(TUser user);
     }
 }

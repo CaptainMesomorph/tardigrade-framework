@@ -4,15 +4,15 @@ using Tardigrade.Framework.AspNet.Models.Identity;
 namespace Tardigrade.Framework.EntityFramework.Data
 {
     /// <summary>
-    /// Entity Framework Core database context for the application.
+    /// Entity Framework database context for use with ASP.NET Identity.
     /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class IdentityUserDbContext : IdentityDbContext<ApplicationUser>
     {
         /// <summary>
         /// Create an instance of this class.
         /// </summary>
         /// <param name="nameOrConnectionString">Name of the database connection or database connection string.</param>
-        public ApplicationDbContext(string nameOrConnectionString) : base(nameOrConnectionString)
+        public IdentityUserDbContext(string nameOrConnectionString) : base(nameOrConnectionString)
         {
         }
     }
