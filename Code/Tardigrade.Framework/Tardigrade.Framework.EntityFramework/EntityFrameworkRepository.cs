@@ -21,8 +21,6 @@ namespace Tardigrade.Framework.EntityFramework
     /// </summary>
     public class EntityFrameworkRepository<T, PK> : IRepository<T, PK> where T : class
     {
-        private const int BatchSize = 1000;
-
         /// <summary>
         /// Database context.
         /// </summary>
@@ -91,47 +89,6 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
-        /// </summary>
-        public virtual IEnumerable<T> Create(IEnumerable<T> objs)
-        {
-            if (objs == null)
-            {
-                throw new ArgumentNullException(nameof(objs));
-            }
-
-            DbContext.Configuration.AutoDetectChangesEnabled = false;
-            int count = 0;
-
-            try
-            {
-                foreach (T obj in objs)
-                {
-                    ++count;
-                    DbContext.Set<T>().Add(obj);
-
-                    if ((count % BatchSize) == 0)
-                    {
-                        DbContext.SaveChanges();
-                    }
-                }
-
-                DbContext.SaveChanges();
-            }
-            catch (Exception e) when (
-                e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
-                e is DbEntityValidationException ||
-                e is ObjectDisposedException ||
-                e is InvalidOperationException)
-            {
-                throw new RepositoryException($"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
-            }
-
-            return objs;
-        }
-
-        /// <summary>
         /// <see cref="IRepository{T, PK}.Create(T)"/>
         /// </summary>
         public virtual T Create(T obj)
@@ -166,6 +123,7 @@ namespace Tardigrade.Framework.EntityFramework
             catch (Exception e) when (
                 e is DbUpdateException ||
                 e is DbUpdateConcurrencyException ||
+                e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
             {
@@ -173,47 +131,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
 
             return obj;
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
-        /// </summary>
-        public virtual async Task<IEnumerable<T>> CreateAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
-        {
-            if (objs == null)
-            {
-                throw new ArgumentNullException(nameof(objs));
-            }
-
-            DbContext.Configuration.AutoDetectChangesEnabled = false;
-            int count = 0;
-
-            try
-            {
-                foreach (T obj in objs)
-                {
-                    ++count;
-                    DbContext.Set<T>().Add(obj);
-
-                    if ((count % BatchSize) == 0)
-                    {
-                        await DbContext.SaveChangesAsync(cancellationToken);
-                    }
-                }
-
-                await DbContext.SaveChangesAsync(cancellationToken);
-            }
-            catch (Exception e) when (
-                e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
-                e is DbEntityValidationException ||
-                e is ObjectDisposedException ||
-                e is InvalidOperationException)
-            {
-                throw new RepositoryException($"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
-            }
-
-            return objs;
         }
 
         /// <summary>
@@ -246,16 +163,66 @@ namespace Tardigrade.Framework.EntityFramework
             {
                 await DbContext.SaveChangesAsync(cancellationToken);
             }
-            catch (DbEntityValidationException e)
-            {
-                throw new ValidationException($"Create failed; object of type {typeof(T).Name} contains invalid values.", e);
-            }
             catch (InvalidOperationException e)
             {
                 throw new RepositoryException($"Create failed; database connection error while creating object of type {typeof(T).Name}.", e);
             }
 
             return obj;
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.CreateBulk(IEnumerable{T})"/>
+        /// </summary>
+        public virtual IEnumerable<T> CreateBulk(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Set<T>().AddRange(objs);
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e) when (
+                e is DbUpdateException ||
+                e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is NotSupportedException ||
+                e is ObjectDisposedException ||
+                e is InvalidOperationException)
+            {
+                throw new RepositoryException($"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
+            }
+
+            return objs;
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.CreateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        public virtual async Task<IEnumerable<T>> CreateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Set<T>().AddRange(objs);
+
+            try
+            {
+                await DbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Create failed; database connection error while creating objects of type {typeof(T).Name}.", e);
+            }
+
+            return objs;
         }
 
         /// <summary>
@@ -293,6 +260,7 @@ namespace Tardigrade.Framework.EntityFramework
             catch (Exception e) when (
                 e is DbUpdateException ||
                 e is DbUpdateConcurrencyException ||
+                e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
             {
@@ -336,6 +304,8 @@ namespace Tardigrade.Framework.EntityFramework
             catch (Exception e) when (
                 e is DbUpdateException ||
                 e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
             {
@@ -408,6 +378,74 @@ namespace Tardigrade.Framework.EntityFramework
             catch (InvalidOperationException e)
             {
                 throw new RepositoryException($"Delete failed; database connection error while deleting object of type {typeof(T).Name}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{PK})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual void DeleteBulk(IEnumerable<PK> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{T})"/>
+        /// </summary>
+        public virtual void DeleteBulk(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Set<T>().RemoveRange(objs);
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e) when (
+                e is DbUpdateException ||
+                e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is NotSupportedException ||
+                e is ObjectDisposedException ||
+                e is InvalidOperationException)
+            {
+                throw new RepositoryException($"Delete failed; database error while deleting objects of type {typeof(T).Name}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{PK}, CancellationToken)"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual Task DeleteBulkAsync(IEnumerable<PK> ids, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        public virtual async Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Set<T>().RemoveRange(objs);
+
+            try
+            {
+                await DbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Delete failed; database connection error while deleting objects of type {typeof(T).Name}.", e);
             }
         }
 
@@ -637,10 +675,11 @@ namespace Tardigrade.Framework.EntityFramework
             catch (Exception e) when (
                 e is DbUpdateException ||
                 e is DbUpdateConcurrencyException ||
+                e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
             {
-                throw new RepositoryException($"Delete failed; database error while updating object of type {typeof(T).Name}.", e);
+                throw new RepositoryException($"Update failed; database error while updating object of type {typeof(T).Name}.", e);
             }
         }
 
@@ -676,6 +715,76 @@ namespace Tardigrade.Framework.EntityFramework
             catch (InvalidOperationException e)
             {
                 throw new RepositoryException($"Update failed; database connection error while updating object of type {typeof(T).Name}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.UpdateBulk(IEnumerable{T})"/>
+        /// </summary>
+        public virtual void UpdateBulk(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Configuration.AutoDetectChangesEnabled = false;
+
+            try
+            {
+                foreach (T obj in objs)
+                {
+                    DbContext.Set<T>().Attach(obj);
+                    DbContext.Entry(obj).State = EntityState.Modified;
+                }
+
+                DbContext.SaveChanges();
+            }
+            catch (Exception e) when (
+                e is DbUpdateException ||
+                e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is NotSupportedException ||
+                e is ObjectDisposedException ||
+                e is InvalidOperationException)
+            {
+                throw new RepositoryException($"Update failed; database error while updating objects of type {typeof(T).Name}.", e);
+            }
+            finally
+            {
+                DbContext.Configuration.AutoDetectChangesEnabled = true;
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        public virtual async Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Configuration.AutoDetectChangesEnabled = false;
+
+            try
+            {
+                foreach (T obj in objs)
+                {
+                    DbContext.Set<T>().Attach(obj);
+                    DbContext.Entry(obj).State = EntityState.Modified;
+                }
+
+                await DbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Update failed; database error while updating objects of type {typeof(T).Name}.", e);
+            }
+            finally
+            {
+                DbContext.Configuration.AutoDetectChangesEnabled = true;
             }
         }
     }

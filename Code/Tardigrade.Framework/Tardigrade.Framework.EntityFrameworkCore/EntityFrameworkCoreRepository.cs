@@ -88,21 +88,6 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
-        /// </summary>
-        public virtual IEnumerable<T> Create(IEnumerable<T> objs)
-        {
-            if (objs.IsNulOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(objs));
-            }
-
-            DbContext.BulkInsert((IList<T>)objs);
-
-            return objs;
-        }
-
-        /// <summary>
         /// <see cref="IRepository{T, PK}.Create(T)"/>
         /// </summary>
         /// <exception cref="ValidationException">Not supported.</exception>
@@ -130,23 +115,6 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             }
 
             return obj;
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
-        /// </summary>
-        /// <param name="objs">Instances to create.</param>
-        /// <param name="cancellationToken">Not supported.</param>
-        public virtual async Task<IEnumerable<T>> CreateAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
-        {
-            if (objs.IsNulOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(objs));
-            }
-
-            await DbContext.BulkInsertAsync((IList<T>)objs);
-
-            return objs;
         }
 
         /// <summary>
@@ -181,6 +149,38 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             }
 
             return obj;
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.CreateBulk(IEnumerable{T})"/>
+        /// </summary>
+        public virtual IEnumerable<T> CreateBulk(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.BulkInsert((IList<T>)objs);
+
+            return objs;
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.CreateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        /// <param name="objs">Instances to create.</param>
+        /// <param name="cancellationToken">Not supported.</param>
+        public virtual async Task<IEnumerable<T>> CreateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            await DbContext.BulkInsertAsync((IList<T>)objs);
+
+            return objs;
         }
 
         /// <summary>
@@ -303,6 +303,63 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             {
                 throw new RepositoryException($"Delete failed; database error while deleting object of type {typeof(T).Name} with primary key {obj.Id}.", e);
             }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{PK})"/>
+        /// </summary>
+        public virtual void DeleteBulk(IEnumerable<PK> ids)
+        {
+            if (ids.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            IList<T> objs = DbContext.Set<T>().Where(o => ids.Contains(o.Id)).ToList();
+            DbContext.BulkDelete(objs);
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{T})"/>
+        /// </summary>
+        public virtual void DeleteBulk(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.BulkDelete((IList<T>)objs);
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{PK}, CancellationToken)"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual async Task DeleteBulkAsync(IEnumerable<PK> ids, CancellationToken cancellationToken = default)
+        {
+            if (ids.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            IList<T> objs = await DbContext.Set<T>().Where(o => ids.Contains(o.Id)).ToListAsync();
+            await DbContext.BulkDeleteAsync(objs);
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        /// <param name="objs">Instances to delete.</param>
+        /// <param name="cancellationToken">Not supported.</param>
+        public virtual async Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            await DbContext.BulkDeleteAsync((IList<T>)objs);
         }
 
         /// <summary>
@@ -510,6 +567,34 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             {
                 throw new RepositoryException($"Update failed; database error while updating object of type {typeof(T).Name} with primary key {obj.Id}.", e);
             }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.UpdateBulk(IEnumerable{T})"/>
+        /// </summary>
+        public virtual void UpdateBulk(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.BulkUpdate((IList<T>)objs);
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        /// <param name="objs">Instances to update.</param>
+        /// <param name="cancellationToken">Not supported.</param>
+        public virtual async Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            await DbContext.BulkUpdateAsync((IList<T>)objs);
         }
     }
 }

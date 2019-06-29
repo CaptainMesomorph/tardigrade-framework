@@ -77,7 +77,7 @@ namespace Tardigrade.Framework.AzureStorage
         /// <summary>
         /// <see cref="IRepository{T, PK}.Count(Expression{Func{T, bool}})"/>
         /// </summary>
-        /// <exception cref="NotImplementedException">Not currently implmented.</exception>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual int Count(Expression<Func<T, bool>> filter = null)
         {
             throw new NotImplementedException();
@@ -86,19 +86,10 @@ namespace Tardigrade.Framework.AzureStorage
         /// <summary>
         /// <see cref="IRepository{T, PK}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
         /// </summary>
-        /// <exception cref="NotImplementedException">Not currently implmented.</exception>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual Task<int> CountAsync(
             Expression<Func<T, bool>> filter = null,
             CancellationToken cancellationToken = default(CancellationToken))
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">Not currently implemented.</exception>
-        public virtual IEnumerable<T> Create(IEnumerable<T> objs)
         {
             throw new NotImplementedException();
         }
@@ -151,15 +142,6 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">Not currently implemented.</exception>
-        public virtual Task<IEnumerable<T>> CreateAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// <see cref="IRepository{T, PK}.CreateAsync(T, CancellationToken)"/>
         /// </summary>
         /// <exception cref="ValidationException">Not supported.</exception>
@@ -202,6 +184,24 @@ namespace Tardigrade.Framework.AzureStorage
             }
 
             return obj;
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.CreateBulk(IEnumerable{T})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual IEnumerable<T> CreateBulk(IEnumerable<T> objs)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.CreateBulk(IEnumerable{T})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual Task<IEnumerable<T>> CreateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -350,6 +350,42 @@ namespace Tardigrade.Framework.AzureStorage
             {
                 throw new RepositoryException($"Delete failed; error code of {result.HttpStatusCode} was returned for object of type {typeof(T).Name} with Partition Key {obj.PartitionKey} and Row Key{obj.RowKey} in Azure Storage Table {table.Name}.");
             }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{PK})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual void DeleteBulk(IEnumerable<PK> ids)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{T})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual void DeleteBulk(IEnumerable<T> objs)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{PK}, CancellationToken)"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual Task DeleteBulkAsync(IEnumerable<PK> ids, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -689,6 +725,24 @@ namespace Tardigrade.Framework.AzureStorage
 
             // Execute the operation.
             await table.ExecuteAsync(insertOrReplaceOperation);
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.UpdateBulk(IEnumerable{T})"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual void UpdateBulk(IEnumerable<T> objs)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T, PK}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        /// <exception cref="NotImplementedException">To be implemented.</exception>
+        public virtual Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

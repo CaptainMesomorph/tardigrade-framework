@@ -67,7 +67,7 @@ namespace Tardigrade.Framework.Services
         {
             try
             {
-                return Repository.Create(objs);
+                return Repository.CreateBulk(objs);
             }
             catch (RepositoryException e)
             {
@@ -99,7 +99,7 @@ namespace Tardigrade.Framework.Services
         {
             try
             {
-                return await Repository.CreateAsync(objs, cancellationToken);
+                return await Repository.CreateBulkAsync(objs, cancellationToken);
             }
             catch (RepositoryException e)
             {

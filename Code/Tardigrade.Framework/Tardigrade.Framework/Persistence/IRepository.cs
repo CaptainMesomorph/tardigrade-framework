@@ -15,7 +15,7 @@ namespace Tardigrade.Framework.Persistence
     /// </summary>
     /// <typeparam name="T">Object type associated with the repository operations.</typeparam>
     /// <typeparam name="PK">Unique identifier type for the object type.</typeparam>
-    public interface IRepository<T, PK>
+    public interface IRepository<T, PK> : IBulkRepository<T, PK>
     {
         /// <summary>
         /// Calculate the number of objects in the repository.
@@ -37,15 +37,6 @@ namespace Tardigrade.Framework.Persistence
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Create multiple instances of the object type.
-        /// </summary>
-        /// <param name="objs">Instances to create.</param>
-        /// <returns>Instances created (including allocated unique identifiers).</returns>
-        /// <exception cref="ArgumentNullException">The objs parameter is null.</exception>
-        /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
-        IEnumerable<T> Create(IEnumerable<T> objs);
-
-        /// <summary>
         /// Create an instance of the object type.
         /// </summary>
         /// <param name="obj">Instance to create.</param>
@@ -55,18 +46,6 @@ namespace Tardigrade.Framework.Persistence
         /// <exception cref="Exceptions.RepositoryException">Error creating the object.</exception>
         /// <exception cref="Exceptions.ValidationException">Object to create contains invalid values.</exception>
         T Create(T obj);
-
-        /// <summary>
-        /// Create multiple instances of the object type.
-        /// </summary>
-        /// <param name="objs">Instances to create.</param>
-        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
-        /// <returns>Instances created (including allocated unique identifiers).</returns>
-        /// <exception cref="ArgumentNullException">The objs parameter is null.</exception>
-        /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
-        Task<IEnumerable<T>> CreateAsync(
-            IEnumerable<T> objs,
-            CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Create an instance of the object type.
