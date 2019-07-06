@@ -15,7 +15,7 @@ namespace Tardigrade.Framework.Persistence
     /// </summary>
     /// <typeparam name="T">Object type associated with the repository operations.</typeparam>
     /// <typeparam name="PK">Unique identifier type for the object type.</typeparam>
-    public interface IRepository<T, PK> : IBulkRepository<T, PK>
+    public interface IRepository<T, PK> : IBulkRepository<T>
     {
         /// <summary>
         /// Calculate the number of objects in the repository.
@@ -60,15 +60,6 @@ namespace Tardigrade.Framework.Persistence
         Task<T> CreateAsync(T obj, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Delete an instance by unique identifier.
-        /// </summary>
-        /// <param name="id">Unique identifier for the instance.</param>
-        /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
-        /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
-        /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
-        void Delete(PK id);
-
-        /// <summary>
         /// Delete an instance.
         /// </summary>
         /// <param name="obj">Instance to delete.</param>
@@ -76,17 +67,6 @@ namespace Tardigrade.Framework.Persistence
         /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
         void Delete(T obj);
-
-        /// <summary>
-        /// Delete an instance by unique identifier.
-        /// </summary>
-        /// <param name="id">Unique identifier for the instance.</param>
-        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
-        /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
-        /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
-        Task DeleteAsync(PK id, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Delete an instance.

@@ -10,8 +10,7 @@ namespace Tardigrade.Framework.Persistence
     /// collection of objects at once, and success or failure applies to the collection as a whole.
     /// </summary>
     /// <typeparam name="T">Object type associated with the repository operations.</typeparam>
-    /// <typeparam name="PK">Unique identifier type for the object type.</typeparam>
-    public interface IBulkRepository<T, PK>
+    public interface IBulkRepository<T>
     {
         /// <summary>
         /// Create multiple instances of the object type.
@@ -35,30 +34,12 @@ namespace Tardigrade.Framework.Persistence
             CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Delete multiple instances by unique identifier.
-        /// </summary>
-        /// <param name="ids">Collection of unique identifiers.</param>
-        /// <exception cref="ArgumentNullException">The ids parameter is null or empty.</exception>
-        /// <exception cref="Exceptions.RepositoryException">Error deleting the objects.</exception>
-        void DeleteBulk(IEnumerable<PK> ids);
-
-        /// <summary>
         /// Delete multiple instances.
         /// </summary>
         /// <param name="objs">Instances to delete.</param>
         /// <exception cref="ArgumentNullException">The objs parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the objects.</exception>
         void DeleteBulk(IEnumerable<T> objs);
-
-        /// <summary>
-        /// Delete multiple instances by unique identifier.
-        /// </summary>
-        /// <param name="ids">Collection of unique identifiers.</param>
-        /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">The ids parameter is null or empty.</exception>
-        /// <exception cref="Exceptions.RepositoryException">Error deleting the objects.</exception>
-        Task DeleteBulkAsync(IEnumerable<PK> ids, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
         /// Delete multiple instances.

@@ -187,7 +187,7 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.CreateBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{T}.CreateBulk(IEnumerable{T})"/>
         /// </summary>
         /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual IEnumerable<T> CreateBulk(IEnumerable<T> objs)
@@ -196,58 +196,12 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.CreateBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{T}.CreateBulk(IEnumerable{T})"/>
         /// </summary>
         /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual Task<IEnumerable<T>> CreateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(PK)"/>
-        /// </summary>
-        /// <exception cref="ArgumentNullException">The id parameter is null, or does not contain either a Partition Key or Row Key.</exception>
-        public virtual void Delete(PK id)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            TableResult retrieveResult = GetRetrieveTableResult(id.Partition, id.Row);
-
-            if (retrieveResult.HttpStatusCode == (int)HttpStatusCode.OK)
-            {
-                // Assign the result to be deleted.
-                T deleteEntity = (T)retrieveResult.Result;
-
-                // Create the Delete TableOperation.
-                TableOperation deleteOperation = TableOperation.Delete(deleteEntity);
-
-                try
-                {
-                    // Execute the operation.
-                    TableResult deleteResult = table.ExecuteAsync(deleteOperation).GetAwaiter().GetResult();
-
-                    if (deleteResult.HttpStatusCode != (int)HttpStatusCode.OK)
-                    {
-                        throw new RepositoryException($"Delete failed; error code of {deleteResult.HttpStatusCode} was returned for object of type {typeof(T).Name} with Partition Key {id.Partition} and Row Key{id.Row} in Azure Storage Table {table.Name}.");
-                    }
-                }
-                catch (Exception e)
-                {
-                    throw new RepositoryException($"Delete failed; error deleting object of type {typeof(T).Name} with Partition Key {id.Partition} and Row Key{id.Row} from Azure Storage Table {table.Name} .", e);
-                }
-            }
-            else if (retrieveResult.HttpStatusCode == (int)HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException($"Delete failed; object of type {typeof(T).Name} with Partition Key {id.Partition} and Row Key{id.Row} does not exist in Azure Storage Table {table.Name}.");
-            }
-            else
-            {
-                throw new RepositoryException($"Delete failed; error code of {retrieveResult.HttpStatusCode} was returned for object of type {typeof(T).Name} with Partition Key {id.Partition} and Row Key{id.Row} in Azure Storage Table {table.Name}.");
-            }
         }
 
         /// <summary>
@@ -286,45 +240,6 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.DeleteAsync(PK, CancellationToken)"/>
-        /// </summary>
-        /// <exception cref="ArgumentNullException">The id parameter is null, or does not contain either a Partition Key or Row Key.</exception>
-        public virtual async Task DeleteAsync(PK id, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            TableResult retrieveResult = await GetRetrieveTableResultAsync(id.Partition, id.Row);
-
-            if (retrieveResult.HttpStatusCode == (int)HttpStatusCode.OK)
-            {
-                // Assign the result to be deleted.
-                T deleteEntity = (T)retrieveResult.Result;
-
-                // Create the Delete TableOperation.
-                TableOperation deleteOperation = TableOperation.Delete(deleteEntity);
-
-                // Execute the operation.
-                TableResult deleteResult = await table.ExecuteAsync(deleteOperation);
-
-                if (deleteResult.HttpStatusCode != (int)HttpStatusCode.OK)
-                {
-                    throw new RepositoryException($"Delete failed; error code of {deleteResult.HttpStatusCode} was returned for object of type {typeof(T).Name} with Partition Key {id.Partition} and Row Key{id.Row} in Azure Storage Table {table.Name}.");
-                }
-            }
-            else if (retrieveResult.HttpStatusCode == (int)HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException($"Delete failed; object of type {typeof(T).Name} with Partition Key {id.Partition} and Row Key{id.Row} does not exist in Azure Storage Table {table.Name}.");
-            }
-            else
-            {
-                throw new RepositoryException($"Delete failed; error code of {retrieveResult.HttpStatusCode} was returned for object of type {typeof(T).Name} with Partition Key {id.Partition} and Row Key{id.Row} in Azure Storage Table {table.Name}.");
-            }
-        }
-
-        /// <summary>
         /// <see cref="IRepository{T, PK}.DeleteAsync(T, CancellationToken)"/>
         /// </summary>
         /// <exception cref="ArgumentNullException">The obj parameter is null, or does not contain either a Partition Key or Row Key.</exception>
@@ -353,16 +268,7 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{PK})"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual void DeleteBulk(IEnumerable<PK> ids)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{T}.DeleteBulk(IEnumerable{T})"/>
         /// </summary>
         /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual void DeleteBulk(IEnumerable<T> objs)
@@ -371,16 +277,7 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{PK}, CancellationToken)"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual Task DeleteBulkAsync(IEnumerable<PK> ids, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IBulkRepository{T}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
         /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
@@ -431,72 +328,6 @@ namespace Tardigrade.Framework.AzureStorage
         private async Task<bool> ExistsAsync(string partitionKey, string rowKey)
         {
             return ((await RetrieveAsync(partitionKey, rowKey)) != null);
-        }
-
-        /// <summary>
-        /// Get the table result for a retrieve operation based upon partition and row keys.
-        /// </summary>
-        /// <param name="partitionKey">Partition key.</param>
-        /// <param name="rowKey">Row key.</param>
-        /// <returns>Storage table result.</returns>
-        /// <exception cref="ArgumentNullException">The partitionKey and/or rowKey parameters are null or empty.</exception>
-        /// <exception cref="RepositoryException">Error getting the storage table result.</exception>
-        private TableResult GetRetrieveTableResult(string partitionKey, string rowKey)
-        {
-            if (string.IsNullOrWhiteSpace(partitionKey))
-            {
-                throw new ArgumentNullException("Unique identifier does not specify a Partition Key.", nameof(partitionKey));
-            }
-
-            if (string.IsNullOrWhiteSpace(rowKey))
-            {
-                throw new ArgumentNullException("Unique identifier does not specify a Row Key.", nameof(rowKey));
-            }
-
-            TableResult result;
-
-            // Create a retrieve operation that expects partition and row keys.
-            TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
-
-            // Execute the operation.
-            try
-            {
-                result = table.ExecuteAsync(retrieveOperation).GetAwaiter().GetResult();
-            }
-            catch (Exception e)
-            {
-                throw new RepositoryException($"Error executing retrieve operation on object of type {typeof(T).Name} with Partition Key {partitionKey} and Row Key{rowKey} in Azure Storage Table {table.Name} .", e);
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Get the table result for a retrieve operation based upon partition and row keys.
-        /// </summary>
-        /// <param name="partitionKey">Partition key.</param>
-        /// <param name="rowKey">Row key.</param>
-        /// <returns>Storage table result.</returns>
-        /// <exception cref="ArgumentNullException">The partitionKey and/or rowKey parameters are null or empty.</exception>
-        private async Task<TableResult> GetRetrieveTableResultAsync(string partitionKey, string rowKey)
-        {
-            if (string.IsNullOrWhiteSpace(partitionKey))
-            {
-                throw new ArgumentNullException("Unique identifier does not specify a Partition Key.", nameof(partitionKey));
-            }
-
-            if (string.IsNullOrWhiteSpace(rowKey))
-            {
-                throw new ArgumentNullException("Unique identifier does not specify a Row Key.", nameof(rowKey));
-            }
-
-            // Create a retrieve operation that expects partition and row keys.
-            TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
-
-            // Execute the operation.
-            TableResult result = await table.ExecuteAsync(retrieveOperation);
-
-            return result;
         }
 
         /// <summary>
@@ -567,7 +398,30 @@ namespace Tardigrade.Framework.AzureStorage
         /// <exception cref="RepositoryException">Error retrieving the object.</exception>
         private T Retrieve(string partitionKey, string rowKey)
         {
-            TableResult result = GetRetrieveTableResult(partitionKey, rowKey);
+            if (string.IsNullOrWhiteSpace(partitionKey))
+            {
+                throw new ArgumentNullException("Unique identifier does not specify a Partition Key.", nameof(partitionKey));
+            }
+
+            if (string.IsNullOrWhiteSpace(rowKey))
+            {
+                throw new ArgumentNullException("Unique identifier does not specify a Row Key.", nameof(rowKey));
+            }
+
+            TableResult result;
+
+            // Create a retrieve operation that expects partition and row keys.
+            TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
+
+            // Execute the operation.
+            try
+            {
+                result = table.ExecuteAsync(retrieveOperation).GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                throw new RepositoryException($"Error executing retrieve operation on object of type {typeof(T).Name} with Partition Key {partitionKey} and Row Key{rowKey} in Azure Storage Table {table.Name} .", e);
+            }
 
             T obj;
 
@@ -652,7 +506,21 @@ namespace Tardigrade.Framework.AzureStorage
         /// <exception cref="RepositoryException">Error retrieving the object.</exception>
         private async Task<T> RetrieveAsync(string partitionKey, string rowKey)
         {
-            TableResult result = await GetRetrieveTableResultAsync(partitionKey, rowKey);
+            if (string.IsNullOrWhiteSpace(partitionKey))
+            {
+                throw new ArgumentNullException("Unique identifier does not specify a Partition Key.", nameof(partitionKey));
+            }
+
+            if (string.IsNullOrWhiteSpace(rowKey))
+            {
+                throw new ArgumentNullException("Unique identifier does not specify a Row Key.", nameof(rowKey));
+            }
+
+            // Create a retrieve operation that expects partition and row keys.
+            TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
+
+            // Execute the operation.
+            TableResult result = await table.ExecuteAsync(retrieveOperation);
 
             T obj;
 
@@ -728,7 +596,7 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.UpdateBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{T}.UpdateBulk(IEnumerable{T})"/>
         /// </summary>
         /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual void UpdateBulk(IEnumerable<T> objs)
@@ -737,7 +605,7 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IBulkRepository{T}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
         /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)

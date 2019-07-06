@@ -172,7 +172,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.CreateBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{T}.CreateBulk(IEnumerable{T})"/>
         /// </summary>
         public virtual IEnumerable<T> CreateBulk(IEnumerable<T> objs)
         {
@@ -202,7 +202,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.CreateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IBulkRepository{T}.CreateBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<IEnumerable<T>> CreateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
         {
@@ -223,49 +223,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
 
             return objs;
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(PK)"/>
-        /// </summary>
-        public virtual void Delete(PK id)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            T obj;
-
-            try
-            {
-                obj = GenerateFindQuery().Find(id);
-
-                if (obj == null)
-                {
-                    throw new NotFoundException($"Delete failed; object of type {typeof(T).Name} with primary key {id} does not exist.");
-                }
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new RepositoryException($"Delete failed; database connection error while deleting object of type {typeof(T).Name} with primary key {id}.", e);
-            }
-
-            DbContext.Set<T>().Remove(obj);
-
-            try
-            {
-                DbContext.SaveChanges();
-            }
-            catch (Exception e) when (
-                e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
-                e is NotSupportedException ||
-                e is ObjectDisposedException ||
-                e is InvalidOperationException)
-            {
-                throw new RepositoryException($"Delete failed; database error while deleting object of type {typeof(T).Name} with primary key {id}.", e);
-            }
         }
 
         /// <summary>
@@ -314,35 +271,6 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.DeleteAsync(PK, CancellationToken)"/>
-        /// </summary>
-        public virtual async Task DeleteAsync(PK id, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            T obj = await GenerateFindQuery().FindAsync(id, cancellationToken);
-
-            if (obj == null)
-            {
-                throw new NotFoundException($"Delete failed; object of type {typeof(T).Name} with primary key {id} does not exist.");
-            }
-
-            DbContext.Set<T>().Remove(obj);
-
-            try
-            {
-                await DbContext.SaveChangesAsync(cancellationToken);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new RepositoryException($"Delete failed; database connection error while deleting object of type {typeof(T).Name} with primary key {id}.", e);
-            }
-        }
-
-        /// <summary>
         /// <see cref="IRepository{T, PK}.DeleteAsync(T, CancellationToken)"/>
         /// </summary>
         public virtual async Task DeleteAsync(T obj, CancellationToken cancellationToken = default(CancellationToken))
@@ -382,16 +310,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{PK})"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual void DeleteBulk(IEnumerable<PK> ids)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.DeleteBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{T}.DeleteBulk(IEnumerable{T})"/>
         /// </summary>
         public virtual void DeleteBulk(IEnumerable<T> objs)
         {
@@ -419,16 +338,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{PK}, CancellationToken)"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual Task DeleteBulkAsync(IEnumerable<PK> ids, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IBulkRepository{T}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
         public virtual async Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
         {
@@ -514,7 +424,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// </summary>
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Query to retrieve a set of objects.</returns>
-        private DbSet<T> GenerateFindQuery(params Expression<Func<T, object>>[] includes)
+        private DbSet<T> FindQuery(params Expression<Func<T, object>>[] includes)
         {
             DbSet<T> query = DbContext.Set<T>();
 
@@ -527,6 +437,67 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
+        /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
+        /// </summary>
+        public virtual IEnumerable<T> Retrieve(
+            Expression<Func<T, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            params Expression<Func<T, object>>[] includes)
+        {
+            return RetrieveQuery(filter, pagingContext, sortCondition, includes).ToList();
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// </summary>
+        public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            try
+            {
+                return FindQuery(includes).Find(id);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Retrieve failed; database connection error while retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// </summary>
+        public virtual async Task<IEnumerable<T>> RetrieveAsync(
+            Expression<Func<T, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            CancellationToken cancellationToken = default(CancellationToken),
+            params Expression<Func<T, object>>[] includes)
+        {
+            return await RetrieveQuery(filter, pagingContext, sortCondition, includes).ToListAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// </summary>
+        public virtual async Task<T> RetrieveAsync(
+            PK id,
+            CancellationToken cancellationToken = default(CancellationToken),
+            params Expression<Func<T, object>>[] includes)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return await FindQuery(includes).FindAsync(id, cancellationToken);
+        }
+
+        /// <summary>
         /// Generate a query to retrieve all instances of the object type.
         /// </summary>
         /// <param name="filter">Filter condition.</param>
@@ -535,7 +506,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Query to retrieve all instances of the object type.</returns>
         /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>"
-        private IQueryable<T> GenerateRetrieveQuery(
+        private IQueryable<T> RetrieveQuery(
             Expression<Func<T, bool>> filter = null,
             PagingContext pagingContext = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
@@ -576,67 +547,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
 
             return query;
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
-        /// </summary>
-        public virtual IEnumerable<T> Retrieve(
-            Expression<Func<T, bool>> filter = null,
-            PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            params Expression<Func<T, object>>[] includes)
-        {
-            return GenerateRetrieveQuery(filter, pagingContext, sortCondition, includes).ToList();
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
-        /// </summary>
-        public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            try
-            {
-                return GenerateFindQuery(includes).Find(id);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new RepositoryException($"Retrieve failed; database connection error while retrieving object of type {typeof(T).Name} with primary key {id}.", e);
-            }
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
-        /// </summary>
-        public virtual async Task<IEnumerable<T>> RetrieveAsync(
-            Expression<Func<T, bool>> filter = null,
-            PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            params Expression<Func<T, object>>[] includes)
-        {
-            return await GenerateRetrieveQuery(filter, pagingContext, sortCondition, includes).ToListAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
-        /// </summary>
-        public virtual async Task<T> RetrieveAsync(
-            PK id,
-            CancellationToken cancellationToken = default(CancellationToken),
-            params Expression<Func<T, object>>[] includes)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            return await GenerateFindQuery(includes).FindAsync(id, cancellationToken);
         }
 
         /// <summary>
@@ -719,7 +629,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.UpdateBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{T}.UpdateBulk(IEnumerable{T})"/>
         /// </summary>
         public virtual void UpdateBulk(IEnumerable<T> objs)
         {
@@ -757,7 +667,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T, PK}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IBulkRepository{T}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
         public virtual async Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
         {
