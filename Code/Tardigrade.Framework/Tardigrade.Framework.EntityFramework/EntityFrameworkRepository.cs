@@ -452,6 +452,8 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// <see cref="IRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
         /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
+        /// <a href="https://docs.microsoft.com/en-au/ef/ef6/querying/related-data">Loading Related Entities</a>
+        /// <a href="https://devblogs.microsoft.com/csharpfaq/how-can-i-get-objects-and-property-values-from-expression-trees/">How can I get objects and property values from expression trees?</a>
         /// </summary>
         public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
         {
@@ -511,6 +513,8 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// <see cref="IRepository{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
         /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
+        /// <a href="https://docs.microsoft.com/en-au/ef/ef6/querying/related-data">Loading Related Entities</a>
+        /// <a href="https://devblogs.microsoft.com/csharpfaq/how-can-i-get-objects-and-property-values-from-expression-trees/">How can I get objects and property values from expression trees?</a>
         /// </summary>
         public virtual async Task<T> RetrieveAsync(
             PK id,
