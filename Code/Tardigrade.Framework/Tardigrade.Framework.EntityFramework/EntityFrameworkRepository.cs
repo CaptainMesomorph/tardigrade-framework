@@ -21,8 +21,6 @@ namespace Tardigrade.Framework.EntityFramework
     /// </summary>
     public class EntityFrameworkRepository<T, PK> : IRepository<T, PK> where T : class
     {
-        private const int BatchSize = 1000;
-
         /// <summary>
         /// Database context.
         /// </summary>
@@ -91,47 +89,6 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Create(IEnumerable{T})"/>
-        /// </summary>
-        public virtual IEnumerable<T> Create(IEnumerable<T> objs)
-        {
-            if (objs == null)
-            {
-                throw new ArgumentNullException(nameof(objs));
-            }
-
-            DbContext.Configuration.AutoDetectChangesEnabled = false;
-            int count = 0;
-
-            try
-            {
-                foreach (T obj in objs)
-                {
-                    ++count;
-                    DbContext.Set<T>().Add(obj);
-
-                    if ((count % BatchSize) == 0)
-                    {
-                        DbContext.SaveChanges();
-                    }
-                }
-
-                DbContext.SaveChanges();
-            }
-            catch (Exception e) when (
-                e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
-                e is DbEntityValidationException ||
-                e is ObjectDisposedException ||
-                e is InvalidOperationException)
-            {
-                throw new RepositoryException($"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
-            }
-
-            return objs;
-        }
-
-        /// <summary>
         /// <see cref="IRepository{T, PK}.Create(T)"/>
         /// </summary>
         public virtual T Create(T obj)
@@ -166,6 +123,7 @@ namespace Tardigrade.Framework.EntityFramework
             catch (Exception e) when (
                 e is DbUpdateException ||
                 e is DbUpdateConcurrencyException ||
+                e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
             {
@@ -173,47 +131,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
 
             return obj;
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
-        /// </summary>
-        public virtual async Task<IEnumerable<T>> CreateAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
-        {
-            if (objs == null)
-            {
-                throw new ArgumentNullException(nameof(objs));
-            }
-
-            DbContext.Configuration.AutoDetectChangesEnabled = false;
-            int count = 0;
-
-            try
-            {
-                foreach (T obj in objs)
-                {
-                    ++count;
-                    DbContext.Set<T>().Add(obj);
-
-                    if ((count % BatchSize) == 0)
-                    {
-                        await DbContext.SaveChangesAsync(cancellationToken);
-                    }
-                }
-
-                await DbContext.SaveChangesAsync(cancellationToken);
-            }
-            catch (Exception e) when (
-                e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
-                e is DbEntityValidationException ||
-                e is ObjectDisposedException ||
-                e is InvalidOperationException)
-            {
-                throw new RepositoryException($"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
-            }
-
-            return objs;
         }
 
         /// <summary>
@@ -246,10 +163,6 @@ namespace Tardigrade.Framework.EntityFramework
             {
                 await DbContext.SaveChangesAsync(cancellationToken);
             }
-            catch (DbEntityValidationException e)
-            {
-                throw new ValidationException($"Create failed; object of type {typeof(T).Name} contains invalid values.", e);
-            }
             catch (InvalidOperationException e)
             {
                 throw new RepositoryException($"Create failed; database connection error while creating object of type {typeof(T).Name}.", e);
@@ -259,32 +172,16 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(PK)"/>
+        /// <see cref="IBulkRepository{T}.CreateBulk(IEnumerable{T})"/>
         /// </summary>
-        public virtual void Delete(PK id)
+        public virtual IEnumerable<T> CreateBulk(IEnumerable<T> objs)
         {
-            if (id == null)
+            if (objs.IsNulOrEmpty())
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(objs));
             }
 
-            T obj;
-
-            try
-            {
-                obj = GenerateFindQuery().Find(id);
-
-                if (obj == null)
-                {
-                    throw new NotFoundException($"Delete failed; object of type {typeof(T).Name} with primary key {id} does not exist.");
-                }
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new RepositoryException($"Delete failed; database connection error while deleting object of type {typeof(T).Name} with primary key {id}.", e);
-            }
-
-            DbContext.Set<T>().Remove(obj);
+            DbContext.Set<T>().AddRange(objs);
 
             try
             {
@@ -293,11 +190,39 @@ namespace Tardigrade.Framework.EntityFramework
             catch (Exception e) when (
                 e is DbUpdateException ||
                 e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
             {
-                throw new RepositoryException($"Delete failed; database error while deleting object of type {typeof(T).Name} with primary key {id}.", e);
+                throw new RepositoryException($"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
             }
+
+            return objs;
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T}.CreateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        public virtual async Task<IEnumerable<T>> CreateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Set<T>().AddRange(objs);
+
+            try
+            {
+                await DbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Create failed; database connection error while creating objects of type {typeof(T).Name}.", e);
+            }
+
+            return objs;
         }
 
         /// <summary>
@@ -336,39 +261,12 @@ namespace Tardigrade.Framework.EntityFramework
             catch (Exception e) when (
                 e is DbUpdateException ||
                 e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
             {
                 throw new RepositoryException($"Delete failed; database error while deleting object of type {typeof(T).Name}.", e);
-            }
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.DeleteAsync(PK, CancellationToken)"/>
-        /// </summary>
-        public virtual async Task DeleteAsync(PK id, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            T obj = await GenerateFindQuery().FindAsync(id, cancellationToken);
-
-            if (obj == null)
-            {
-                throw new NotFoundException($"Delete failed; object of type {typeof(T).Name} with primary key {id} does not exist.");
-            }
-
-            DbContext.Set<T>().Remove(obj);
-
-            try
-            {
-                await DbContext.SaveChangesAsync(cancellationToken);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new RepositoryException($"Delete failed; database connection error while deleting object of type {typeof(T).Name} with primary key {id}.", e);
             }
         }
 
@@ -408,6 +306,56 @@ namespace Tardigrade.Framework.EntityFramework
             catch (InvalidOperationException e)
             {
                 throw new RepositoryException($"Delete failed; database connection error while deleting object of type {typeof(T).Name}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T}.DeleteBulk(IEnumerable{T})"/>
+        /// </summary>
+        public virtual void DeleteBulk(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Set<T>().RemoveRange(objs);
+
+            try
+            {
+                DbContext.SaveChanges();
+            }
+            catch (Exception e) when (
+                e is DbUpdateException ||
+                e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is NotSupportedException ||
+                e is ObjectDisposedException ||
+                e is InvalidOperationException)
+            {
+                throw new RepositoryException($"Delete failed; database error while deleting objects of type {typeof(T).Name}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        public virtual async Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Set<T>().RemoveRange(objs);
+
+            try
+            {
+                await DbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Delete failed; database connection error while deleting objects of type {typeof(T).Name}.", e);
             }
         }
 
@@ -473,19 +421,137 @@ namespace Tardigrade.Framework.EntityFramework
 
         /// <summary>
         /// Generate a query to retrieve a set of objects.
+        /// NOTE: Not currently used. Awaiting changes to add an Id property to the model.
         /// </summary>
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Query to retrieve a set of objects.</returns>
-        private DbSet<T> GenerateFindQuery(params Expression<Func<T, object>>[] includes)
+        private IQueryable<T> FindQuery(params Expression<Func<T, object>>[] includes)
         {
-            DbSet<T> query = DbContext.Set<T>();
+            IQueryable<T> query = DbContext.Set<T>();
 
             foreach (Expression<Func<T, object>> include in includes.OrEmptyIfNull())
             {
-                query = (DbSet<T>)query.Include(include);
+                query = query.Include(include);
             }
 
             return query;
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
+        /// </summary>
+        public virtual IEnumerable<T> Retrieve(
+            Expression<Func<T, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            params Expression<Func<T, object>>[] includes)
+        {
+            return RetrieveQuery(filter, pagingContext, sortCondition, includes).ToList();
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
+        /// <a href="https://docs.microsoft.com/en-au/ef/ef6/querying/related-data">Loading Related Entities</a>
+        /// <a href="https://devblogs.microsoft.com/csharpfaq/how-can-i-get-objects-and-property-values-from-expression-trees/">How can I get objects and property values from expression trees?</a>
+        /// </summary>
+        public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            try
+            {
+                T obj = DbContext.Set<T>().Find(id);
+                DbEntityEntry<T> entity = DbContext.Entry(obj);
+
+                foreach (Expression<Func<T, object>> include in includes)
+                {
+                    try
+                    {
+                        entity.Reference(include).Load();
+                    }
+                    catch (ArgumentException)
+                    {
+                        MemberExpression expression = (MemberExpression)include.Body;
+                        string name = expression.Member.Name;
+
+                        try
+                        {
+                            entity.Collection(name).Load();
+                        }
+                        catch (ArgumentException e)
+                        {
+                            throw new RepositoryException($"Retrieve failed; a lazy-loading error occurred retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                        }
+                    }
+                }
+
+                return obj;
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Retrieve failed; database connection error while retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// </summary>
+        public virtual async Task<IEnumerable<T>> RetrieveAsync(
+            Expression<Func<T, bool>> filter = null,
+            PagingContext pagingContext = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            CancellationToken cancellationToken = default(CancellationToken),
+            params Expression<Func<T, object>>[] includes)
+        {
+            return await RetrieveQuery(filter, pagingContext, sortCondition, includes).ToListAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// <see cref="IRepository{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
+        /// <a href="https://docs.microsoft.com/en-au/ef/ef6/querying/related-data">Loading Related Entities</a>
+        /// <a href="https://devblogs.microsoft.com/csharpfaq/how-can-i-get-objects-and-property-values-from-expression-trees/">How can I get objects and property values from expression trees?</a>
+        /// </summary>
+        public virtual async Task<T> RetrieveAsync(
+            PK id,
+            CancellationToken cancellationToken = default(CancellationToken),
+            params Expression<Func<T, object>>[] includes)
+        {
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            T obj = await DbContext.Set<T>().FindAsync(cancellationToken, id);
+            DbEntityEntry<T> entity = DbContext.Entry(obj);
+
+            foreach (Expression<Func<T, object>> include in includes)
+            {
+                try
+                {
+                    await entity.Reference(include).LoadAsync(cancellationToken);
+                }
+                catch (ArgumentException)
+                {
+                    MemberExpression expression = (MemberExpression)include.Body;
+                    string name = expression.Member.Name;
+
+                    try
+                    {
+                        await entity.Collection(name).LoadAsync(cancellationToken);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        throw new RepositoryException($"Retrieve failed; a lazy-loading error occurred retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                    }
+                }
+            }
+
+            return obj;
         }
 
         /// <summary>
@@ -497,7 +563,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Query to retrieve all instances of the object type.</returns>
         /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>"
-        private IQueryable<T> GenerateRetrieveQuery(
+        private IQueryable<T> RetrieveQuery(
             Expression<Func<T, bool>> filter = null,
             PagingContext pagingContext = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
@@ -541,67 +607,6 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
-        /// </summary>
-        public virtual IEnumerable<T> Retrieve(
-            Expression<Func<T, bool>> filter = null,
-            PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            params Expression<Func<T, object>>[] includes)
-        {
-            return GenerateRetrieveQuery(filter, pagingContext, sortCondition, includes).ToList();
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
-        /// </summary>
-        public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            try
-            {
-                return GenerateFindQuery(includes).Find(id);
-            }
-            catch (InvalidOperationException e)
-            {
-                throw new RepositoryException($"Retrieve failed; database connection error while retrieving object of type {typeof(T).Name} with primary key {id}.", e);
-            }
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
-        /// </summary>
-        public virtual async Task<IEnumerable<T>> RetrieveAsync(
-            Expression<Func<T, bool>> filter = null,
-            PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            params Expression<Func<T, object>>[] includes)
-        {
-            return await GenerateRetrieveQuery(filter, pagingContext, sortCondition, includes).ToListAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// <see cref="IRepository{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
-        /// </summary>
-        public virtual async Task<T> RetrieveAsync(
-            PK id,
-            CancellationToken cancellationToken = default(CancellationToken),
-            params Expression<Func<T, object>>[] includes)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            return await GenerateFindQuery(includes).FindAsync(id, cancellationToken);
-        }
-
-        /// <summary>
         /// <see cref="IRepository{T, PK}.Update(T)"/>
         /// </summary>
         public virtual void Update(T obj)
@@ -637,10 +642,11 @@ namespace Tardigrade.Framework.EntityFramework
             catch (Exception e) when (
                 e is DbUpdateException ||
                 e is DbUpdateConcurrencyException ||
+                e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
             {
-                throw new RepositoryException($"Delete failed; database error while updating object of type {typeof(T).Name}.", e);
+                throw new RepositoryException($"Update failed; database error while updating object of type {typeof(T).Name}.", e);
             }
         }
 
@@ -676,6 +682,76 @@ namespace Tardigrade.Framework.EntityFramework
             catch (InvalidOperationException e)
             {
                 throw new RepositoryException($"Update failed; database connection error while updating object of type {typeof(T).Name}.", e);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T}.UpdateBulk(IEnumerable{T})"/>
+        /// </summary>
+        public virtual void UpdateBulk(IEnumerable<T> objs)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Configuration.AutoDetectChangesEnabled = false;
+
+            try
+            {
+                foreach (T obj in objs)
+                {
+                    DbContext.Set<T>().Attach(obj);
+                    DbContext.Entry(obj).State = EntityState.Modified;
+                }
+
+                DbContext.SaveChanges();
+            }
+            catch (Exception e) when (
+                e is DbUpdateException ||
+                e is DbUpdateConcurrencyException ||
+                e is DbEntityValidationException ||
+                e is NotSupportedException ||
+                e is ObjectDisposedException ||
+                e is InvalidOperationException)
+            {
+                throw new RepositoryException($"Update failed; database error while updating objects of type {typeof(T).Name}.", e);
+            }
+            finally
+            {
+                DbContext.Configuration.AutoDetectChangesEnabled = true;
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IBulkRepository{T}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// </summary>
+        public virtual async Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        {
+            if (objs.IsNulOrEmpty())
+            {
+                throw new ArgumentNullException(nameof(objs));
+            }
+
+            DbContext.Configuration.AutoDetectChangesEnabled = false;
+
+            try
+            {
+                foreach (T obj in objs)
+                {
+                    DbContext.Set<T>().Attach(obj);
+                    DbContext.Entry(obj).State = EntityState.Modified;
+                }
+
+                await DbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Update failed; database error while updating objects of type {typeof(T).Name}.", e);
+            }
+            finally
+            {
+                DbContext.Configuration.AutoDetectChangesEnabled = true;
             }
         }
     }

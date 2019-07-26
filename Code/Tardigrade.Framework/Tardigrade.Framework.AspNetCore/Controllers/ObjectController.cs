@@ -54,8 +54,17 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                await service.DeleteAsync(id);
-                result = Ok();
+                T model = await service.RetrieveAsync(id);
+
+                if (model == null)
+                {
+                    result = NotFound();
+                }
+                else
+                {
+                    await service.DeleteAsync(model);
+                    result = Ok();
+                }
             }
             catch (ServiceException e)
             {
@@ -93,7 +102,6 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
                 {
                     sortCondition = (q => q.OrderBy(o => o.Id));
                 }
-
             }
 
             if (!string.IsNullOrWhiteSpace(sortBy))

@@ -67,7 +67,7 @@ namespace Tardigrade.Framework.Services
         {
             try
             {
-                return Repository.Create(objs);
+                return Repository.CreateBulk(objs);
             }
             catch (RepositoryException e)
             {
@@ -99,7 +99,7 @@ namespace Tardigrade.Framework.Services
         {
             try
             {
-                return await Repository.CreateAsync(objs, cancellationToken);
+                return await Repository.CreateBulkAsync(objs, cancellationToken);
             }
             catch (RepositoryException e)
             {
@@ -123,21 +123,6 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Delete(PK)"/>
-        /// </summary>
-        public virtual void Delete(PK id)
-        {
-            try
-            {
-                Repository.Delete(id);
-            }
-            catch (RepositoryException e)
-            {
-                throw new ServiceException($"Error deleting an object of type {typeof(T).Name} with a unique identifier of {id}.", e);
-            }
-        }
-
-        /// <summary>
         /// <see cref="IObjectService{T, PK}.Delete(T)"/>
         /// </summary>
         public virtual void Delete(T obj)
@@ -149,21 +134,6 @@ namespace Tardigrade.Framework.Services
             catch (RepositoryException e)
             {
                 throw new ServiceException($"Error deleting an object of type {typeof(T).Name}.", e);
-            }
-        }
-
-        /// <summary>
-        /// <see cref="IObjectService{T, PK}.DeleteAsync(PK, CancellationToken)"/>
-        /// </summary>
-        public virtual async Task DeleteAsync(PK id, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                await Repository.DeleteAsync(id, cancellationToken);
-            }
-            catch (RepositoryException e)
-            {
-                throw new ServiceException($"Error deleting an object of type {typeof(T).Name} with a unique identifier of {id}.", e);
             }
         }
 

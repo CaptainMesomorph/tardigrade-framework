@@ -197,54 +197,12 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Delete(DtoPk)"/>
-        /// </summary>
-        public virtual void Delete(DtoPk id)
-        {
-            try
-            {
-                if (KeyEncoder != null)
-                {
-                    id = KeyEncoder.Decode(id);
-                }
-
-                ModelPk modelId = Mapper.Map<ModelPk>(id);
-                ObjectService.Delete(modelId);
-            }
-            catch (EncodingException e)
-            {
-                throw new ServiceException($"Error deleting an object of type {typeof(Dto).Name} with a unique identifier of {id}.", e);
-            }
-        }
-
-        /// <summary>
         /// <see cref="IObjectService{Dto, DtoPk}.DeleteAsync(Dto, CancellationToken)"/>
         /// </summary>
         public virtual async Task DeleteAsync(Dto dto, CancellationToken cancellationToken = default)
         {
             Model model = Mapper.Map<Model>(dto);
             await ObjectService.DeleteAsync(model);
-        }
-
-        /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.DeleteAsync(DtoPk, CancellationToken)"/>
-        /// </summary>
-        public virtual async Task DeleteAsync(DtoPk id, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                if (KeyEncoder != null)
-                {
-                    id = KeyEncoder.Decode(id);
-                }
-
-                ModelPk modelId = Mapper.Map<ModelPk>(id);
-                await ObjectService.DeleteAsync(modelId);
-            }
-            catch (EncodingException e)
-            {
-                throw new ServiceException($"Error deleting an object of type {typeof(Dto).Name} with a unique identifier of {id}.", e);
-            }
         }
 
         /// <summary>

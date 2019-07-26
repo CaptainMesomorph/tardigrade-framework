@@ -4,6 +4,13 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**July 26, 2019 - 8.0.0 Redesigned the repository layer to better manage bulk operations**
+
+- Enhanced the repository layer to support bulk operations on delete and update.
+- Removed operations that delete objects by unique identifier from the repository and service layers.
+- Resolved issue regarding the use of "includes" with the DbSet<T>.Find() method.
+- Added a helper class for executing asynchronous methods synchronously.
+
 **June 27, 2019 - 7.0.0 Redesigned the Identity services to make them easier to use**
 
 - Standardised the Identity user framework to make it more intuitive and easier to implement based upon Microsoft conventions.
