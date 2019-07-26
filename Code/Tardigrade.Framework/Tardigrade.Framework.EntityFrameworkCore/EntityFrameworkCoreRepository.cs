@@ -18,7 +18,8 @@ namespace Tardigrade.Framework.EntityFrameworkCore
     /// <see cref="IRepository{T, PK}"/>
     /// <a href="https://stackoverflow.com/questions/40132380/ef-cannot-apply-operator-to-operands-of-type-tid-and-tid">EF - Cannot apply operator '==' to operands of type 'TId' and 'TId'</a>
     /// </summary>
-    public class EntityFrameworkCoreRepository<T, PK> : IRepository<T, PK> where T : class, IHasUniqueIdentifier<PK> where PK : IEquatable<PK>
+    public class EntityFrameworkCoreRepository<T, PK>
+        : IRepository<T, PK> where T : class, IHasUniqueIdentifier<PK> where PK : IEquatable<PK>
     {
         /// <summary>
         /// Database context.
@@ -308,13 +309,13 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Query to retrieve an instance of the object type.</returns>
-        private DbSet<T> FindQuery(params Expression<Func<T, object>>[] includes)
+        private IQueryable<T> FindQuery(params Expression<Func<T, object>>[] includes)
         {
-            DbSet<T> query = DbContext.Set<T>();
+            IQueryable<T> query = DbContext.Set<T>();
 
             foreach (Expression<Func<T, object>> include in includes.OrEmptyIfNull())
             {
-                query = (DbSet<T>)query.Include(include);
+                query = query.Include(include);
             }
 
             return query;
@@ -334,6 +335,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
         /// <summary>
         /// <see cref="IRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
         /// </summary>
         public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
         {
@@ -342,7 +344,18 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return FindQuery(includes).Find(id);
+            T obj;
+
+            if (includes.IsNulOrEmpty())
+            {
+                obj = DbContext.Set<T>().Find(id);
+            }
+            else
+            {
+                obj = FindQuery(includes).SingleOrDefault(o => o.Id.Equals(id));
+            }
+
+            return obj;
         }
 
         /// <summary>
@@ -360,6 +373,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
         /// <summary>
         /// <see cref="IRepository{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
         /// </summary>
         public virtual async Task<T> RetrieveAsync(
             PK id,
@@ -371,7 +385,18 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await FindQuery(includes).FindAsync(id, cancellationToken);
+            T obj;
+
+            if (includes.IsNulOrEmpty())
+            {
+                obj = await DbContext.Set<T>().FindAsync(new object[] { id }, cancellationToken);
+            }
+            else
+            {
+                obj = await FindQuery(includes).SingleOrDefaultAsync(o => o.Id.Equals(id), cancellationToken);
+            }
+
+            return obj;
         }
 
         /// <summary>

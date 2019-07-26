@@ -421,16 +421,17 @@ namespace Tardigrade.Framework.EntityFramework
 
         /// <summary>
         /// Generate a query to retrieve a set of objects.
+        /// NOTE: Not currently used. Awaiting changes to add an Id property to the model.
         /// </summary>
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Query to retrieve a set of objects.</returns>
-        private DbSet<T> FindQuery(params Expression<Func<T, object>>[] includes)
+        private IQueryable<T> FindQuery(params Expression<Func<T, object>>[] includes)
         {
-            DbSet<T> query = DbContext.Set<T>();
+            IQueryable<T> query = DbContext.Set<T>();
 
             foreach (Expression<Func<T, object>> include in includes.OrEmptyIfNull())
             {
-                query = (DbSet<T>)query.Include(include);
+                query = query.Include(include);
             }
 
             return query;
@@ -450,6 +451,7 @@ namespace Tardigrade.Framework.EntityFramework
 
         /// <summary>
         /// <see cref="IRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
         /// </summary>
         public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
         {
@@ -460,7 +462,32 @@ namespace Tardigrade.Framework.EntityFramework
 
             try
             {
-                return FindQuery(includes).Find(id);
+                T obj = DbContext.Set<T>().Find(id);
+                DbEntityEntry<T> entity = DbContext.Entry(obj);
+
+                foreach (Expression<Func<T, object>> include in includes)
+                {
+                    try
+                    {
+                        entity.Reference(include).Load();
+                    }
+                    catch (ArgumentException)
+                    {
+                        MemberExpression expression = (MemberExpression)include.Body;
+                        string name = expression.Member.Name;
+
+                        try
+                        {
+                            entity.Collection(name).Load();
+                        }
+                        catch (ArgumentException e)
+                        {
+                            throw new RepositoryException($"Retrieve failed; a lazy-loading error occurred retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                        }
+                    }
+                }
+
+                return obj;
             }
             catch (InvalidOperationException e)
             {
@@ -483,6 +510,7 @@ namespace Tardigrade.Framework.EntityFramework
 
         /// <summary>
         /// <see cref="IRepository{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
         /// </summary>
         public virtual async Task<T> RetrieveAsync(
             PK id,
@@ -494,7 +522,32 @@ namespace Tardigrade.Framework.EntityFramework
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await FindQuery(includes).FindAsync(id, cancellationToken);
+            T obj = await DbContext.Set<T>().FindAsync(cancellationToken, id);
+            DbEntityEntry<T> entity = DbContext.Entry(obj);
+
+            foreach (Expression<Func<T, object>> include in includes)
+            {
+                try
+                {
+                    await entity.Reference(include).LoadAsync(cancellationToken);
+                }
+                catch (ArgumentException)
+                {
+                    MemberExpression expression = (MemberExpression)include.Body;
+                    string name = expression.Member.Name;
+
+                    try
+                    {
+                        await entity.Collection(name).LoadAsync(cancellationToken);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        throw new RepositoryException($"Retrieve failed; a lazy-loading error occurred retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                    }
+                }
+            }
+
+            return obj;
         }
 
         /// <summary>
