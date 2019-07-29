@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**July 29, 2019 - 8.0.1 Updated referenced NuGet packages for all projects**
+
+- Updated referenced NuGet packages for all projects.
+
 **July 26, 2019 - 8.0.0 Redesigned the repository layer to better manage bulk operations**
 
 - Enhanced the repository layer to support bulk operations on delete and update.
