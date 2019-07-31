@@ -465,26 +465,30 @@ namespace Tardigrade.Framework.EntityFramework
             try
             {
                 T obj = DbContext.Set<T>().Find(id);
-                DbEntityEntry<T> entity = DbContext.Entry(obj);
 
-                foreach (Expression<Func<T, object>> include in includes)
+                if (obj != null)
                 {
-                    try
-                    {
-                        entity.Reference(include).Load();
-                    }
-                    catch (ArgumentException)
-                    {
-                        MemberExpression expression = (MemberExpression)include.Body;
-                        string name = expression.Member.Name;
+                    DbEntityEntry<T> entity = DbContext.Entry(obj);
 
+                    foreach (Expression<Func<T, object>> include in includes)
+                    {
                         try
                         {
-                            entity.Collection(name).Load();
+                            entity.Reference(include).Load();
                         }
-                        catch (ArgumentException e)
+                        catch (ArgumentException)
                         {
-                            throw new RepositoryException($"Retrieve failed; a lazy-loading error occurred retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                            MemberExpression expression = (MemberExpression)include.Body;
+                            string name = expression.Member.Name;
+
+                            try
+                            {
+                                entity.Collection(name).Load();
+                            }
+                            catch (ArgumentException e)
+                            {
+                                throw new RepositoryException($"Retrieve failed; a lazy-loading error occurred retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                            }
                         }
                     }
                 }
@@ -493,7 +497,7 @@ namespace Tardigrade.Framework.EntityFramework
             }
             catch (InvalidOperationException e)
             {
-                throw new RepositoryException($"Retrieve failed; database connection error while retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                throw new RepositoryException($"Retrieve failed; database error while retrieving object of type {typeof(T).Name} with primary key {id}.", e);
             }
         }
 
@@ -526,32 +530,43 @@ namespace Tardigrade.Framework.EntityFramework
                 throw new ArgumentNullException(nameof(id));
             }
 
-            T obj = await DbContext.Set<T>().FindAsync(cancellationToken, id);
-            DbEntityEntry<T> entity = DbContext.Entry(obj);
-
-            foreach (Expression<Func<T, object>> include in includes)
+            try
             {
-                try
-                {
-                    await entity.Reference(include).LoadAsync(cancellationToken);
-                }
-                catch (ArgumentException)
-                {
-                    MemberExpression expression = (MemberExpression)include.Body;
-                    string name = expression.Member.Name;
+                T obj = await DbContext.Set<T>().FindAsync(cancellationToken, id);
 
-                    try
+                if (obj != null)
+                {
+                    DbEntityEntry<T> entity = DbContext.Entry(obj);
+
+                    foreach (Expression<Func<T, object>> include in includes)
                     {
-                        await entity.Collection(name).LoadAsync(cancellationToken);
-                    }
-                    catch (ArgumentException e)
-                    {
-                        throw new RepositoryException($"Retrieve failed; a lazy-loading error occurred retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                        try
+                        {
+                            await entity.Reference(include).LoadAsync(cancellationToken);
+                        }
+                        catch (ArgumentException)
+                        {
+                            MemberExpression expression = (MemberExpression)include.Body;
+                            string name = expression.Member.Name;
+
+                            try
+                            {
+                                await entity.Collection(name).LoadAsync(cancellationToken);
+                            }
+                            catch (ArgumentException e)
+                            {
+                                throw new RepositoryException($"Retrieve failed; a lazy-loading error occurred retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+                            }
+                        }
                     }
                 }
+
+                return obj;
             }
-
-            return obj;
+            catch (InvalidOperationException e)
+            {
+                throw new RepositoryException($"Retrieve failed; database error while retrieving object of type {typeof(T).Name} with primary key {id}.", e);
+            }
         }
 
         /// <summary>

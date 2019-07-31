@@ -57,44 +57,6 @@ namespace Tardigrade.Framework.EntityFramework.Extensions
         }
 
         /// <summary>
-        /// Delete an instance using their unique identifier.
-        /// </summary>
-        /// <param name="repository">Repository type being extended.</param>
-        /// <param name="id">Unique identifier for the instance.</param>
-        /// <param name="unitOfWork">Unit of Work used to define the transaction boundary.</param>
-        /// <exception cref="ArgumentException">The unitOfWork parameter is null or does not hold a database context.</exception>
-        /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
-        /// <exception cref="RepositoryException">Error deleting the object.</exception>
-        public static void Delete<T, PK>(
-#pragma warning disable IDE0060 // Remove unused parameter
-            this IRepository<T, PK> repository,
-#pragma warning restore IDE0060 // Remove unused parameter
-            PK id,
-            EntityFrameworkUnitOfWork unitOfWork) where T : class
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            if (unitOfWork?.DbContext == null)
-            {
-                throw new ArgumentException(nameof(unitOfWork));
-            }
-
-            try
-            {
-                T obj = unitOfWork.DbContext.Set<T>().Find(id);
-                unitOfWork.DbContext.Set<T>().Remove(obj);
-                unitOfWork.DbContext.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                throw new RepositoryException($"Error deleting an object of type {typeof(T).Name} with unique identifier of {id}.", e);
-            }
-        }
-
-        /// <summary>
         /// Delete an instance.
         /// </summary>
         /// <param name="repository">Repository type being extended.</param>
