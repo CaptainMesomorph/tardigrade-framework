@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**July 31, 2019 - 8.1.0 Resolved an argument null exception with the repository layer**
+
+- Resolved an issue with the repository layer when retrieving an object by identifier for an object that does not exist.
+
 **July 29, 2019 - 8.0.1 Updated referenced NuGet packages for all projects**
 
 - Updated referenced NuGet packages for all projects.
