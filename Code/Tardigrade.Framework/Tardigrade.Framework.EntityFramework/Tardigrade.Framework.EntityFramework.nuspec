@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Tardigrade.Framework.EntityFramework</id>
-    <version>7.1.0</version>
+    <version>7.1.1</version>
     <title>Tardigrade Framework Library (Entity Framework Integration)</title>
     <authors>Rafidzal Rafiq</authors>
     <owners>Rafidzal Rafiq</owners>
