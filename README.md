@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Aug 1, 2019 - 8.1.1 Resolved an issue with the NuGet pack of version 8.1.0**
+
+- Resolved an issue with the NuGet pack of version 8.1.0 whereby the DLL was being referenced from the Debug rather than Release directory (https://github.com/NuGet/Home/issues/7079).
+
 **July 31, 2019 - 8.1.0 Resolved an argument null exception with the repository layer**
 
 - Resolved an issue with the repository layer when retrieving an object by identifier for an object that does not exist.
