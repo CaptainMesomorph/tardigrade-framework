@@ -81,6 +81,7 @@ namespace Tardigrade.Framework.Services
         /// </summary>
         /// <param name="obj">Instance to delete.</param>
         /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
+        /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
         /// <exception cref="Exceptions.ServiceException">Error deleting the object.</exception>
         void Delete(T obj);
 

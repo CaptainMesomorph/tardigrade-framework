@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Aug 6, 2019 - 8.2.0 Created a custom role manager for ASP.NET Identity**
+
+- Created a custom role manager for ASP.NET and ASP.NET Core Identity.
+
 **Aug 1, 2019 - 8.1.1 Resolved an issue with the NuGet pack of version 8.1.0**
 
 - Resolved an issue with the NuGet pack of version 8.1.0 whereby the DLL was being referenced from the Debug rather than Release directory (https://github.com/NuGet/Home/issues/7079).
