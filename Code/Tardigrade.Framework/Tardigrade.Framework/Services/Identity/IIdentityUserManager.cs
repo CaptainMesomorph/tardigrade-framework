@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Tardigrade.Framework.Services.Identity
 {
@@ -7,7 +6,7 @@ namespace Tardigrade.Framework.Services.Identity
     /// Interface that defines operations associated with application users.
     /// </summary>
     /// <typeparam name="TUser">Type associated with the application user definition.</typeparam>
-    public interface IIdentityUserManager<TUser> : IDisposable
+    public interface IIdentityUserManager<TUser>
     {
         /// <summary>
         /// Add the password to the specified user only if the user does not already have a password.
@@ -43,7 +42,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// </summary>
         /// <param name="user">Application user to create.</param>
         /// <param name="password">Password for the application user.</param>
-        /// <returns>True if the application user is successfully created; false otherwise.</returns>
+        /// <returns>Application user created (including allocated unique identifier).</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or password is null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">Error creating the application user.</exception>
         Task<TUser> CreateAsync(TUser user, string password);
@@ -88,6 +87,15 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>True if the email address is verified; false otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         Task<bool> IsEmailConfirmedAsync(TUser user);
+
+        /// <summary>
+        /// Check whether the user is in the specified role.
+        /// </summary>
+        /// <param name="user">Application user to check.</param>
+        /// <param name="role">Role to check.</param>
+        /// <returns>True if the user is in the specified role; false otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null, and/or role is null or empty.</exception>
+        Task<bool> IsInRoleAsync(TUser user, string role);
 
         /// <summary>
         /// Check whether the specified user's telephone number has been confirmed.

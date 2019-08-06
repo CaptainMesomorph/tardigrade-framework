@@ -24,7 +24,8 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         /// Create an instance of this class.
         /// </summary>
         /// <param name="signInManager">Service for managing application user sign-in.</param>
-        /// <param name="userManager">Service for managing an application user.</param>
+        /// <param name="userManager">Service for managing application users.</param>
+        /// <exception cref="System.ArgumentNullException">signInManager and/or userManager is null.</exception>
         public IdentityUserManager(
             SignInManager<ApplicationUser, string> signInManager,
             UserManager<ApplicationUser> userManager)
@@ -189,6 +190,18 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             return await userManager.IsEmailConfirmedAsync(user.Id);
+        }
+
+        /// <summary>
+        /// <see cref="IIdentityUserManager{T}.IsInRoleAsync(T, string)"/>
+        /// </summary>
+        public async Task<bool> IsInRoleAsync(ApplicationUser user, string role)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(role)) throw new ArgumentNullException(nameof(role));
+
+            return await userManager.IsInRoleAsync(user.Id, role);
         }
 
         /// <summary>

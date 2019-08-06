@@ -192,6 +192,18 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IIdentityUserManager{T}.IsInRoleAsync(T, string)"/>
+        /// </summary>
+        public async Task<bool> IsInRoleAsync(ApplicationUser user, string role)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(role)) throw new ArgumentNullException(nameof(role));
+
+            return await userManager.IsInRoleAsync(user, role);
+        }
+
+        /// <summary>
         /// <see cref="IIdentityUserManager{T}.IsPhoneNumberConfirmedAsync(T)"/>
         /// </summary>
         public async Task<bool> IsPhoneNumberConfirmedAsync(ApplicationUser user)
