@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Aug 7, 2019 - 8.2.1 Resolved an issue with the NuGet pack of version 8.2.0**
+
+- Repacked (NuGet) the Tardigrade.Framework.AspNet project using the Debug configuration rather than the Release configuration as it is a .NET Framework project.
+
 **Aug 6, 2019 - 8.2.0 Created a custom role manager for ASP.NET Identity**
 
 - Created a custom role manager for ASP.NET and ASP.NET Core Identity.
