@@ -285,6 +285,8 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         /// <summary>
         /// <see cref="IIdentityUserManager{T}.SignInAsync(T, bool, string)"/>
         /// </summary>
+        /// <param name="user">Application user to sign-in.</param>
+        /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
         /// <param name="authenticationMethod">Not supported.</param>
         public async Task SignInAsync(
             ApplicationUser user,
