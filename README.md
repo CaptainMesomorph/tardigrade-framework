@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Dec 4, 2019 - 9.1.1 Updated .NET Standard projects to support .NET Framework 4.7.2**
+
+- Updated all .NET Standard projects to also support .NET Framework 4.7.2.
+
 **Dec 4, 2019 - 9.1.0 Updated .NET Standard and .NET Core versions for all projects**
 
 - Updated the .NET Standard and .NET Core versions used by all projects.
