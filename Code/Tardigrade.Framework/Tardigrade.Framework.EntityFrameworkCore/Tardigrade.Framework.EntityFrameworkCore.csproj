@@ -12,6 +12,7 @@
     <RepositoryUrl>https://github.com/CaptainMesomorph/tardigrade-framework</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
