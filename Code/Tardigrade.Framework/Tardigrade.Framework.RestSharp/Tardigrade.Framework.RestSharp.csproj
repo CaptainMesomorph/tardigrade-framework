@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Version>1.0.5</Version>
     <Authors>Rafidzal Rafiq</Authors>
     <Product>Tardigrade Framework Library (RestSharp Integration)</Product>
