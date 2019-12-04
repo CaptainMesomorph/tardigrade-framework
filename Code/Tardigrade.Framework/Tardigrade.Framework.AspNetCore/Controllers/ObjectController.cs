@@ -27,16 +27,19 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
     [Route("api/[controller]")]
     public abstract class ObjectController<T, PK> : ControllerBase where T : IHasUniqueIdentifier<PK>
     {
-        private readonly IObjectService<T, PK> service;
+        /// <summary>
+        /// Object service associated with the Controller.
+        /// </summary>
+        protected IObjectService<T, PK> Service { get; private set; }
 
         /// <summary>
         /// Create an instance of this API Controller.
         /// </summary>
         /// <param name="service">Service associated with the object type.</param>
         /// <exception cref="ArgumentNullException">service is null.</exception>
-        public ObjectController(IObjectService<T, PK> service)
+        protected ObjectController(IObjectService<T, PK> service)
         {
-            this.service = service ?? throw new ArgumentNullException(nameof(service));
+            Service = service ?? throw new ArgumentNullException(nameof(service));
         }
 
         /// <summary>
@@ -54,7 +57,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                T model = await service.RetrieveAsync(id);
+                T model = await Service.RetrieveAsync(id);
 
                 if (model == null)
                 {
@@ -62,7 +65,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
                 }
                 else
                 {
-                    await service.DeleteAsync(model);
+                    await Service.DeleteAsync(model);
                     result = Ok();
                 }
             }
@@ -113,7 +116,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                IEnumerable<T> models = await service.RetrieveAsync(pagingContext: pagingContext, sortCondition: sortCondition);
+                IEnumerable<T> models = await Service.RetrieveAsync(pagingContext: pagingContext, sortCondition: sortCondition);
 
                 if (models?.Count() == 0)
                 {
@@ -146,7 +149,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                T model = await service.RetrieveAsync(id);
+                T model = await Service.RetrieveAsync(id);
 
                 if (model == null)
                 {
@@ -184,7 +187,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                T createdObj = await service.CreateAsync(model);
+                T createdObj = await Service.CreateAsync(model);
                 result = CreatedAtAction(nameof(Get), new { id = createdObj.Id }, createdObj);
             }
             catch (ServiceException e)
@@ -208,7 +211,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
         /// </summary>
         /// <param name="id">Unique identifier of the object to update.</param>
         /// <param name="model">Object to update.</param>
-        /// <returns></returns>
+        /// <returns>Result of the update action.</returns>
         [HttpPut("{id}")]
         public virtual async Task<IActionResult> Put(PK id, T model)
         {
@@ -225,7 +228,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
 
             try
             {
-                await service.UpdateAsync(model);
+                await Service.UpdateAsync(model);
                 result = NoContent();
             }
             catch (NotFoundException)
