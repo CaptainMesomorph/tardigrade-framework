@@ -4,6 +4,11 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Dec 4, 2019 - 9.1.0 Updated .NET Standard and .NET Core versions for all projects**
+
+- Updated the .NET Standard and .NET Core versions used by all projects.
+- Created a ConfigurationManager helper class.
+
 **Aug 8, 2019 - 9.0.0 Converted the AspNet and EntityFramework projects to .NET Standard**
 
 - Converted the Tardigrade.Framework.AspNet and Tardigrade.Framework.EntityFramework projects from .NET Framework to .NET Standard to resolve ongoing issues with NuGet Pack.
