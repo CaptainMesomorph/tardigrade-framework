@@ -24,9 +24,9 @@ namespace Tardigrade.Framework.RestSharp
         public RestSharpClient(Uri endpoint)
         {
             RestClient = new RestClient(endpoint);
-            RestClient.AddHandler("application/json", NewtonsoftJsonDeserializer.Instance);
-            RestClient.AddHandler("text/json", NewtonsoftJsonDeserializer.Instance);
-            RestClient.AddHandler("*+json", NewtonsoftJsonDeserializer.Instance);
+            RestClient.AddHandler("application/json", () => NewtonsoftJsonDeserializer.Instance);
+            RestClient.AddHandler("text/json", () => NewtonsoftJsonDeserializer.Instance);
+            RestClient.AddHandler("*+json", () => NewtonsoftJsonDeserializer.Instance);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Tardigrade.Framework.RestSharp
         {
             if (payload == null)
             {
-                throw new ArgumentNullException("payload");
+                throw new ArgumentNullException(nameof(payload));
             }
 
             resource = (string.IsNullOrWhiteSpace(resource) ? null : resource.Trim());
@@ -117,7 +117,7 @@ namespace Tardigrade.Framework.RestSharp
         {
             if (payload == null)
             {
-                throw new ArgumentNullException("payload");
+                throw new ArgumentNullException(nameof(payload));
             }
 
             resource = (string.IsNullOrWhiteSpace(resource) ? null : resource.Trim());
@@ -142,7 +142,7 @@ namespace Tardigrade.Framework.RestSharp
         {
             if (obj == null)
             {
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
             }
 
             resource = (string.IsNullOrWhiteSpace(resource) ? null : resource.Trim());
