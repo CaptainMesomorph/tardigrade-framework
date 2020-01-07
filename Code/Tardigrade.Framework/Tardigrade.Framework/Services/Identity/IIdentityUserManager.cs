@@ -202,5 +202,15 @@ namespace Tardigrade.Framework.Services.Identity
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         /// <exception cref="Exceptions.IdentityException">User update failed due to an unknown reason.</exception>
         Task UpdateSecurityStampAsync(TUser user);
+
+        /// <summary>
+        /// Verify the specified two factor authentication token against the user.
+        /// </summary>
+        /// <param name="user">User the token applies to.</param>
+        /// <param name="tokenProvider">Provider which will verify the token.</param>
+        /// <param name="token">Token to verify.</param>
+        /// <returns>True if the token is valid; false otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null, or either tokenProvider or token is null or empty.</exception>
+        Task<bool> VerifyTwoFactorTokenAsync(TUser user, string tokenProvider, string token);
     }
 }
