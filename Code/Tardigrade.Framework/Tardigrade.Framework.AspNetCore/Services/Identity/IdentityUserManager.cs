@@ -379,5 +379,19 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
                 throw new IdentityException($"Update security stamp failed; unable to update security stamp for {user.UserName}.", errors);
             }
         }
+
+        /// <summary>
+        /// <see cref="IIdentityUserManager{T}.VerifyTwoFactorTokenAsync(T, string, string)"/>
+        /// </summary>
+        public async Task<bool> VerifyTwoFactorTokenAsync(ApplicationUser user, string tokenProvider, string token)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(tokenProvider)) throw new ArgumentNullException(nameof(tokenProvider));
+
+            if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
+
+            return await userManager.VerifyTwoFactorTokenAsync(user, tokenProvider, token);
+        }
     }
 }

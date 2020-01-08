@@ -4,6 +4,15 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Dec 8, 2020 - 10.0.0 Updated the targeted frameworks of all projects**
+
+- Updated all projects to support a greater number of targeted frameworks. Updated any NuGet packages that needed updating.
+- Added a method to the Identity User Manager for verifying two factor authentication tokens.
+- Reverted the AspNet and EntityFramework projects back to only supporting .NET Framework.
+- Removed redundant reference to the slf4net NuGet package in the AzureStorage project.
+- Updated deprecated RestSharp methods.
+- Updated copyright date on all projects.
+
 **Dec 4, 2019 - 9.1.1 Updated .NET Standard projects to support .NET Framework 4.7.2**
 
 - Updated all .NET Standard projects to also support .NET Framework 4.7.2.
