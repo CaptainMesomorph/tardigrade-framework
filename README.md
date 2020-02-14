@@ -4,7 +4,13 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
-**Dec 8, 2020 - 10.0.0 Updated the targeted frameworks of all projects**
+**Feb 14, 2020 - 10.1.0 Enhanced the Identity User Manager**
+
+- Added a RestSharp tests project.
+- Enhanced the Identity User Manager to allow verification of user tokens.
+- Updated NuGet packages and removed redundant NuGet packages.
+
+**Jan 8, 2020 - 10.0.0 Updated the targeted frameworks of all projects**
 
 - Updated all projects to support a greater number of targeted frameworks. Updated any NuGet packages that needed updating.
 - Added a method to the Identity User Manager for verifying two factor authentication tokens.
