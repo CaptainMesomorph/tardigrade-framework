@@ -393,5 +393,21 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             return await userManager.VerifyTwoFactorTokenAsync(user, tokenProvider, token);
         }
+
+        /// <summary>
+        /// <see cref="IIdentityUserManager{T}.VerifyUserTokenAsync(T, string, string, string)"/>
+        /// </summary>
+        public async Task<bool> VerifyUserTokenAsync(ApplicationUser user, string tokenProvider, string purpose, string token)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(tokenProvider)) throw new ArgumentNullException(nameof(tokenProvider));
+
+            if (string.IsNullOrWhiteSpace(purpose)) throw new ArgumentNullException(nameof(purpose));
+
+            if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
+
+            return await userManager.VerifyUserTokenAsync(user, tokenProvider, purpose, token);
+        }
     }
 }

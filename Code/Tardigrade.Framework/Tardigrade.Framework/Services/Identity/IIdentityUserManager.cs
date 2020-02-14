@@ -212,5 +212,15 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>True if the token is valid; false otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or either tokenProvider or token is null or empty.</exception>
         Task<bool> VerifyTwoFactorTokenAsync(TUser user, string tokenProvider, string token);
+
+        /// <summary>
+        /// Verify a user token with the specified purpose.
+        /// </summary>
+        /// <param name="user">User to validate the token against.</param>
+        /// <param name="tokenProvider">Provider used to generate the token.</param>
+        /// <param name="purpose">Purpose the token should be generated for.</param>
+        /// <param name="token">Token to validate.</param>
+        /// <returns>True if the token is valid; false otherwise.</returns>
+        Task<bool> VerifyUserTokenAsync(TUser user, string tokenProvider, string purpose, string token);
     }
 }

@@ -394,5 +394,23 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             return await userManager.VerifyTwoFactorTokenAsync(user.Id, tokenProvider, token);
         }
+
+        /// <summary>
+        /// <see cref="IIdentityUserManager{T}.VerifyUserTokenAsync(T, string, string, string)"/>
+        /// <param name="user">User to validate the token against.</param>
+        /// <param name="tokenProvider">Not used.</param>
+        /// <param name="purpose">Purpose the token should be generated for.</param>
+        /// <param name="token">Token to validate.</param>
+        /// </summary>
+        public async Task<bool> VerifyUserTokenAsync(ApplicationUser user, string tokenProvider, string purpose, string token)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            if (string.IsNullOrWhiteSpace(purpose)) throw new ArgumentNullException(nameof(purpose));
+
+            if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
+
+            return await userManager.VerifyUserTokenAsync(user.Id, purpose, token);
+        }
     }
 }
