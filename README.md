@@ -4,6 +4,13 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Mar 5, 2020 - 10.2.0 Created read-only repository interface**
+
+- Created a read-only repository interface and refactored the Azure Storage, Entity Framework and Entity Framework Core repository implementations accordingly.
+- Added an integration project for Audit.NET and included an audit decorator class.
+- Added an extension methhod for the Type class to determine whether a class implements or derives from another (including open and unbound generic types).
+- Updated NuGet packages.
+
 **Feb 14, 2020 - 10.1.0 Enhanced the Identity User Manager**
 
 - Added a RestSharp tests project.

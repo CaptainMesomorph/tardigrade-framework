@@ -20,7 +20,7 @@ namespace Tardigrade.Framework.Patterns.DependencyInjection
         /// <summary>
         /// Create an instance of this service container.
         /// </summary>
-        public MicrosoftServiceContainer()
+        protected MicrosoftServiceContainer()
         {
             Services = new ServiceCollection();
             ConfigureServices(Services);

@@ -9,6 +9,46 @@ namespace Tardigrade.Framework.Extensions
     public static class TypeExtension
     {
         /// <summary>
+        /// Determine whether a type implements or derives from another (including open and unbound generic types).
+        /// <a href="https://stackoverflow.com/questions/5461295/using-isassignablefrom-with-open-generic-types">Using IsAssignableFrom with 'open' generic types</a>
+        /// </summary>
+        /// <param name="type">Type to check.</param>
+        /// <param name="fromType">Implemented or derived type.</param>
+        /// <returns>True if the type implements or derives from the other; false otherwise.</returns>
+        public static bool ImplementsOrDerives(this Type type, Type fromType)
+        {
+            if (fromType is null)
+            {
+                return false;
+            }
+            else if (!fromType.IsGenericType)
+            {
+                return fromType.IsAssignableFrom(type);
+            }
+            else if (!fromType.IsGenericTypeDefinition)
+            {
+                return fromType.IsAssignableFrom(type);
+            }
+            else if (fromType.IsInterface)
+            {
+                foreach (Type interfaceType in type.GetInterfaces())
+                {
+                    if (interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == fromType)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == fromType)
+            {
+                return true;
+            }
+
+            return type.BaseType?.ImplementsOrDerives(fromType) ?? false;
+        }
+
+        /// <summary>
         /// Get the name of the type. If the type is generic, replace the generic arity (`) with the name of the
         /// generic type parameter using a more human readable format. This method will handle nested generic types.
         /// <![CDATA[For example, AuditEntry<string> would return AuditEntry<string> instead of AuditEntry`T.]]>
