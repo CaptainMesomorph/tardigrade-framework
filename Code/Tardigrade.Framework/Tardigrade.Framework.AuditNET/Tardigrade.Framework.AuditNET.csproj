@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;netcoreapp2.2</TargetFrameworks>
-    <Version>3.2.1</Version>
+    <TargetFrameworks>netstandard2.1;netstandard2.0;net472;net461</TargetFrameworks>
+    <Version>1.0.0</Version>
     <Authors>Rafidzal Rafiq</Authors>
-    <Product>Tardigrade Framework Library (ASP.NET Core Integration)</Product>
+    <Product>Tardigrade Framework Library (Audit.NET Integration)</Product>
     <Description>Software framework for supporting coding best practices.</Description>
     <Copyright>Copyright © 2020</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -16,11 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="3.1.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
-    <PackageReference Include="System.Security.Claims" Version="4.3.0" />
+    <PackageReference Include="Audit.NET" Version="15.0.4" />
   </ItemGroup>
 
   <ItemGroup>
