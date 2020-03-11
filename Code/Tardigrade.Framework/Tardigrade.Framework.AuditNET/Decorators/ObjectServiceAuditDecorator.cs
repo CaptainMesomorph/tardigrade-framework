@@ -94,7 +94,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         {
             IEnumerable<T> created = default(IEnumerable<T>);
 
-            using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}+:Create", () => created))
+            using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Create+", () => created))
             {
                 auditScope.Event.Target.Type = $"{objs.GetType()}";
                 created = decoratee.Create(objs);
@@ -131,7 +131,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}+:Create", () => created);
+                auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Create+", () => created);
                 auditScope.Event.Target.Type = $"{objs.GetType()}";
                 created = await decoratee.CreateAsync(objs, cancellationToken);
             }
@@ -264,7 +264,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             // Due to size constraints, only audit the number of objects retrieved rather than the objects themselves.
             AuditScopeOptions options = new AuditScopeOptions
             {
-                EventType = $"{typeof(T).Name}+:Retrieve",
+                EventType = $"{typeof(T).Name}:Retrieve+",
                 ExtraFields = new { Count = retrieved.Count() },
                 AuditEvent = new AuditEvent { Target = new AuditTarget() }
             };
@@ -313,7 +313,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             // Due to size constraints, only audit the number of objects retrieved rather than the objects themselves.
             AuditScopeOptions options = new AuditScopeOptions
             {
-                EventType = $"{typeof(T).Name}+:Retrieve",
+                EventType = $"{typeof(T).Name}:Retrieve+",
                 ExtraFields = new { Count = retrieved.Count() },
                 AuditEvent = new AuditEvent { Target = new AuditTarget() }
             };
