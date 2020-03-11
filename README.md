@@ -4,6 +4,11 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Mar 11, 2020 - 10.3.0 Minor change to the audit decorator**
+
+- Minor change to event types defined in the Audit.NET object service audit decorator.
+- Updated NuGet package version numbers that were missed in the last release, as well as references to them.
+
 **Mar 5, 2020 - 10.2.0 Created read-only repository interface**
 
 - Created a read-only repository interface and refactored the Azure Storage, Entity Framework and Entity Framework Core repository implementations accordingly.
