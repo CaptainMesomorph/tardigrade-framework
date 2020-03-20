@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Tardigrade.Framework.Exceptions
 {
@@ -8,6 +9,20 @@ namespace Tardigrade.Framework.Exceptions
     [Serializable]
     public class LockedOutException : BaseException
     {
+        /// <summary>
+        /// <see cref="BaseException()"/>
+        /// </summary>
+        protected LockedOutException() : base()
+        {
+        }
+
+        /// <summary>
+        /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
+        /// </summary>
+        protected LockedOutException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
         /// <summary>
         /// <see cref="BaseException(string)"/>
         /// </summary>

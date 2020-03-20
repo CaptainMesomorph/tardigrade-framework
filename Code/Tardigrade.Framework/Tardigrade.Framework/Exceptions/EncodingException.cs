@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Tardigrade.Framework.Exceptions
 {
@@ -8,6 +9,20 @@ namespace Tardigrade.Framework.Exceptions
     [Serializable]
     public class EncodingException : BaseException
     {
+        /// <summary>
+        /// <see cref="BaseException()"/>
+        /// </summary>
+        protected EncodingException() : base()
+        {
+        }
+
+        /// <summary>
+        /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
+        /// </summary>
+        protected EncodingException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
         /// <summary>
         /// <see cref="BaseException(string)"/>
         /// </summary>

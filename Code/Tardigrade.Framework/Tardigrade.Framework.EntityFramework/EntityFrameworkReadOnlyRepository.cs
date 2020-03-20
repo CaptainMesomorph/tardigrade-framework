@@ -27,7 +27,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// Create an instance of this class.
         /// </summary>
         /// <param name="dbContext">Database context used to define a Unit of Work.</param>
-        /// <exception cref="ArgumentNullException">dbContext is null.</exception>"
+        /// <exception cref="ArgumentNullException">dbContext is null.</exception>
         /// <exception cref="RepositoryException">Object type T is not recognised in the dbContext.</exception>
         public EntityFrameworkReadOnlyRepository(DbContext dbContext)
         {
@@ -67,7 +67,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// </summary>
         public virtual async Task<int> CountAsync(
             Expression<Func<T, bool>> filter = null,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// </summary>
         public virtual async Task<bool> ExistsAsync(
             PK id,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (id == null)
             {
@@ -123,24 +123,6 @@ namespace Tardigrade.Framework.EntityFramework
             T obj = await DbContext.Set<T>().FindAsync(id);
 
             return (obj != null);
-        }
-
-        /// <summary>
-        /// Generate a query to retrieve a set of objects.
-        /// NOTE: Not currently used. Awaiting changes to add an Id property to the model.
-        /// </summary>
-        /// <param name="includes">A list of related objects to include in the query results.</param>
-        /// <returns>Query to retrieve a set of objects.</returns>
-        private IQueryable<T> FindQuery(params Expression<Func<T, object>>[] includes)
-        {
-            IQueryable<T> query = DbContext.Set<T>();
-
-            foreach (Expression<Func<T, object>> include in includes.OrEmptyIfNull())
-            {
-                query = query.Include(include);
-            }
-
-            return query;
         }
 
         /// <summary>
@@ -216,7 +198,7 @@ namespace Tardigrade.Framework.EntityFramework
             Expression<Func<T, bool>> filter = null,
             PagingContext pagingContext = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             params Expression<Func<T, object>>[] includes)
         {
             return await RetrieveQuery(filter, pagingContext, sortCondition, includes).ToListAsync(cancellationToken);
@@ -230,7 +212,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// </summary>
         public virtual async Task<T> RetrieveAsync(
             PK id,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             params Expression<Func<T, object>>[] includes)
         {
             if (id == null)

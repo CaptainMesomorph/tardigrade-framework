@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.Entity
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.RestSharp.Tests", "Tardigrade.Framework.RestSharp.Tests\Tardigrade.Framework.RestSharp.Tests.csproj", "{392F6989-0050-440E-B090-9986807E0C50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.AuditNET", "Tardigrade.Framework.AuditNET\Tardigrade.Framework.AuditNET.csproj", "{23F7EDDF-02C1-48FA-9DFB-D709DD4A93A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AuditNET", "Tardigrade.Framework.AuditNET\Tardigrade.Framework.AuditNET.csproj", "{23F7EDDF-02C1-48FA-9DFB-D709DD4A93A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

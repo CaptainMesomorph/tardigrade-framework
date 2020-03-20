@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace Tardigrade.Framework.Exceptions
 {
     /// <summary>
     /// This class represents the base class for customised exceptions.
+    /// <a href="https://docs.microsoft.com/en-au/archive/blogs/agileer/the-correct-way-to-code-a-custom-exception-class">The CORRECT Way to Code a Custom Exception Class</a>
+    /// <a href="https://stackoverflow.com/questions/94488/what-is-the-correct-way-to-make-a-custom-net-exception-serializable">What is the correct way to make a custom .NET Exception serializable?</a>
     /// </summary>
     [Serializable]
     public abstract class BaseException : Exception
@@ -17,23 +20,7 @@ namespace Tardigrade.Framework.Exceptions
         /// <summary>
         /// <see cref="Exception()"/>
         /// </summary>
-        public BaseException() : base()
-        {
-            ExceptionReference = GenerateUniqueReference();
-        }
-
-        /// <summary>
-        /// <see cref="Exception(string)"/>
-        /// </summary>
-        public BaseException(string message) : base(message)
-        {
-            ExceptionReference = GenerateUniqueReference();
-        }
-
-        /// <summary>
-        /// <see cref="Exception(string, Exception)"/>
-        /// </summary>
-        public BaseException(string message, Exception innerException) : base(message, innerException)
+        protected BaseException() : base()
         {
             ExceptionReference = GenerateUniqueReference();
         }
@@ -42,6 +29,22 @@ namespace Tardigrade.Framework.Exceptions
         /// <see cref="Exception(SerializationInfo, StreamingContext)"/>
         /// </summary>
         protected BaseException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            ExceptionReference = info.GetString(nameof(ExceptionReference));
+        }
+
+        /// <summary>
+        /// <see cref="Exception(string)"/>
+        /// </summary>
+        protected BaseException(string message) : base(message)
+        {
+            ExceptionReference = GenerateUniqueReference();
+        }
+
+        /// <summary>
+        /// <see cref="Exception(string, Exception)"/>
+        /// </summary>
+        protected BaseException(string message, Exception innerException) : base(message, innerException)
         {
             ExceptionReference = GenerateUniqueReference();
         }
@@ -56,17 +59,20 @@ namespace Tardigrade.Framework.Exceptions
         }
 
         /// <summary>
-        /// This method will prefix the exception message with a unique reference.
+        /// <see cref="Exception.GetObjectData(SerializationInfo, StreamingContext)"/>
         /// </summary>
-        public override string Message
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            get
+
+            if (info == null)
             {
-                // Disable the exception reference until an appropriate framework for displaying exception messages in
-                // the UI is implemented.
-                //return $"[EXCEPTION_REF={ExceptionReference}] {base.Message}";
-                return base.Message;
+                throw new ArgumentNullException(nameof(info));
             }
+
+            info.AddValue(nameof(ExceptionReference), ExceptionReference);
+
+            base.GetObjectData(info, context);
         }
     }
 }
