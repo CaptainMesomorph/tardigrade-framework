@@ -4,36 +4,36 @@ using System.Runtime.Serialization;
 namespace Tardigrade.Framework.Exceptions
 {
     /// <summary>
-    /// This exception is associated with not found errors.
+    /// This exception is associated with message queue errors.
     /// </summary>
     [Serializable]
-    public class NotFoundException : BaseException
+    public class QueueException : BaseException
     {
         /// <summary>
         /// <see cref="BaseException()"/>
         /// </summary>
-        protected NotFoundException() : base()
+        protected QueueException() : base()
         {
         }
 
         /// <summary>
         /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
         /// </summary>
-        protected NotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected QueueException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
         /// <summary>
         /// <see cref="BaseException(string)"/>
         /// </summary>
-        public NotFoundException(string message) : base(message)
+        public QueueException(string message) : base(message)
         {
         }
 
         /// <summary>
         /// <see cref="BaseException(string, Exception)"/>
         /// </summary>
-        public NotFoundException(string message, Exception innerException) : base(message, innerException)
+        public QueueException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

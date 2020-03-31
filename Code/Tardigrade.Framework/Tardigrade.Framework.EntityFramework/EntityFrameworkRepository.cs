@@ -83,7 +83,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// </summary>
         public virtual async Task<T> CreateAsync(
             T obj,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             if (obj == null)
             {
@@ -228,7 +228,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// <see cref="IRepository{T, PK}.DeleteAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task DeleteAsync(T obj, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task DeleteAsync(T obj, CancellationToken cancellationToken = default)
         {
             if (obj == null)
             {
@@ -393,7 +393,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// <see cref="IRepository{T, PK}.UpdateAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task UpdateAsync(T obj, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task UpdateAsync(T obj, CancellationToken cancellationToken = default)
         {
             if (obj == null)
             {

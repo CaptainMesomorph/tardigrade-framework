@@ -4,6 +4,14 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Mar 20, 2020 - 10.4.0 Enhanced the auditing framework**
+
+- Added an Audit.NET Data Provider for Azure Storage Queues.
+- Enhanced the Audit.NET object service audit decorator to reference the currently logged in user and to ignore auditing errors.
+- Replaced use of the default operator with the default literal (introduced in C# 7.1).
+- Updated all custom exceptions to properly cater for serialisation.
+- Updated NuGet packages.
+
 **Mar 11, 2020 - 10.3.0 Minor change to the audit decorator**
 
 - Minor change to event types defined in the Audit.NET object service audit decorator.

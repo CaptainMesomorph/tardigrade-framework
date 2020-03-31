@@ -9,6 +9,7 @@ using Tardigrade.Framework.Models.Domain;
 using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
 using Tardigrade.Framework.Services;
+using Tardigrade.Framework.Services.Users;
 
 namespace Tardigrade.Framework.AuditNET.Decorators
 {
@@ -21,17 +22,24 @@ namespace Tardigrade.Framework.AuditNET.Decorators
     {
         private readonly IObjectService<T, PK> decoratee;
         private readonly IReadOnlyRepository<T, PK> readOnlyRepository;
+        private readonly IUserContext userContext;
 
         /// <summary>
         /// Create an instance of this Decorator.
         /// </summary>
         /// <param name="decoratee">Object service that is being decorated.</param>
         /// <param name="readOnlyRepository">Read-only repository for data retrieval.</param>
+        /// <param name="userContext">Contextual information on the current user.</param>
+        /// <exception cref="ArgumentNullException">A parameter is null.</exception>
         public ObjectServiceAuditDecorator(
-            IObjectService<T, PK> decoratee, IReadOnlyRepository<T, PK> readOnlyRepository)
+            IObjectService<T, PK> decoratee,
+            IReadOnlyRepository<T, PK> readOnlyRepository,
+            IUserContext userContext)
         {
-            this.decoratee = decoratee;
-            this.readOnlyRepository = readOnlyRepository;
+            this.decoratee = decoratee ?? throw new ArgumentNullException(nameof(decoratee));
+            this.readOnlyRepository =
+                readOnlyRepository ?? throw new ArgumentNullException(nameof(readOnlyRepository));
+            this.userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
         }
 
         /// <summary>
@@ -41,16 +49,24 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         {
             int count = decoratee.Count(filter);
 
-            AuditScopeOptions options = new AuditScopeOptions
+            try
             {
-                EventType = $"{typeof(T).Name}:Count",
-                ExtraFields = new { Count = count },
-                AuditEvent = new AuditEvent { Target = new AuditTarget() }
-            };
+                AuditScopeOptions options = new AuditScopeOptions
+                {
+                    EventType = $"{typeof(T).Name}:Count",
+                    ExtraFields = new { Count = count },
+                    AuditEvent = new AuditEvent { Target = new AuditTarget() }
+                };
 
-            using (AuditScope auditScope = AuditScope.Create(options))
+                using (AuditScope auditScope = AuditScope.Create(options))
+                {
+                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+                }
+            }
+            catch
             {
-                auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
 
             return count;
@@ -64,20 +80,24 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             CancellationToken cancellationToken = new CancellationToken())
         {
             int count = await decoratee.CountAsync(filter, cancellationToken);
-
-            AuditScopeOptions options = new AuditScopeOptions
-            {
-                EventType = $"{typeof(T).Name}:Count",
-                ExtraFields = new { Count = count },
-                AuditEvent = new AuditEvent { Target = new AuditTarget() }
-            };
-
             AuditScope auditScope = null;
 
             try
             {
+                AuditScopeOptions options = new AuditScopeOptions
+                {
+                    EventType = $"{typeof(T).Name}:Count",
+                    ExtraFields = new { Count = count },
+                    AuditEvent = new AuditEvent { Target = new AuditTarget() }
+                };
+
                 auditScope = await AuditScope.CreateAsync(options);
+                auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+            }
+            catch
+            {
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
             finally
             {
@@ -92,12 +112,37 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// </summary>
         public IEnumerable<T> Create(IEnumerable<T> objs)
         {
-            IEnumerable<T> created = default(IEnumerable<T>);
+            IEnumerable<T> created = default;
+            bool isDecorateeException = false;
 
-            using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Create+", () => created))
+            try
             {
-                auditScope.Event.Target.Type = $"{objs.GetType()}";
-                created = decoratee.Create(objs);
+                using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Create+", () => created))
+                {
+                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{objs.GetType()}";
+
+                    try
+                    {
+                        created = decoratee.Create(objs);
+                    }
+                    catch
+                    {
+                        isDecorateeException = true;
+                        throw;
+                    }
+                }
+            }
+            catch
+            {
+                if (isDecorateeException)
+                {
+                    throw;
+                }
+                else
+                {
+                    // TODO: Ignore and log the exception raised by the auditing framework.
+                }
             }
 
             return created;
@@ -108,12 +153,37 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// </summary>
         public T Create(T obj)
         {
-            T created = default(T);
+            T created = default;
+            bool isDecorateeException = false;
 
-            using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Create", () => created))
+            try
             {
-                auditScope.Event.Target.Type = $"{obj.GetType()}";
-                created = decoratee.Create(obj);
+                using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Create", () => created))
+                {
+                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{obj.GetType()}";
+
+                    try
+                    {
+                        created = decoratee.Create(obj);
+                    }
+                    catch
+                    {
+                        isDecorateeException = true;
+                        throw;
+                    }
+                }
+            }
+            catch
+            {
+                if (isDecorateeException)
+                {
+                    throw;
+                }
+                else
+                {
+                    // TODO: Ignore and log the exception raised by the auditing framework.
+                }
             }
 
             return created;
@@ -126,14 +196,36 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             IEnumerable<T> objs,
             CancellationToken cancellationToken = new CancellationToken())
         {
-            IEnumerable<T> created = default(IEnumerable<T>);
+            IEnumerable<T> created = default;
             AuditScope auditScope = null;
+            bool isDecorateeException = false;
 
             try
             {
                 auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Create+", () => created);
+                auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{objs.GetType()}";
-                created = await decoratee.CreateAsync(objs, cancellationToken);
+
+                try
+                {
+                    created = await decoratee.CreateAsync(objs, cancellationToken);
+                }
+                catch
+                {
+                    isDecorateeException = true;
+                    throw;
+                }
+            }
+            catch
+            {
+                if (isDecorateeException)
+                {
+                    throw;
+                }
+                else
+                {
+                    // TODO: Ignore and log the exception raised by the auditing framework.
+                }
             }
             finally
             {
@@ -148,14 +240,36 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// </summary>
         public async Task<T> CreateAsync(T obj, CancellationToken cancellationToken = new CancellationToken())
         {
-            T created = default(T);
+            T created = default;
             AuditScope auditScope = null;
+            bool isDecorateeException = false;
 
             try
             {
                 auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Create", () => created);
+                auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{obj.GetType()}";
-                created = await decoratee.CreateAsync(obj, cancellationToken);
+
+                try
+                {
+                    created = await decoratee.CreateAsync(obj, cancellationToken);
+                }
+                catch
+                {
+                    isDecorateeException = true;
+                    throw;
+                }
+            }
+            catch
+            {
+                if (isDecorateeException)
+                {
+                    throw;
+                }
+                else
+                {
+                    // TODO: Ignore and log the exception raised by the auditing framework.
+                }
             }
             finally
             {
@@ -172,10 +286,18 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         {
             decoratee.Delete(obj);
 
-            using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Delete", () => obj))
+            try
             {
-                auditScope.Event.Target.Type = $"{obj.GetType()}";
-                obj = default(T);
+                using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Delete", () => obj))
+                {
+                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{obj.GetType()}";
+                    obj = default;
+                }
+            }
+            catch
+            {
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
         }
 
@@ -190,8 +312,13 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             try
             {
                 auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Delete", () => obj);
+                auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{obj.GetType()}";
-                obj = default(T);
+                obj = default;
+            }
+            catch
+            {
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
             finally
             {
@@ -206,16 +333,24 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         {
             bool exists = decoratee.Exists(id);
 
-            AuditScopeOptions options = new AuditScopeOptions
+            try
             {
-                EventType = $"{typeof(T).Name}:Exists",
-                ExtraFields = new { Id = id, Exists = exists },
-                AuditEvent = new AuditEvent { Target = new AuditTarget() }
-            };
+                AuditScopeOptions options = new AuditScopeOptions
+                {
+                    EventType = $"{typeof(T).Name}:Exists",
+                    ExtraFields = new { Id = id, Exists = exists },
+                    AuditEvent = new AuditEvent { Target = new AuditTarget() }
+                };
 
-            using (AuditScope auditScope = AuditScope.Create(options))
+                using (AuditScope auditScope = AuditScope.Create(options))
+                {
+                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+                }
+            }
+            catch
             {
-                auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
 
             return exists;
@@ -227,20 +362,24 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         public async Task<bool> ExistsAsync(PK id, CancellationToken cancellationToken = new CancellationToken())
         {
             bool exists = await decoratee.ExistsAsync(id, cancellationToken);
-
-            AuditScopeOptions options = new AuditScopeOptions
-            {
-                EventType = $"{typeof(T).Name}:Exists",
-                ExtraFields = new { Id = id, Exists = exists },
-                AuditEvent = new AuditEvent { Target = new AuditTarget() }
-            };
-
             AuditScope auditScope = null;
 
             try
             {
+                AuditScopeOptions options = new AuditScopeOptions
+                {
+                    EventType = $"{typeof(T).Name}:Exists",
+                    ExtraFields = new { Id = id, Exists = exists },
+                    AuditEvent = new AuditEvent { Target = new AuditTarget() }
+                };
+
                 auditScope = await AuditScope.CreateAsync(options);
+                auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+            }
+            catch
+            {
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
             finally
             {
@@ -261,17 +400,25 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         {
             IEnumerable<T> retrieved = decoratee.Retrieve(filter, pagingContext, sortCondition, includes);
 
-            // Due to size constraints, only audit the number of objects retrieved rather than the objects themselves.
-            AuditScopeOptions options = new AuditScopeOptions
+            try
             {
-                EventType = $"{typeof(T).Name}:Retrieve+",
-                ExtraFields = new { Count = retrieved.Count() },
-                AuditEvent = new AuditEvent { Target = new AuditTarget() }
-            };
+                // Due to size constraints, only audit the number of objects retrieved rather than the objects themselves.
+                AuditScopeOptions options = new AuditScopeOptions
+                {
+                    EventType = $"{typeof(T).Name}:Retrieve+",
+                    ExtraFields = new { Count = retrieved.Count() },
+                    AuditEvent = new AuditEvent { Target = new AuditTarget() }
+                };
 
-            using (AuditScope auditScope = AuditScope.Create(options))
+                using (AuditScope auditScope = AuditScope.Create(options))
+                {
+                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+                }
+            }
+            catch
             {
-                auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
 
             return retrieved;
@@ -282,12 +429,37 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// </summary>
         public T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
         {
-            T retrieved = default(T);
+            T retrieved = default;
+            bool isDecorateeException = false;
 
-            using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Retrieve", () => retrieved))
+            try
             {
-                auditScope.Event.Target.Type = $"{typeof(T).FullName}";
-                retrieved = decoratee.Retrieve(id, includes);
+                using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Retrieve", () => retrieved))
+                {
+                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+
+                    try
+                    {
+                        retrieved = decoratee.Retrieve(id, includes);
+                    }
+                    catch
+                    {
+                        isDecorateeException = true;
+                        throw;
+                    }
+                }
+            }
+            catch
+            {
+                if (isDecorateeException)
+                {
+                    throw;
+                }
+                else
+                {
+                    // TODO: Ignore and log the exception raised by the auditing framework.
+                }
             }
 
             return retrieved;
@@ -309,21 +481,25 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 sortCondition,
                 cancellationToken,
                 includes);
-
-            // Due to size constraints, only audit the number of objects retrieved rather than the objects themselves.
-            AuditScopeOptions options = new AuditScopeOptions
-            {
-                EventType = $"{typeof(T).Name}:Retrieve+",
-                ExtraFields = new { Count = retrieved.Count() },
-                AuditEvent = new AuditEvent { Target = new AuditTarget() }
-            };
-
             AuditScope auditScope = null;
 
             try
             {
+                // Due to size constraints, only audit the number of objects retrieved rather than the objects themselves.
+                AuditScopeOptions options = new AuditScopeOptions
+                {
+                    EventType = $"{typeof(T).Name}:Retrieve+",
+                    ExtraFields = new { Count = retrieved.Count() },
+                    AuditEvent = new AuditEvent { Target = new AuditTarget() }
+                };
+
                 auditScope = await AuditScope.CreateAsync(options);
+                auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+            }
+            catch
+            {
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
             finally
             {
@@ -341,14 +517,36 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             CancellationToken cancellationToken = new CancellationToken(),
             params Expression<Func<T, object>>[] includes)
         {
-            T retrieved = default(T);
+            T retrieved = default;
             AuditScope auditScope = null;
+            bool isDecorateeException = false;
 
             try
             {
                 auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Retrieve", () => retrieved);
+                auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{typeof(T).FullName}";
-                retrieved = await decoratee.RetrieveAsync(id, cancellationToken, includes);
+
+                try
+                {
+                    retrieved = await decoratee.RetrieveAsync(id, cancellationToken, includes);
+                }
+                catch
+                {
+                    isDecorateeException = true;
+                    throw;
+                }
+            }
+            catch
+            {
+                if (isDecorateeException)
+                {
+                    throw;
+                }
+                else
+                {
+                    // TODO: Ignore and log the exception raised by the auditing framework.
+                }
             }
             finally
             {
@@ -364,12 +562,38 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         public void Update(T obj)
         {
             T original = readOnlyRepository.Retrieve(obj.Id);
+            bool isDecorateeException = false;
 
-            using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Update", () => original))
+            try
             {
-                auditScope.Event.Target.Type = $"{obj.GetType()}";
-                decoratee.Update(obj);
-                original = obj;
+                using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Update", () => original))
+                {
+                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{obj.GetType()}";
+
+                    try
+                    {
+                        decoratee.Update(obj);
+                    }
+                    catch
+                    {
+                        isDecorateeException = true;
+                        throw;
+                    }
+
+                    original = obj;
+                }
+            }
+            catch
+            {
+                if (isDecorateeException)
+                {
+                    throw;
+                }
+                else
+                {
+                    // TODO: Ignore and log the exception raised by the auditing framework.
+                }
             }
         }
 
@@ -379,12 +603,34 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         public async Task UpdateAsync(T obj, CancellationToken cancellationToken = new CancellationToken())
         {
             AuditScope auditScope = null;
+            bool isDecorateeException = false;
 
             try
             {
                 auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Update", () => obj);
+                auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{obj.GetType()}";
-                await decoratee.UpdateAsync(obj);
+
+                try
+                {
+                    await decoratee.UpdateAsync(obj);
+                }
+                catch
+                {
+                    isDecorateeException = true;
+                    throw;
+                }
+            }
+            catch
+            {
+                if (isDecorateeException)
+                {
+                    throw;
+                }
+                else
+                {
+                    // TODO: Ignore and log the exception raised by the auditing framework.
+                }
             }
             finally
             {
