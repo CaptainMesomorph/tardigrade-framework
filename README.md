@@ -4,6 +4,12 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**May 8, 2020 - 10.5.0 Created a project for QR Code processing**
+
+- Added a new project that implements a QR Code processor based upon ZXing.Net.
+- Migrated existing xUnit test projects from the Tardigrade Framework Solution to a new Solution. 
+- Updated NuGet packages.
+
 **Mar 20, 2020 - 10.4.0 Enhanced the auditing framework**
 
 - Added an Audit.NET Data Provider for Azure Storage Queues.

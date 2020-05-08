@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.RestSh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.SimpleInjector", "Tardigrade.Framework.SimpleInjector\Tardigrade.Framework.SimpleInjector.csproj", "{6029CF54-1C03-46EE-849B-A7369A41E0CB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AzureStorage.Tests", "Tardigrade.Framework.AzureStorage.Tests\Tardigrade.Framework.AzureStorage.Tests.csproj", "{00CD8B2D-6771-4712-B0BE-F7C0489B667B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AspNetCore", "Tardigrade.Framework.AspNetCore\Tardigrade.Framework.AspNetCore.csproj", "{62381965-6745-48A3-A1A5-238CB80EDD22}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.EntityFrameworkCore", "Tardigrade.Framework.EntityFrameworkCore\Tardigrade.Framework.EntityFrameworkCore.csproj", "{2D0EF768-6F21-42FD-9745-2F23705A3D7C}"
@@ -21,11 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AspNet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.EntityFramework", "Tardigrade.Framework.EntityFramework\Tardigrade.Framework.EntityFramework.csproj", "{43161900-684A-493A-90E4-0B46A4F9684F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.EntityFramework.Tests", "Tardigrade.Framework.EntityFramework.Tests\Tardigrade.Framework.EntityFramework.Tests.csproj", "{661A6ED5-C114-4AA5-BC3A-37A298C192B9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.RestSharp.Tests", "Tardigrade.Framework.RestSharp.Tests\Tardigrade.Framework.RestSharp.Tests.csproj", "{392F6989-0050-440E-B090-9986807E0C50}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AuditNET", "Tardigrade.Framework.AuditNET\Tardigrade.Framework.AuditNET.csproj", "{23F7EDDF-02C1-48FA-9DFB-D709DD4A93A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.ZXingNet", "Tardigrade.Framework.ZXingNet\Tardigrade.Framework.ZXingNet.csproj", "{947CB431-E5DE-40ED-AE94-153BF999AF45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +45,6 @@ Global
 		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6029CF54-1C03-46EE-849B-A7369A41E0CB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00CD8B2D-6771-4712-B0BE-F7C0489B667B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00CD8B2D-6771-4712-B0BE-F7C0489B667B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00CD8B2D-6771-4712-B0BE-F7C0489B667B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00CD8B2D-6771-4712-B0BE-F7C0489B667B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62381965-6745-48A3-A1A5-238CB80EDD22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62381965-6745-48A3-A1A5-238CB80EDD22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62381965-6745-48A3-A1A5-238CB80EDD22}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -69,18 +61,14 @@ Global
 		{43161900-684A-493A-90E4-0B46A4F9684F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43161900-684A-493A-90E4-0B46A4F9684F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43161900-684A-493A-90E4-0B46A4F9684F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{661A6ED5-C114-4AA5-BC3A-37A298C192B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{661A6ED5-C114-4AA5-BC3A-37A298C192B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{661A6ED5-C114-4AA5-BC3A-37A298C192B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{661A6ED5-C114-4AA5-BC3A-37A298C192B9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{392F6989-0050-440E-B090-9986807E0C50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{392F6989-0050-440E-B090-9986807E0C50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{392F6989-0050-440E-B090-9986807E0C50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{392F6989-0050-440E-B090-9986807E0C50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{23F7EDDF-02C1-48FA-9DFB-D709DD4A93A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{23F7EDDF-02C1-48FA-9DFB-D709DD4A93A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23F7EDDF-02C1-48FA-9DFB-D709DD4A93A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23F7EDDF-02C1-48FA-9DFB-D709DD4A93A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{947CB431-E5DE-40ED-AE94-153BF999AF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{947CB431-E5DE-40ED-AE94-153BF999AF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{947CB431-E5DE-40ED-AE94-153BF999AF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{947CB431-E5DE-40ED-AE94-153BF999AF45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

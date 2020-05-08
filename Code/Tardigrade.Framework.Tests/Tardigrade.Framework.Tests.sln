@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.Tests", "Tardigrade.Framework.Tests\Tardigrade.Framework.Tests.csproj", "{C864E58E-51D0-4A35-BF78-7607C674C876}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AzureStorage.Tests", "Tardigrade.Framework.AzureStorage.Tests\Tardigrade.Framework.AzureStorage.Tests.csproj", "{DCE4A790-4FE0-432F-8896-EDAC605B64F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.EntityFramework.Tests", "Tardigrade.Framework.EntityFramework.Tests\Tardigrade.Framework.EntityFramework.Tests.csproj", "{2BB63FEC-26E1-4744-AEBA-16E51D3D0028}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.RestSharp.Tests", "Tardigrade.Framework.RestSharp.Tests\Tardigrade.Framework.RestSharp.Tests.csproj", "{570C73D2-1A71-4A8C-AE9D-6724FE5ED189}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.ZXingNet.Tests", "Tardigrade.Framework.ZXingNet.Tests\Tardigrade.Framework.ZXingNet.Tests.csproj", "{258ED01D-C416-4304-AFBB-712D7B12CA4D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C864E58E-51D0-4A35-BF78-7607C674C876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C864E58E-51D0-4A35-BF78-7607C674C876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C864E58E-51D0-4A35-BF78-7607C674C876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C864E58E-51D0-4A35-BF78-7607C674C876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCE4A790-4FE0-432F-8896-EDAC605B64F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCE4A790-4FE0-432F-8896-EDAC605B64F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCE4A790-4FE0-432F-8896-EDAC605B64F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCE4A790-4FE0-432F-8896-EDAC605B64F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BB63FEC-26E1-4744-AEBA-16E51D3D0028}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BB63FEC-26E1-4744-AEBA-16E51D3D0028}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BB63FEC-26E1-4744-AEBA-16E51D3D0028}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BB63FEC-26E1-4744-AEBA-16E51D3D0028}.Release|Any CPU.Build.0 = Release|Any CPU
+		{570C73D2-1A71-4A8C-AE9D-6724FE5ED189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{570C73D2-1A71-4A8C-AE9D-6724FE5ED189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{570C73D2-1A71-4A8C-AE9D-6724FE5ED189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{570C73D2-1A71-4A8C-AE9D-6724FE5ED189}.Release|Any CPU.Build.0 = Release|Any CPU
+		{258ED01D-C416-4304-AFBB-712D7B12CA4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{258ED01D-C416-4304-AFBB-712D7B12CA4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{258ED01D-C416-4304-AFBB-712D7B12CA4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{258ED01D-C416-4304-AFBB-712D7B12CA4D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D74880C8-4BB2-4EBA-9180-A55D658D2020}
+	EndGlobalSection
+EndGlobal
