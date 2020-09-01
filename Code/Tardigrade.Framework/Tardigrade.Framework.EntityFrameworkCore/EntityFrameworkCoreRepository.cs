@@ -40,13 +40,6 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (!item.Id.Equals(default))
-            {
-                throw new ArgumentNullException(
-                    nameof(item),
-                    "Create failed; Object primary keys which equal their data type default value are not supported.");
-            }
-
             if (item.Id != null && Exists(item.Id))
             {
                 throw new AlreadyExistsException(
@@ -80,13 +73,6 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             if (item == null)
             {
                 throw new ArgumentNullException(nameof(item));
-            }
-
-            if (!item.Id.Equals(default))
-            {
-                throw new ArgumentNullException(
-                    nameof(item),
-                    "Create failed; Object primary keys which equal their data type default value are not supported.");
             }
 
             if (item.Id != null && (await ExistsAsync(item.Id, cancellationToken)))
