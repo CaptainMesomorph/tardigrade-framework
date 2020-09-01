@@ -7,11 +7,11 @@ using Xunit;
 
 namespace Tardigrade.Framework.AzureStorage.Tests
 {
-    public class StorageTableRepository_Test : IClassFixture<ServiceProviderFixture>
+    public class StorageTableRepositoryTest : IClassFixture<ServiceProviderFixture>
     {
         private readonly IServiceContainer container;
 
-        public StorageTableRepository_Test(ServiceProviderFixture fixture)
+        public StorageTableRepositoryTest(ServiceProviderFixture fixture)
         {
             container = fixture.Container;
         }
@@ -23,7 +23,7 @@ namespace Tardigrade.Framework.AzureStorage.Tests
             // Arrange.
             IRepository<FakeTableEntity, FakeTableKey> repository =
                 new StorageTableRepository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName);
-            FakeTableEntity entity = new FakeTableEntity() { PartitionKey = "Mock", RowKey = Guid.NewGuid().ToString() };
+            var entity = new FakeTableEntity() { PartitionKey = "Mock", RowKey = Guid.NewGuid().ToString() };
 
             // Act.
             FakeTableEntity createdEntity = repository.Create(entity);
@@ -36,8 +36,8 @@ namespace Tardigrade.Framework.AzureStorage.Tests
         public void Constructor_Instantiate_Success()
         {
             // Arrange.
-            IRepository<FakeTableEntity, FakeTableKey> repository = container.GetService<IRepository<FakeTableEntity, FakeTableKey>>();
-            FakeTableEntity entity = new FakeTableEntity() { PartitionKey = "Mock", RowKey = Guid.NewGuid().ToString() };
+            var repository = container.GetService<IRepository<FakeTableEntity, FakeTableKey>>();
+            var entity = new FakeTableEntity() { PartitionKey = "Mock", RowKey = Guid.NewGuid().ToString() };
 
             // Act.
             FakeTableEntity createdEntity = repository.Create(entity);
@@ -55,11 +55,9 @@ namespace Tardigrade.Framework.AzureStorage.Tests
         public void Constructor_InvalidConnectionString_FormatException(string storageConnectionString, string tableName)
         {
             // Arrange.
-            IRepository<FakeTableEntity, FakeTableKey> repository;
 
             // Act.
-            Action actual = (() => repository =
-                new StorageTableRepository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName));
+            Action actual = (() => _ = new StorageTableRepository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName));
 
             // Assert.
             Assert.Throws<FormatException>(actual);
@@ -74,11 +72,9 @@ namespace Tardigrade.Framework.AzureStorage.Tests
         public void Constructor_NullOrEmptyParameters_ArgumentNullException(string storageConnectionString, string tableName)
         {
             // Arrange.
-            IRepository<FakeTableEntity, FakeTableKey> repository;
 
             // Act.
-            Action actual = (() => repository =
-                new StorageTableRepository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName));
+            Action actual = (() => _ = new StorageTableRepository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName));
 
             // Assert.
             Assert.Throws<ArgumentNullException>(actual);
@@ -88,13 +84,12 @@ namespace Tardigrade.Framework.AzureStorage.Tests
         public void Create_ExistingObject_AlreadyExistsException()
         {
             // Arrange.
-            IRepository<FakeTableEntity, FakeTableKey> repository = container.GetService<IRepository<FakeTableEntity, FakeTableKey>>();
-            FakeTableEntity entity = new FakeTableEntity() { PartitionKey = "Mock", RowKey = Guid.NewGuid().ToString() };
-            FakeTableEntity originalEntity = repository.Create(entity);
-            FakeTableEntity duplicatedEntity;
+            var repository = container.GetService<IRepository<FakeTableEntity, FakeTableKey>>();
+            var entity = new FakeTableEntity() { PartitionKey = "Mock", RowKey = Guid.NewGuid().ToString() };
+            repository.Create(entity);
 
             // Act.
-            Action actual = (() => duplicatedEntity = repository.Create(entity));
+            Action actual = (() => repository.Create(entity));
 
             // Assert.
             Assert.Throws<AlreadyExistsException>(actual);

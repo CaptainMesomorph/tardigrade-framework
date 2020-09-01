@@ -5,7 +5,7 @@ using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.AzureStorage.Tests
 {
-    internal class UnitTestServiceContainer : MicrosoftServiceContainer, IServiceContainer
+    internal class UnitTestServiceContainer : MicrosoftServiceContainer
     {
         public override void ConfigureServices(IServiceCollection services)
         {

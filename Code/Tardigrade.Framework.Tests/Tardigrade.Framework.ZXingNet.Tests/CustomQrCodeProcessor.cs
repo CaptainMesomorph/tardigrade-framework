@@ -4,7 +4,7 @@ namespace Tardigrade.Framework.ZXingNet.Tests
 {
     internal class CustomQrCodeProcessor : QrCodeProcessor
     {
-        public CustomQrCodeProcessor() : base()
+        public CustomQrCodeProcessor()
         {
             Writer.Options.Height = 250;
             Writer.Options.Width = 250;

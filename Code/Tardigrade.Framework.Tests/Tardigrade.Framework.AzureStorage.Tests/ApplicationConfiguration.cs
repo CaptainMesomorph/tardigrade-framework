@@ -19,7 +19,7 @@ namespace Tardigrade.Framework.AzureStorage.Tests
         {
             config = new ConfigurationBuilder()
                 .SetBasePath(basePath ?? Directory.GetCurrentDirectory())
-                .AddJsonFile(jsonFile, optional: true, reloadOnChange: true)
+                .AddJsonFile(jsonFile, true, true)
                 .AddEnvironmentVariables()
                 .Build();
         }
