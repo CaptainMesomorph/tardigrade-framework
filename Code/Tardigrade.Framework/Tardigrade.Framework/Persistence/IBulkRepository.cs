@@ -15,58 +15,56 @@ namespace Tardigrade.Framework.Persistence
         /// <summary>
         /// Create multiple instances of the object type.
         /// </summary>
-        /// <param name="objs">Instances to create.</param>
+        /// <param name="items">Instances to create.</param>
         /// <returns>Instances created (including allocated unique identifiers).</returns>
-        /// <exception cref="ArgumentNullException">The objs parameter is null or empty.</exception>
+        /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
-        IEnumerable<T> CreateBulk(IEnumerable<T> objs);
+        IEnumerable<T> CreateBulk(IEnumerable<T> items);
 
         /// <summary>
         /// Create multiple instances of the object type.
         /// </summary>
-        /// <param name="objs">Instances to create.</param>
+        /// <param name="items">Instances to create.</param>
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
         /// <returns>Instances created (including allocated unique identifiers).</returns>
-        /// <exception cref="ArgumentNullException">The objs parameter is null or empty.</exception>
+        /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
-        Task<IEnumerable<T>> CreateBulkAsync(
-            IEnumerable<T> objs,
-            CancellationToken cancellationToken = default(CancellationToken));
+        Task<IEnumerable<T>> CreateBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete multiple instances.
         /// </summary>
-        /// <param name="objs">Instances to delete.</param>
-        /// <exception cref="ArgumentNullException">The objs parameter is null or empty.</exception>
+        /// <param name="items">Instances to delete.</param>
+        /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the objects.</exception>
-        void DeleteBulk(IEnumerable<T> objs);
+        void DeleteBulk(IEnumerable<T> items);
 
         /// <summary>
         /// Delete multiple instances.
         /// </summary>
-        /// <param name="objs">Instances to delete.</param>
+        /// <param name="items">Instances to delete.</param>
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">The objs parameter is null or empty.</exception>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
+        /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the objects.</exception>
-        Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default(CancellationToken));
+        Task DeleteBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update multiple instances.
         /// </summary>
-        /// <param name="objs">Instances to update.</param>
-        /// <exception cref="ArgumentNullException">The objs parameter is null or empty.</exception>
+        /// <param name="items">Instances to update.</param>
+        /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the objects.</exception>
-        void UpdateBulk(IEnumerable<T> objs);
+        void UpdateBulk(IEnumerable<T> items);
 
         /// <summary>
         /// Update multiple instances.
         /// </summary>
-        /// <param name="objs">Instances to update.</param>
+        /// <param name="items">Instances to update.</param>
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
-        /// <exception cref="ArgumentNullException">The objs parameter is null or empty.</exception>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
+        /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the objects.</exception>
-        Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default(CancellationToken));
+        Task UpdateBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default);
     }
 }

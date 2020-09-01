@@ -10,9 +10,9 @@ namespace Tardigrade.Framework.Helpers
     /// </summary>
     public static class ConfigurationManagerHelper
     {
-        private const string pattern = @"\$\{([\w\.\-_]+)\}";
+        private const string Pattern = @"\$\{([\w\.\-_]+)\}";
 
-        private static readonly Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+        private static readonly Regex Regex = new Regex(Pattern, RegexOptions.IgnoreCase);
 
         /// <summary>
         /// If the application setting exists, return the value associated with it. If it does not exist, then the
@@ -23,7 +23,7 @@ namespace Tardigrade.Framework.Helpers
         ///     <add key="Referenced.Setting" value="World"/>
         ///     <add key="Print.Statement" value="Hello ${Referenced.Setting}"/>
         /// ]]>
-        /// In this case, getting the "Print.Statement" applicaton setting will return the value "Hello World".
+        /// In this case, getting the "Print.Statement" application setting will return the value "Hello World".
         /// </summary>
         /// <param name="name">Name of the application setting.</param>
         /// <param name="defaultValue">Default value returned in case the application setting does not exist.</param>
@@ -45,7 +45,7 @@ namespace Tardigrade.Framework.Helpers
             }
             else
             {
-                foreach (Match match in regex.Matches(value))
+                foreach (Match match in Regex.Matches(value))
                 {
                     string referencedName = match.Groups[1].Value;
                     string referencedValue = GetStringSetting(referencedName);
@@ -55,7 +55,7 @@ namespace Tardigrade.Framework.Helpers
                         throw new NotFoundException($"Referenced application setting {referencedName.Trim()} does not exist.");
                     }
 
-                    value = regex.Replace(value, referencedValue, 1);
+                    value = Regex.Replace(value, referencedValue, 1);
                 }
             }
 

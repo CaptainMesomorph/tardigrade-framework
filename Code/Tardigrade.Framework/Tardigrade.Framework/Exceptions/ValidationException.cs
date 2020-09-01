@@ -12,7 +12,7 @@ namespace Tardigrade.Framework.Exceptions
         /// <summary>
         /// <see cref="BaseException()"/>
         /// </summary>
-        protected ValidationException() : base()
+        protected ValidationException()
         {
         }
 

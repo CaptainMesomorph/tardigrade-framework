@@ -7,7 +7,7 @@
     public interface IHasUniqueIdentifier<PK>
     {
         /// <summary>
-        /// Unique identififer.
+        /// Unique identifier.
         /// </summary>
         PK Id { get; set; }
     }

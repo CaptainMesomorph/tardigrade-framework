@@ -20,7 +20,7 @@ namespace Tardigrade.Framework.Exceptions
         /// <summary>
         /// <see cref="Exception()"/>
         /// </summary>
-        protected BaseException() : base()
+        protected BaseException()
         {
             ExceptionReference = GenerateUniqueReference();
         }
@@ -64,7 +64,6 @@ namespace Tardigrade.Framework.Exceptions
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-
             if (info == null)
             {
                 throw new ArgumentNullException(nameof(info));

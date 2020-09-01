@@ -21,7 +21,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// Database context.
         /// </summary>
-        protected DbContext DbContext { get; private set; }
+        protected DbContext DbContext { get; }
 
         /// <summary>
         /// Create an instance of this class.
@@ -120,7 +120,7 @@ namespace Tardigrade.Framework.EntityFramework
                 throw new ArgumentNullException(nameof(id));
             }
 
-            T obj = await DbContext.Set<T>().FindAsync(id);
+            T obj = await DbContext.Set<T>().FindAsync(cancellationToken, id);
 
             return (obj != null);
         }
@@ -282,7 +282,6 @@ namespace Tardigrade.Framework.EntityFramework
                     $"{nameof(sortCondition)} is required if {nameof(pagingContext)} is provided.");
             }
 
-            IList<T> objs = new List<T>();
             IQueryable<T> query = DbContext.Set<T>();
 
             if (filter != null)

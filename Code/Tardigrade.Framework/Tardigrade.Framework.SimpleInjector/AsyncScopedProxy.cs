@@ -37,7 +37,7 @@ namespace Tardigrade.Framework.SimpleInjector
                 // Create the decorateeFactory within the scope.
                 ICommandHandler<TCommand> handler = decorateeFactory.Invoke();
                 handler.Handle(command);
-            };
+            }
         }
     }
 }

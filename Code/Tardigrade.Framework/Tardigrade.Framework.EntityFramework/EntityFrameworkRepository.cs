@@ -14,9 +14,9 @@ using Tardigrade.Framework.Persistence;
 namespace Tardigrade.Framework.EntityFramework
 {
     /// <summary>
-    /// <see cref="IRepository{T, PK}"/>
+    /// <see cref="IRepository{T, Pk}"/>
     /// </summary>
-    public class EntityFrameworkRepository<T, PK> : EntityFrameworkReadOnlyRepository<T, PK>, IRepository<T, PK>
+    public class EntityFrameworkRepository<T, Pk> : EntityFrameworkReadOnlyRepository<T, Pk>, IRepository<T, Pk>
         where T : class
     {
         /// <summary>
@@ -30,18 +30,18 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Create(T)"/>
+        /// <see cref="IRepository{T, Pk}.Create(T)"/>
         /// </summary>
-        public virtual T Create(T obj)
+        public virtual T Create(T item)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
             try
             {
-                if (Exists(obj))
+                if (Exists(item))
                 {
                     throw new AlreadyExistsException(
                         $"Create failed; object of type {typeof(T).Name} with the same primary key already exists.");
@@ -53,7 +53,7 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Create failed; object type {typeof(T).Name} does not have a recognised primary key.", e);
             }
 
-            DbContext.Set<T>().Add(obj);
+            DbContext.Set<T>().Add(item);
 
             try
             {
@@ -66,7 +66,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
             catch (Exception e) when (
                 e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
                 e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
@@ -75,24 +74,22 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Create failed; database error while creating object of type {typeof(T).Name}.", e);
             }
 
-            return obj;
+            return item;
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.CreateAsync(T, CancellationToken)"/>
+        /// <see cref="IRepository{T, Pk}.CreateAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task<T> CreateAsync(
-            T obj,
-            CancellationToken cancellationToken = default)
+        public virtual async Task<T> CreateAsync(T item, CancellationToken cancellationToken = default)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
             try
             {
-                if (Exists(obj))
+                if (Exists(item))
                 {
                     throw new AlreadyExistsException(
                         $"Create failed; object of type {typeof(T).Name} with the same primary key already exists.");
@@ -104,7 +101,7 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Create failed; object type {typeof(T).Name} does not have a recognised primary key.", e);
             }
 
-            DbContext.Set<T>().Add(obj);
+            DbContext.Set<T>().Add(item);
 
             try
             {
@@ -116,20 +113,20 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Create failed; database connection error while creating object of type {typeof(T).Name}.", e);
             }
 
-            return obj;
+            return item;
         }
 
         /// <summary>
         /// <see cref="IBulkRepository{T}.CreateBulk(IEnumerable{T})"/>
         /// </summary>
-        public virtual IEnumerable<T> CreateBulk(IEnumerable<T> objs)
+        public virtual IEnumerable<T> CreateBulk(IEnumerable<T> items)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            DbContext.Set<T>().AddRange(objs);
+            DbContext.Set<T>().AddRange(items);
 
             try
             {
@@ -137,7 +134,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
             catch (Exception e) when (
                 e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
                 e is DbEntityValidationException ||
                 e is NotSupportedException ||
                 e is ObjectDisposedException ||
@@ -147,22 +143,22 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Create failed; database error while creating objects of type {typeof(T).Name}.", e);
             }
 
-            return objs;
+            return items;
         }
 
         /// <summary>
         /// <see cref="IBulkRepository{T}.CreateBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<IEnumerable<T>> CreateBulkAsync(
-            IEnumerable<T> objs,
+            IEnumerable<T> items,
             CancellationToken cancellationToken = default)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            DbContext.Set<T>().AddRange(objs);
+            DbContext.Set<T>().AddRange(items);
 
             try
             {
@@ -174,22 +170,22 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Create failed; database connection error while creating objects of type {typeof(T).Name}.", e);
             }
 
-            return objs;
+            return items;
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(T)"/>
+        /// <see cref="IRepository{T, Pk}.Delete(T)"/>
         /// </summary>
-        public virtual void Delete(T obj)
+        public virtual void Delete(T item)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
             try
             {
-                if (!Exists(obj))
+                if (!Exists(item))
                 {
                     throw new NotFoundException(
                         $"Delete failed; unable to find specified object of type {typeof(T).Name}.");
@@ -201,12 +197,12 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Delete failed; object type {typeof(T).Name} does not have a recognised primary key.", e);
             }
 
-            if (DbContext.Entry(obj).State == EntityState.Detached)
+            if (DbContext.Entry(item).State == EntityState.Detached)
             {
-                DbContext.Set<T>().Attach(obj);
+                DbContext.Set<T>().Attach(item);
             }
 
-            DbContext.Set<T>().Remove(obj);
+            DbContext.Set<T>().Remove(item);
 
             try
             {
@@ -214,7 +210,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
             catch (Exception e) when (
                 e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
                 e is DbEntityValidationException ||
                 e is NotSupportedException ||
                 e is ObjectDisposedException ||
@@ -226,18 +221,18 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.DeleteAsync(T, CancellationToken)"/>
+        /// <see cref="IRepository{T, Pk}.DeleteAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task DeleteAsync(T obj, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(T item, CancellationToken cancellationToken = default)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
             try
             {
-                if (!Exists(obj))
+                if (!Exists(item))
                 {
                     throw new NotFoundException(
                         $"Delete failed; unable to find specified object of type {typeof(T).Name}.");
@@ -249,12 +244,12 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Delete failed; object type {typeof(T).Name} does not have a recognised primary key.", e);
             }
 
-            if (DbContext.Entry(obj).State == EntityState.Detached)
+            if (DbContext.Entry(item).State == EntityState.Detached)
             {
-                DbContext.Set<T>().Attach(obj);
+                DbContext.Set<T>().Attach(item);
             }
 
-            DbContext.Set<T>().Remove(obj);
+            DbContext.Set<T>().Remove(item);
 
             try
             {
@@ -270,14 +265,14 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// <see cref="IBulkRepository{T}.DeleteBulk(IEnumerable{T})"/>
         /// </summary>
-        public virtual void DeleteBulk(IEnumerable<T> objs)
+        public virtual void DeleteBulk(IEnumerable<T> items)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            DbContext.Set<T>().RemoveRange(objs);
+            DbContext.Set<T>().RemoveRange(items);
 
             try
             {
@@ -285,7 +280,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
             catch (Exception e) when (
                 e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
                 e is DbEntityValidationException ||
                 e is NotSupportedException ||
                 e is ObjectDisposedException ||
@@ -299,14 +293,14 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// <see cref="IBulkRepository{T}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
-        public virtual async Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            DbContext.Set<T>().RemoveRange(objs);
+            DbContext.Set<T>().RemoveRange(items);
 
             try
             {
@@ -323,14 +317,14 @@ namespace Tardigrade.Framework.EntityFramework
         /// Check for existence of an instance.
         /// <a href="https://stackoverflow.com/questions/6018711/generic-way-to-check-if-entity-exists-in-entity-framework">Generic Way to Check If Entity Exists In Entity Framework?</a>
         /// </summary>
-        /// <param name="obj">Instance to check for existence. Assumed to be not null.</param>
+        /// <param name="item">Instance to check for existence. Assumed to be not null.</param>
         /// <returns>True if the instance exists; false otherwise.</returns>
         /// <exception cref="InvalidOperationException">When the entity key cannot be constructed successfully for the existence check.</exception>
-        private bool Exists(T obj)
+        private bool Exists(T item)
         {
             ObjectContext objectContext = ((IObjectContextAdapter)DbContext).ObjectContext;
             ObjectSet<T> objectSet = objectContext.CreateObjectSet<T>();
-            EntityKey entityKey = objectContext.CreateEntityKey(objectSet.EntitySet.Name, obj);
+            EntityKey entityKey = objectContext.CreateEntityKey(objectSet.EntitySet.Name, item);
             bool exists = objectContext.TryGetObjectByKey(entityKey, out object foundEntity);
 
             // TryGetObjectByKey attaches a found entity. Detach it here to prevent side-effects.
@@ -343,18 +337,18 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Update(T)"/>
+        /// <see cref="IRepository{T, Pk}.Update(T)"/>
         /// </summary>
-        public virtual void Update(T obj)
+        public virtual void Update(T item)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
             try
             {
-                if (!Exists(obj))
+                if (!Exists(item))
                 {
                     throw new NotFoundException(
                         $"Update failed; unable to find specified object of type {typeof(T).Name}.");
@@ -366,8 +360,8 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Update failed; object type {typeof(T).Name} does not have a recognised primary key.", e);
             }
 
-            DbContext.Set<T>().Attach(obj);
-            DbContext.Entry(obj).State = EntityState.Modified;
+            DbContext.Set<T>().Attach(item);
+            DbContext.Entry(item).State = EntityState.Modified;
 
             try
             {
@@ -380,7 +374,6 @@ namespace Tardigrade.Framework.EntityFramework
             }
             catch (Exception e) when (
                 e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
                 e is NotSupportedException ||
                 e is ObjectDisposedException ||
                 e is InvalidOperationException)
@@ -391,18 +384,18 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.UpdateAsync(T, CancellationToken)"/>
+        /// <see cref="IRepository{T, Pk}.UpdateAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task UpdateAsync(T obj, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateAsync(T item, CancellationToken cancellationToken = default)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
             try
             {
-                if (!Exists(obj))
+                if (!Exists(item))
                 {
                     throw new NotFoundException(
                         $"Update failed; unable to find specified object of type {typeof(T).Name}.");
@@ -414,8 +407,8 @@ namespace Tardigrade.Framework.EntityFramework
                     $"Update failed; object type {typeof(T).Name} does not have a recognised primary key.", e);
             }
 
-            DbContext.Set<T>().Attach(obj);
-            DbContext.Entry(obj).State = EntityState.Modified;
+            DbContext.Set<T>().Attach(item);
+            DbContext.Entry(item).State = EntityState.Modified;
 
             try
             {
@@ -431,28 +424,27 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// <see cref="IBulkRepository{T}.UpdateBulk(IEnumerable{T})"/>
         /// </summary>
-        public virtual void UpdateBulk(IEnumerable<T> objs)
+        public virtual void UpdateBulk(IEnumerable<T> items)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
             DbContext.Configuration.AutoDetectChangesEnabled = false;
 
             try
             {
-                foreach (T obj in objs)
+                foreach (T item in items)
                 {
-                    DbContext.Set<T>().Attach(obj);
-                    DbContext.Entry(obj).State = EntityState.Modified;
+                    DbContext.Set<T>().Attach(item);
+                    DbContext.Entry(item).State = EntityState.Modified;
                 }
 
                 DbContext.SaveChanges();
             }
             catch (Exception e) when (
                 e is DbUpdateException ||
-                e is DbUpdateConcurrencyException ||
                 e is DbEntityValidationException ||
                 e is NotSupportedException ||
                 e is ObjectDisposedException ||
@@ -470,21 +462,21 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// <see cref="IBulkRepository{T}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
-        public virtual async Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
             DbContext.Configuration.AutoDetectChangesEnabled = false;
 
             try
             {
-                foreach (T obj in objs)
+                foreach (T item in items)
                 {
-                    DbContext.Set<T>().Attach(obj);
-                    DbContext.Entry(obj).State = EntityState.Modified;
+                    DbContext.Set<T>().Attach(item);
+                    DbContext.Entry(item).State = EntityState.Modified;
                 }
 
                 await DbContext.SaveChangesAsync(cancellationToken);

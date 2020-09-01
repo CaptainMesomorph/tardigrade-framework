@@ -15,7 +15,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// <summary>
         /// Database context.
         /// </summary>
-        public DbContext DbContext { get; private set; }
+        public DbContext DbContext { get; }
 
         /// <summary>
         /// Create an instance of this class.
@@ -57,10 +57,7 @@ namespace Tardigrade.Framework.EntityFramework
         /// </summary>
         public void Dispose()
         {
-            if (DbContext != null)
-            {
-                DbContext.Dispose();
-            }
+            DbContext?.Dispose();
         }
 
         /// <summary>

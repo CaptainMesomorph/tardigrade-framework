@@ -23,21 +23,15 @@ namespace Tardigrade.Framework.EntityFramework.Extensions
         /// <exception cref="RepositoryException">Error creating the object.</exception>
         /// <exception cref="ValidationException">Object to create contains invalid values.</exception>
         public static T Create<T, PK>(
-#pragma warning disable IDE0060 // Remove unused parameter
             this IRepository<T, PK> repository,
-#pragma warning restore IDE0060 // Remove unused parameter
             T obj,
             EntityFrameworkUnitOfWork unitOfWork) where T : class
         {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
+            if (repository == null) throw new ArgumentNullException(nameof(obj));
 
-            if (unitOfWork?.DbContext == null)
-            {
-                throw new ArgumentException(nameof(unitOfWork));
-            }
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+
+            if (unitOfWork?.DbContext == null) throw new ArgumentException(nameof(unitOfWork));
 
             try
             {
@@ -66,21 +60,15 @@ namespace Tardigrade.Framework.EntityFramework.Extensions
         /// <exception cref="ArgumentNullException">The obj parameter is null.</exception>
         /// <exception cref="RepositoryException">Error deleting the object.</exception>
         public static void Delete<T, PK>(
-#pragma warning disable IDE0060 // Remove unused parameter
             this IRepository<T, PK> repository,
-#pragma warning restore IDE0060 // Remove unused parameter
             T obj,
             EntityFrameworkUnitOfWork unitOfWork) where T : class
         {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
+            if (repository == null) throw new ArgumentNullException(nameof(obj));
 
-            if (unitOfWork?.DbContext == null)
-            {
-                throw new ArgumentException(nameof(unitOfWork));
-            }
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+
+            if (unitOfWork?.DbContext == null) throw new ArgumentException(nameof(unitOfWork));
 
             try
             {
@@ -109,21 +97,15 @@ namespace Tardigrade.Framework.EntityFramework.Extensions
         /// <exception cref="RepositoryException">Error updating the object.</exception>
         /// <exception cref="ValidationException">Object to update contains invalid values.</exception>
         public static void Update<T, PK>(
-#pragma warning disable IDE0060 // Remove unused parameter
             this IRepository<T, PK> repository,
-#pragma warning restore IDE0060 // Remove unused parameter
             T obj,
             EntityFrameworkUnitOfWork unitOfWork) where T : class
         {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
+            if (repository == null) throw new ArgumentNullException(nameof(obj));
 
-            if (unitOfWork?.DbContext == null)
-            {
-                throw new ArgumentException(nameof(unitOfWork));
-            }
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+
+            if (unitOfWork?.DbContext == null) throw new ArgumentException(nameof(unitOfWork));
 
             try
             {

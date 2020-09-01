@@ -17,26 +17,26 @@ namespace Tardigrade.Framework.AuditNET.Decorators
     /// Decorator class for auditing of the object service interface.
     /// </summary>
     /// <typeparam name="T">Object type associated with the service operations.</typeparam>
-    /// <typeparam name="PK">Unique identifier type for the object type.</typeparam>
-    public class ObjectServiceAuditDecorator<T, PK> : IObjectService<T, PK> where T : IHasUniqueIdentifier<PK>
+    /// <typeparam name="Pk">Unique identifier type for the object type.</typeparam>
+    public class ObjectServiceAuditDecorator<T, Pk> : IObjectService<T, Pk> where T : IHasUniqueIdentifier<Pk>
     {
-        private readonly IObjectService<T, PK> decoratee;
-        private readonly IReadOnlyRepository<T, PK> readOnlyRepository;
+        private readonly IObjectService<T, Pk> decoratedService;
+        private readonly IReadOnlyRepository<T, Pk> readOnlyRepository;
         private readonly IUserContext userContext;
 
         /// <summary>
         /// Create an instance of this Decorator.
         /// </summary>
-        /// <param name="decoratee">Object service that is being decorated.</param>
+        /// <param name="decoratedService">Object service that is being decorated.</param>
         /// <param name="readOnlyRepository">Read-only repository for data retrieval.</param>
         /// <param name="userContext">Contextual information on the current user.</param>
         /// <exception cref="ArgumentNullException">A parameter is null.</exception>
         public ObjectServiceAuditDecorator(
-            IObjectService<T, PK> decoratee,
-            IReadOnlyRepository<T, PK> readOnlyRepository,
+            IObjectService<T, Pk> decoratedService,
+            IReadOnlyRepository<T, Pk> readOnlyRepository,
             IUserContext userContext)
         {
-            this.decoratee = decoratee ?? throw new ArgumentNullException(nameof(decoratee));
+            this.decoratedService = decoratedService ?? throw new ArgumentNullException(nameof(decoratedService));
             this.readOnlyRepository =
                 readOnlyRepository ?? throw new ArgumentNullException(nameof(readOnlyRepository));
             this.userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
@@ -47,11 +47,11 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// </summary>
         public int Count(Expression<Func<T, bool>> filter = null)
         {
-            int count = decoratee.Count(filter);
+            int count = decoratedService.Count(filter);
 
             try
             {
-                AuditScopeOptions options = new AuditScopeOptions
+                var options = new AuditScopeOptions
                 {
                     EventType = $"{typeof(T).Name}:Count",
                     ExtraFields = new { Count = count },
@@ -79,7 +79,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             Expression<Func<T, bool>> filter = null,
             CancellationToken cancellationToken = new CancellationToken())
         {
-            int count = await decoratee.CountAsync(filter, cancellationToken);
+            int count = await decoratedService.CountAsync(filter, cancellationToken);
             AuditScope auditScope = null;
 
             try
@@ -101,7 +101,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
             finally
             {
-                await auditScope.DisposeAsync();
+                if (auditScope != null)
+                {
+                    await auditScope.DisposeAsync();
+                }
             }
 
             return count;
@@ -110,32 +113,32 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.Create(IEnumerable{T})"/>
         /// </summary>
-        public IEnumerable<T> Create(IEnumerable<T> objs)
+        public IEnumerable<T> Create(IEnumerable<T> items)
         {
             IEnumerable<T> created = default;
-            bool isDecorateeException = false;
+            bool isServiceException = false;
 
             try
             {
                 using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Create+", () => created))
                 {
                     auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{objs.GetType()}";
+                    auditScope.Event.Target.Type = $"{items.GetType()}";
 
                     try
                     {
-                        created = decoratee.Create(objs);
+                        created = decoratedService.Create(items);
                     }
                     catch
                     {
-                        isDecorateeException = true;
+                        isServiceException = true;
                         throw;
                     }
                 }
             }
             catch
             {
-                if (isDecorateeException)
+                if (isServiceException)
                 {
                     throw;
                 }
@@ -151,32 +154,32 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.Create(T)"/>
         /// </summary>
-        public T Create(T obj)
+        public T Create(T item)
         {
             T created = default;
-            bool isDecorateeException = false;
+            bool isServiceException = false;
 
             try
             {
                 using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Create", () => created))
                 {
                     auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{obj.GetType()}";
+                    auditScope.Event.Target.Type = $"{typeof(T).FullName}";
 
                     try
                     {
-                        created = decoratee.Create(obj);
+                        created = decoratedService.Create(item);
                     }
                     catch
                     {
-                        isDecorateeException = true;
+                        isServiceException = true;
                         throw;
                     }
                 }
             }
             catch
             {
-                if (isDecorateeException)
+                if (isServiceException)
                 {
                     throw;
                 }
@@ -193,32 +196,32 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <see cref="IObjectService{T, PK}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
         public async Task<IEnumerable<T>> CreateAsync(
-            IEnumerable<T> objs,
+            IEnumerable<T> items,
             CancellationToken cancellationToken = new CancellationToken())
         {
             IEnumerable<T> created = default;
             AuditScope auditScope = null;
-            bool isDecorateeException = false;
+            bool isServiceException = false;
 
             try
             {
                 auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Create+", () => created);
                 auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{objs.GetType()}";
+                auditScope.Event.Target.Type = $"{items.GetType()}";
 
                 try
                 {
-                    created = await decoratee.CreateAsync(objs, cancellationToken);
+                    created = await decoratedService.CreateAsync(items, cancellationToken);
                 }
                 catch
                 {
-                    isDecorateeException = true;
+                    isServiceException = true;
                     throw;
                 }
             }
             catch
             {
-                if (isDecorateeException)
+                if (isServiceException)
                 {
                     throw;
                 }
@@ -229,7 +232,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
             finally
             {
-                await auditScope.DisposeAsync();
+                if (auditScope != null)
+                {
+                    await auditScope.DisposeAsync();
+                }
             }
 
             return created;
@@ -238,31 +244,31 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.CreateAsync(T, CancellationToken)"/>
         /// </summary>
-        public async Task<T> CreateAsync(T obj, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<T> CreateAsync(T item, CancellationToken cancellationToken = new CancellationToken())
         {
             T created = default;
             AuditScope auditScope = null;
-            bool isDecorateeException = false;
+            bool isServiceException = false;
 
             try
             {
                 auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Create", () => created);
                 auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{obj.GetType()}";
+                auditScope.Event.Target.Type = $"{typeof(T).FullName}";
 
                 try
                 {
-                    created = await decoratee.CreateAsync(obj, cancellationToken);
+                    created = await decoratedService.CreateAsync(item, cancellationToken);
                 }
                 catch
                 {
-                    isDecorateeException = true;
+                    isServiceException = true;
                     throw;
                 }
             }
             catch
             {
-                if (isDecorateeException)
+                if (isServiceException)
                 {
                     throw;
                 }
@@ -273,7 +279,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
             finally
             {
-                await auditScope.DisposeAsync();
+                if (auditScope != null)
+                {
+                    await auditScope.DisposeAsync();
+                }
             }
 
             return created;
@@ -282,17 +291,17 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.Delete(T)"/>
         /// </summary>
-        public void Delete(T obj)
+        public void Delete(T item)
         {
-            decoratee.Delete(obj);
+            decoratedService.Delete(item);
 
             try
             {
-                using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Delete", () => obj))
+                using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Delete", () => item))
                 {
                     auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{obj.GetType()}";
-                    obj = default;
+                    auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+                    item = default;
                 }
             }
             catch
@@ -304,17 +313,17 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.DeleteAsync(T, CancellationToken)"/>
         /// </summary>
-        public async Task DeleteAsync(T obj, CancellationToken cancellationToken = new CancellationToken())
+        public async Task DeleteAsync(T item, CancellationToken cancellationToken = new CancellationToken())
         {
-            await decoratee.DeleteAsync(obj, cancellationToken);
+            await decoratedService.DeleteAsync(item, cancellationToken);
             AuditScope auditScope = null;
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Delete", () => obj);
+                auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Delete", () => item);
                 auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{obj.GetType()}";
-                obj = default;
+                auditScope.Event.Target.Type = $"{typeof(T).FullName}";
+                item = default;
             }
             catch
             {
@@ -322,16 +331,19 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
             finally
             {
-                await auditScope.DisposeAsync();
+                if (auditScope != null)
+                {
+                    await auditScope.DisposeAsync();
+                }
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, PK}.Exists(PK)"/>
         /// </summary>
-        public bool Exists(PK id)
+        public bool Exists(Pk id)
         {
-            bool exists = decoratee.Exists(id);
+            bool exists = decoratedService.Exists(id);
 
             try
             {
@@ -359,9 +371,9 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.ExistsAsync(PK, CancellationToken)"/>
         /// </summary>
-        public async Task<bool> ExistsAsync(PK id, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<bool> ExistsAsync(Pk id, CancellationToken cancellationToken = new CancellationToken())
         {
-            bool exists = await decoratee.ExistsAsync(id, cancellationToken);
+            bool exists = await decoratedService.ExistsAsync(id, cancellationToken);
             AuditScope auditScope = null;
 
             try
@@ -383,7 +395,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
             finally
             {
-                await auditScope.DisposeAsync();
+                if (auditScope != null)
+                {
+                    await auditScope.DisposeAsync();
+                }
             }
 
             return exists;
@@ -398,7 +413,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
             params Expression<Func<T, object>>[] includes)
         {
-            IEnumerable<T> retrieved = decoratee.Retrieve(filter, pagingContext, sortCondition, includes);
+            List<T> retrieved = decoratedService.Retrieve(filter, pagingContext, sortCondition, includes).ToList();
 
             try
             {
@@ -427,10 +442,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
+        public T Retrieve(Pk id, params Expression<Func<T, object>>[] includes)
         {
             T retrieved = default;
-            bool isDecorateeException = false;
+            bool isServiceException = false;
 
             try
             {
@@ -441,18 +456,18 @@ namespace Tardigrade.Framework.AuditNET.Decorators
 
                     try
                     {
-                        retrieved = decoratee.Retrieve(id, includes);
+                        retrieved = decoratedService.Retrieve(id, includes);
                     }
                     catch
                     {
-                        isDecorateeException = true;
+                        isServiceException = true;
                         throw;
                     }
                 }
             }
             catch
             {
-                if (isDecorateeException)
+                if (isServiceException)
                 {
                     throw;
                 }
@@ -475,7 +490,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             CancellationToken cancellationToken = new CancellationToken(),
             params Expression<Func<T, object>>[] includes)
         {
-            IEnumerable<T> retrieved = await decoratee.RetrieveAsync(
+            IEnumerable<T> retrieved = await decoratedService.RetrieveAsync(
                 filter,
                 pagingContext,
                 sortCondition,
@@ -503,7 +518,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
             finally
             {
-                await auditScope.DisposeAsync();
+                if (auditScope != null)
+                {
+                    await auditScope.DisposeAsync();
+                }
             }
 
             return retrieved;
@@ -513,13 +531,13 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <see cref="IObjectService{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
         /// </summary>
         public async Task<T> RetrieveAsync(
-            PK id,
+            Pk id,
             CancellationToken cancellationToken = new CancellationToken(),
             params Expression<Func<T, object>>[] includes)
         {
             T retrieved = default;
             AuditScope auditScope = null;
-            bool isDecorateeException = false;
+            bool isServiceException = false;
 
             try
             {
@@ -529,17 +547,17 @@ namespace Tardigrade.Framework.AuditNET.Decorators
 
                 try
                 {
-                    retrieved = await decoratee.RetrieveAsync(id, cancellationToken, includes);
+                    retrieved = await decoratedService.RetrieveAsync(id, cancellationToken, includes);
                 }
                 catch
                 {
-                    isDecorateeException = true;
+                    isServiceException = true;
                     throw;
                 }
             }
             catch
             {
-                if (isDecorateeException)
+                if (isServiceException)
                 {
                     throw;
                 }
@@ -550,7 +568,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
             finally
             {
-                await auditScope.DisposeAsync();
+                if (auditScope != null)
+                {
+                    await auditScope.DisposeAsync();
+                }
             }
 
             return retrieved;
@@ -559,34 +580,34 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.Update(T)"/>
         /// </summary>
-        public void Update(T obj)
+        public void Update(T item)
         {
-            T original = readOnlyRepository.Retrieve(obj.Id);
-            bool isDecorateeException = false;
+            T original = readOnlyRepository.Retrieve(item.Id);
+            bool isServiceException = false;
 
             try
             {
                 using (AuditScope auditScope = AuditScope.Create($"{typeof(T).Name}:Update", () => original))
                 {
                     auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{obj.GetType()}";
+                    auditScope.Event.Target.Type = $"{typeof(T).FullName}";
 
                     try
                     {
-                        decoratee.Update(obj);
+                        decoratedService.Update(item);
                     }
                     catch
                     {
-                        isDecorateeException = true;
+                        isServiceException = true;
                         throw;
                     }
 
-                    original = obj;
+                    original = item;
                 }
             }
             catch
             {
-                if (isDecorateeException)
+                if (isServiceException)
                 {
                     throw;
                 }
@@ -600,30 +621,30 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.UpdateAsync(T, CancellationToken)"/>
         /// </summary>
-        public async Task UpdateAsync(T obj, CancellationToken cancellationToken = new CancellationToken())
+        public async Task UpdateAsync(T item, CancellationToken cancellationToken = new CancellationToken())
         {
             AuditScope auditScope = null;
-            bool isDecorateeException = false;
+            bool isServiceException = false;
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Update", () => obj);
+                auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Update", () => item);
                 auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{obj.GetType()}";
+                auditScope.Event.Target.Type = $"{typeof(T).FullName}";
 
                 try
                 {
-                    await decoratee.UpdateAsync(obj);
+                    await decoratedService.UpdateAsync(item, cancellationToken);
                 }
                 catch
                 {
-                    isDecorateeException = true;
+                    isServiceException = true;
                     throw;
                 }
             }
             catch
             {
-                if (isDecorateeException)
+                if (isServiceException)
                 {
                     throw;
                 }
@@ -634,7 +655,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
             finally
             {
-                await auditScope.DisposeAsync();
+                if (auditScope != null)
+                {
+                    await auditScope.DisposeAsync();
+                }
             }
         }
     }

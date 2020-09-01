@@ -26,8 +26,10 @@ namespace Tardigrade.Framework.ZXingNet
         /// </summary>
         public QrCodeProcessor()
         {
-            Reader = new ZXing.Magick.BarcodeReader();
-            Reader.Options.PossibleFormats = new List<BarcodeFormat> { BarcodeFormat.QR_CODE };
+            Reader = new ZXing.Magick.BarcodeReader
+            {
+                Options = { PossibleFormats = new List<BarcodeFormat> { BarcodeFormat.QR_CODE } }
+            };
 
             Writer = new ZXing.Magick.BarcodeWriter
             {

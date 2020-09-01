@@ -17,8 +17,6 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
     /// REST API Controller based on a specific object type.
     /// TODO: Reflect new exceptions raised from service methods, e.g. AlreadyExistsException.
     /// TODO: Add status code 409 Conflict to the Post method once implemented in service layer.
-    /// TODO: Standardise to use ResponseObject.
-    /// TODO: Need to specify paging parameters for GET.
     /// </summary>
     /// <typeparam name="T">Object type associated with the API Controller.</typeparam>
     /// <typeparam name="PK">Unique identifier type for the object type.</typeparam>
@@ -30,7 +28,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
         /// <summary>
         /// Object service associated with the Controller.
         /// </summary>
-        protected IObjectService<T, PK> Service { get; private set; }
+        protected IObjectService<T, PK> Service { get; }
 
         /// <summary>
         /// Create an instance of this API Controller.
@@ -112,7 +110,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
                 sortCondition = (q => q.OrderBy(sortBy));
             }
 
-            ActionResult result;
+            ActionResult<IEnumerable<T>> result;
 
             try
             {
@@ -124,7 +122,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
                 }
                 else
                 {
-                    result = Ok(models);
+                    result = models.ToList();
                 }
             }
             catch (ServiceException e)
@@ -145,7 +143,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
         [HttpGet("{id}")]
         public virtual async Task<ActionResult<T>> Get(PK id)
         {
-            ActionResult result;
+            ActionResult<T> result;
 
             try
             {
@@ -157,7 +155,7 @@ namespace Tardigrade.Framework.AspNetCore.Controllers
                 }
                 else
                 {
-                    result = Ok(model);
+                    result = model;
                 }
             }
             catch (ServiceException e)

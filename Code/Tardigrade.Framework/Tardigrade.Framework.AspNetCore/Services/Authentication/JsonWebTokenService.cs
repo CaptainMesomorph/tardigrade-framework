@@ -29,12 +29,15 @@ namespace Tardigrade.Framework.AspNetCore.Services.Authentication
             string notBefore = new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString();
             string expirationTime = new DateTimeOffset(DateTime.Now.AddDays(1)).ToUnixTimeSeconds().ToString();
 
+            // https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens#using-claims-to-reliably-identify-a-user-subject-and-object-id
             Claim[] claims = new Claim[]
             {
                 new Claim(ClaimTypes.Name, model.UserName),
+                new Claim(ClaimTypes.NameIdentifier, model.Id),
                 new Claim(JwtRegisteredClaimNames.Email, model.Email),
-                new Claim(JwtRegisteredClaimNames.Nbf, notBefore),
                 new Claim(JwtRegisteredClaimNames.Exp, expirationTime),
+                new Claim(JwtRegisteredClaimNames.Nbf, notBefore),
+                new Claim(JwtRegisteredClaimNames.Sub, model.Id),
             };
 
             SigningCredentials credential = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256);
