@@ -12,13 +12,12 @@ using Tardigrade.Framework.Persistence;
 namespace Tardigrade.Framework.EntityFrameworkCore
 {
     /// <summary>
-    /// <see cref="IRepository{T, PK}"/>
+    /// <see cref="IRepository{T, Pk}"/>
     /// <a href="https://stackoverflow.com/questions/40132380/ef-cannot-apply-operator-to-operands-of-type-tid-and-tid">EF - Cannot apply operator '==' to operands of type 'TId' and 'TId'</a>
     /// </summary>
-    public class EntityFrameworkCoreRepository<T, PK>
-        : EntityFrameworkCoreReadOnlyRepository<T, PK>, IRepository<T, PK>
-        where T : class, IHasUniqueIdentifier<PK>
-        where PK : IEquatable<PK>
+    public class EntityFrameworkCoreRepository<T, Pk> : EntityFrameworkCoreReadOnlyRepository<T, Pk>, IRepository<T, Pk>
+        where T : class, IHasUniqueIdentifier<Pk>
+        where Pk : IEquatable<Pk>
     {
         /// <summary>
         /// Create an instance of this class.
@@ -31,175 +30,187 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Create(T)"/>
+        /// <see cref="IRepository{T, Pk}.Create(T)"/>
         /// </summary>
         /// <exception cref="ValidationException">Not supported.</exception>
-        public virtual T Create(T obj)
+        public virtual T Create(T item)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
-            if (obj.Id != null && Exists(obj.Id))
+            if (!item.Id.Equals(default))
+            {
+                throw new ArgumentNullException(
+                    nameof(item),
+                    "Create failed; Object primary keys which equal their data type default value are not supported.");
+            }
+
+            if (item.Id != null && Exists(item.Id))
             {
                 throw new AlreadyExistsException(
-                    $"Create failed; object of type {typeof(T).Name} with primary key {obj.Id} already exists.");
+                    $"Create failed; object of type {typeof(T).Name} with primary key {item.Id} already exists.");
             }
 
-            DbContext.Set<T>().Add(obj);
+            DbContext.Set<T>().Add(item);
 
             try
             {
                 DbContext.SaveChanges();
             }
-            catch (Exception e) when (e is DbUpdateException || e is DbUpdateConcurrencyException)
+            catch (Exception e) when (e is DbUpdateException)
             {
                 throw new RepositoryException(
                     $"Create failed; database error while creating object of type {typeof(T).Name}.",
                     e);
             }
 
-            return obj;
+            return item;
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.CreateAsync(T, CancellationToken)"/>
+        /// <see cref="IRepository{T, Pk}.CreateAsync(T, CancellationToken)"/>
         /// </summary>
-        /// <param name="obj">Instance to create.</param>
+        /// <param name="item">Instance to create.</param>
         /// <param name="cancellationToken">Not supported.</param>
         /// <exception cref="ValidationException">Not supported.</exception>
-        public virtual async Task<T> CreateAsync(
-            T obj,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<T> CreateAsync(T item, CancellationToken cancellationToken = default)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
-            if (obj.Id != null && (await ExistsAsync(obj.Id)))
+            if (!item.Id.Equals(default))
+            {
+                throw new ArgumentNullException(
+                    nameof(item),
+                    "Create failed; Object primary keys which equal their data type default value are not supported.");
+            }
+
+            if (item.Id != null && (await ExistsAsync(item.Id, cancellationToken)))
             {
                 throw new AlreadyExistsException(
-                    $"Create failed; object of type {typeof(T).Name} with primary key {obj.Id} already exists.");
+                    $"Create failed; object of type {typeof(T).Name} with primary key {item.Id} already exists.");
             }
 
-            await DbContext.Set<T>().AddAsync(obj, cancellationToken);
+            await DbContext.Set<T>().AddAsync(item, cancellationToken);
 
             try
             {
                 await DbContext.SaveChangesAsync(cancellationToken);
             }
-            catch (Exception e) when (e is DbUpdateException || e is DbUpdateConcurrencyException)
+            catch (Exception e) when (e is DbUpdateException)
             {
                 throw new RepositoryException(
                     $"Create failed; database error while creating object of type {typeof(T).Name}.",
                     e);
             }
 
-            return obj;
+            return item;
         }
 
         /// <summary>
         /// <see cref="IBulkRepository{T}.CreateBulk(IEnumerable{T})"/>
         /// </summary>
-        public virtual IEnumerable<T> CreateBulk(IEnumerable<T> objs)
+        public virtual IEnumerable<T> CreateBulk(IEnumerable<T> items)
         {
-            if (objs.IsNulOrEmpty())
+            if (items == null)
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            DbContext.BulkInsert((IList<T>)objs);
+            DbContext.BulkInsert((IList<T>)items);
 
-            return objs;
+            return items;
         }
 
         /// <summary>
         /// <see cref="IBulkRepository{T}.CreateBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
-        /// <param name="objs">Instances to create.</param>
+        /// <param name="items">Instances to create.</param>
         /// <param name="cancellationToken">Not supported.</param>
         public virtual async Task<IEnumerable<T>> CreateBulkAsync(
-            IEnumerable<T> objs,
+            IEnumerable<T> items,
             CancellationToken cancellationToken = default)
         {
-            if (objs.IsNulOrEmpty())
+            if (items == null)
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            await DbContext.BulkInsertAsync((IList<T>)objs);
+            await DbContext.BulkInsertAsync((IList<T>)items, cancellationToken: cancellationToken);
 
-            return objs;
+            return items;
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Delete(T)"/>
+        /// <see cref="IRepository{T, Pk}.Delete(T)"/>
         /// </summary>
-        public virtual void Delete(T obj)
+        public virtual void Delete(T item)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
-            if (obj.Id == null || !Exists(obj.Id))
+            if (item.Id == null || !Exists(item.Id))
             {
                 throw new NotFoundException(
-                    $"Delete failed; object of type {typeof(T).Name} with primary key {obj.Id} does not exist.");
+                    $"Delete failed; object of type {typeof(T).Name} with primary key {item.Id} does not exist.");
             }
 
-            if (DbContext.Entry(obj).State == EntityState.Detached)
+            if (DbContext.Entry(item).State == EntityState.Detached)
             {
-                DbContext.Set<T>().Attach(obj);
+                DbContext.Set<T>().Attach(item);
             }
 
-            DbContext.Set<T>().Remove(obj);
+            DbContext.Set<T>().Remove(item);
 
             try
             {
                 DbContext.SaveChanges();
             }
-            catch (Exception e) when (e is DbUpdateException || e is DbUpdateConcurrencyException)
+            catch (Exception e) when (e is DbUpdateException)
             {
                 throw new RepositoryException(
-                    $"Delete failed; database error while deleting object of type {typeof(T).Name} with primary key {obj.Id}.",
+                    $"Delete failed; database error while deleting object of type {typeof(T).Name} with primary key {item.Id}.",
                     e);
             }
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.DeleteAsync(T, CancellationToken)"/>
+        /// <see cref="IRepository{T, Pk}.DeleteAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task DeleteAsync(T obj, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task DeleteAsync(T item, CancellationToken cancellationToken = default)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
-            if (obj.Id == null || !Exists(obj.Id))
+            if (item.Id == null || !await ExistsAsync(item.Id, cancellationToken))
             {
                 throw new NotFoundException(
-                    $"Delete failed; object of type {typeof(T).Name} with primary key {obj.Id} does not exist.");
+                    $"Delete failed; object of type {typeof(T).Name} with primary key {item.Id} does not exist.");
             }
 
-            if (DbContext.Entry(obj).State == EntityState.Detached)
+            if (DbContext.Entry(item).State == EntityState.Detached)
             {
-                DbContext.Set<T>().Attach(obj);
+                DbContext.Set<T>().Attach(item);
             }
 
-            DbContext.Set<T>().Remove(obj);
+            DbContext.Set<T>().Remove(item);
 
             try
             {
                 await DbContext.SaveChangesAsync(cancellationToken);
             }
-            catch (Exception e) when (e is DbUpdateException || e is DbUpdateConcurrencyException)
+            catch (Exception e) when (e is DbUpdateException)
             {
                 throw new RepositoryException(
-                    $"Delete failed; database error while deleting object of type {typeof(T).Name} with primary key {obj.Id}.",
+                    $"Delete failed; database error while deleting object of type {typeof(T).Name} with primary key {item.Id}.",
                     e);
             }
         }
@@ -207,91 +218,91 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <summary>
         /// <see cref="IBulkRepository{T}.DeleteBulk(IEnumerable{T})"/>
         /// </summary>
-        public virtual void DeleteBulk(IEnumerable<T> objs)
+        public virtual void DeleteBulk(IEnumerable<T> items)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            DbContext.BulkDelete((IList<T>)objs);
+            DbContext.BulkDelete((IList<T>)items);
         }
 
         /// <summary>
         /// <see cref="IBulkRepository{T}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
-        /// <param name="objs">Instances to delete.</param>
+        /// <param name="items">Instances to delete.</param>
         /// <param name="cancellationToken">Not supported.</param>
-        public virtual async Task DeleteBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            await DbContext.BulkDeleteAsync((IList<T>)objs);
+            await DbContext.BulkDeleteAsync((IList<T>)items, cancellationToken: cancellationToken);
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Update(T)"/>
+        /// <see cref="IRepository{T, Pk}.Update(T)"/>
         /// </summary>
-        /// <exception cref="ArgumentNullException">The obj parameter (or associated primary key) is null.</exception>
+        /// <exception cref="ArgumentNullException">The item parameter (or associated primary key) is null.</exception>
         /// <exception cref="ValidationException">Not supported.</exception>
-        public virtual void Update(T obj)
+        public virtual void Update(T item)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
-            if (obj.Id == null || !Exists(obj.Id))
+            if (item.Id == null || !Exists(item.Id))
             {
                 throw new NotFoundException(
-                    $"Update failed; object of type {typeof(T).Name} with primary key {obj.Id} does not exist.");
+                    $"Update failed; object of type {typeof(T).Name} with primary key {item.Id} does not exist.");
             }
 
-            DbContext.Set<T>().Update(obj);
+            DbContext.Set<T>().Update(item);
 
             try
             {
                 DbContext.SaveChanges();
             }
-            catch (Exception e) when (e is DbUpdateException || e is DbUpdateConcurrencyException)
+            catch (Exception e) when (e is DbUpdateException)
             {
                 throw new RepositoryException(
-                    $"Update failed; database error while updating object of type {typeof(T).Name} with primary key {obj.Id}.",
+                    $"Update failed; database error while updating object of type {typeof(T).Name} with primary key {item.Id}.",
                     e);
             }
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, PK}.Update(T)"/>
+        /// <see cref="IRepository{T, Pk}.Update(T)"/>
         /// </summary>
-        /// <exception cref="ArgumentNullException">The obj parameter (or associated primary key) is null.</exception>
+        /// <exception cref="ArgumentNullException">The item parameter (or associated primary key) is null.</exception>
         /// <exception cref="ValidationException">Not supported.</exception>
-        public virtual async Task UpdateAsync(T obj, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task UpdateAsync(T item, CancellationToken cancellationToken = default)
         {
-            if (obj == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(obj));
+                throw new ArgumentNullException(nameof(item));
             }
 
-            if (obj.Id == null || !await ExistsAsync(obj.Id))
+            if (item.Id == null || !await ExistsAsync(item.Id, cancellationToken))
             {
                 throw new NotFoundException(
-                    $"Update failed; object of type {typeof(T).Name} with primary key {obj.Id} does not exist.");
+                    $"Update failed; object of type {typeof(T).Name} with primary key {item.Id} does not exist.");
             }
 
-            DbContext.Set<T>().Update(obj);
+            DbContext.Set<T>().Update(item);
 
             try
             {
                 await DbContext.SaveChangesAsync(cancellationToken);
             }
-            catch (Exception e) when (e is DbUpdateException || e is DbUpdateConcurrencyException)
+            catch (Exception e) when (e is DbUpdateException)
             {
                 throw new RepositoryException(
-                    $"Update failed; database error while updating object of type {typeof(T).Name} with primary key {obj.Id}.",
+                    $"Update failed; database error while updating object of type {typeof(T).Name} with primary key {item.Id}.",
                     e);
             }
         }
@@ -299,29 +310,29 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <summary>
         /// <see cref="IBulkRepository{T}.UpdateBulk(IEnumerable{T})"/>
         /// </summary>
-        public virtual void UpdateBulk(IEnumerable<T> objs)
+        public virtual void UpdateBulk(IEnumerable<T> items)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            DbContext.BulkUpdate((IList<T>)objs);
+            DbContext.BulkUpdate((IList<T>)items);
         }
 
         /// <summary>
         /// <see cref="IBulkRepository{T}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
-        /// <param name="objs">Instances to update.</param>
+        /// <param name="items">Instances to update.</param>
         /// <param name="cancellationToken">Not supported.</param>
-        public virtual async Task UpdateBulkAsync(IEnumerable<T> objs, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default)
         {
-            if (objs.IsNulOrEmpty())
+            if (items.IsNullOrEmpty())
             {
-                throw new ArgumentNullException(nameof(objs));
+                throw new ArgumentNullException(nameof(items));
             }
 
-            await DbContext.BulkUpdateAsync((IList<T>)objs);
+            await DbContext.BulkUpdateAsync((IList<T>)items, cancellationToken: cancellationToken);
         }
     }
 }

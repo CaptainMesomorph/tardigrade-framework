@@ -1,5 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,16 +17,16 @@ namespace Tardigrade.Framework.AzureStorage
 {
     /// <summary>
     /// Repository layer that is based on Azure Storage Tables.
-    /// <see cref="IRepository{T, PK}"/>
+    /// <see cref="IRepository{T, Pk}"/>
     /// </summary>
-    public class StorageTableReadOnlyRepository<T, PK> : IReadOnlyRepository<T, PK>
+    public class StorageTableReadOnlyRepository<T, Pk> : IReadOnlyRepository<T, Pk>
         where T : ITableEntity, new()
-        where PK : ITableKey
+        where Pk : ITableKey
     {
         /// <summary>
         /// Azure Storage Table containing the object types.
         /// </summary>
-        protected CloudTable Table { get; private set; }
+        protected CloudTable Table { get; }
 
         /// <summary>
         /// Create an instance of this repository. If the table name does not exist, it will be created.
@@ -65,7 +64,7 @@ namespace Tardigrade.Framework.AzureStorage
             {
                 Table.CreateIfNotExistsAsync().GetAwaiter().GetResult();
             }
-            catch (StorageException e) when (e?.InnerException is HttpRequestException)
+            catch (StorageException e) when (e.InnerException is HttpRequestException)
             {
                 throw new FormatException(
                     $"A Storage Account endpoint in the following connection string is invalid:\n{connectionString}",
@@ -86,7 +85,7 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.Count(Expression{Func{T, bool}})"/>
+        /// <see cref="IReadOnlyRepository{T, Pk}.Count(Expression{Func{T, bool}})"/>
         /// </summary>
         /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual int Count(Expression<Func<T, bool>> filter = null)
@@ -95,21 +94,21 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
+        /// <see cref="IReadOnlyRepository{T, Pk}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
         /// </summary>
         /// <exception cref="NotImplementedException">To be implemented.</exception>
         public virtual Task<int> CountAsync(
             Expression<Func<T, bool>> filter = null,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.Exists(PK)"/>
+        /// <see cref="IReadOnlyRepository{T, Pk}.Exists(Pk)"/>
         /// </summary>
         /// <exception cref="ArgumentNullException">The Partition and/or Row keys of the id parameter are null or empty.</exception>
-        public virtual bool Exists(PK id)
+        public virtual bool Exists(Pk id)
         {
             return Exists(id.Partition, id.Row);
         }
@@ -128,11 +127,11 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.ExistsAsync(PK, CancellationToken)"/>
+        /// <see cref="IReadOnlyRepository{T, Pk}.ExistsAsync(Pk, CancellationToken)"/>
         /// </summary>
         public virtual async Task<bool> ExistsAsync(
-            PK id,
-            CancellationToken cancellationToken = default(CancellationToken))
+            Pk id,
+            CancellationToken cancellationToken = default)
         {
             return (await ExistsAsync(id.Partition, id.Row));
         }
@@ -155,7 +154,7 @@ namespace Tardigrade.Framework.AzureStorage
         /// The sortCondition parameter has not been implemented and instead been defaulted to Timestamp (descending).
         /// The includes parameter is not applicable to Azure Storage Tables.
         /// The current paging implementation is highly inefficient.
-        /// <see cref="IReadOnlyRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{T, Pk}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
         /// </summary>
         /// <exception cref="ArgumentException">Not applicable.</exception>"
         public virtual IEnumerable<T> Retrieve(
@@ -164,17 +163,17 @@ namespace Tardigrade.Framework.AzureStorage
             Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
             params Expression<Func<T, object>>[] includes)
         {
-            IList<T> objs = new List<T>();
+            IList<T> items;
 
             try
             {
                 // Construct the query operation for all objects.
-                TableQuery<T> query = new TableQuery<T>();
-                objs = Table.ExecuteQueryAsync(query).GetAwaiter().GetResult();
+                var query = new TableQuery<T>();
+                items = Table.ExecuteQueryAsync(query).GetAwaiter().GetResult();
 
                 if (pagingContext?.PageSize > 0)
                 {
-                    objs = objs
+                    items = items
                         .OrderByDescending(l => l.Timestamp)
                         .Skip((int)(pagingContext.PageIndex * pagingContext.PageSize))
                         .Take((int)pagingContext.PageSize)
@@ -182,7 +181,7 @@ namespace Tardigrade.Framework.AzureStorage
                 }
                 else
                 {
-                    objs = objs.OrderByDescending(l => l.Timestamp).ToList();
+                    items = items.OrderByDescending(l => l.Timestamp).ToList();
                 }
             }
             catch (Exception e)
@@ -192,15 +191,15 @@ namespace Tardigrade.Framework.AzureStorage
                     e);
             }
 
-            return objs;
+            return items;
         }
 
         /// <summary>
         /// The includes parameter is not applicable to Azure Storage Tables.
-        /// <see cref="IReadOnlyRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{T, Pk}.Retrieve(Pk, Expression{Func{T, object}}[])"/>
         /// </summary>
         /// <exception cref="ArgumentException">The Partition and/or Row keys of the id parameter are null or empty.</exception>
-        public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
+        public virtual T Retrieve(Pk id, params Expression<Func<T, object>>[] includes)
         {
             if (id == null)
             {
@@ -222,12 +221,12 @@ namespace Tardigrade.Framework.AzureStorage
         {
             if (string.IsNullOrWhiteSpace(partitionKey))
             {
-                throw new ArgumentNullException("Unique identifier does not specify a Partition Key.", nameof(partitionKey));
+                throw new ArgumentNullException(nameof(partitionKey), "Unique identifier does not specify a Partition Key.");
             }
 
             if (string.IsNullOrWhiteSpace(rowKey))
             {
-                throw new ArgumentNullException("Unique identifier does not specify a Row Key.", nameof(rowKey));
+                throw new ArgumentNullException(nameof(rowKey), "Unique identifier does not specify a Row Key.");
             }
 
             TableResult result;
@@ -255,7 +254,7 @@ namespace Tardigrade.Framework.AzureStorage
             }
             else if (result.HttpStatusCode == (int)HttpStatusCode.NotFound)
             {
-                obj = default(T);
+                obj = default;
             }
             else
             {
@@ -271,25 +270,23 @@ namespace Tardigrade.Framework.AzureStorage
         /// The sortCondition parameter has not been implemented and instead been defaulted to Timestamp (descending).
         /// The includes parameter is not applicable to Azure Storage Tables.
         /// The current paging implementation is highly inefficient.
-        /// <see cref="IReadOnlyRepository{T, PK}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{T, Pk}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
         /// </summary>
         /// <exception cref="ArgumentException">Not applicable.</exception>"
         public virtual async Task<IEnumerable<T>> RetrieveAsync(
             Expression<Func<T, bool>> filter = null,
             PagingContext pagingContext = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             params Expression<Func<T, object>>[] includes)
         {
-            IList<T> objs = new List<T>();
-
             // Construct the query operation for all objects.
-            TableQuery<T> query = new TableQuery<T>();
-            objs = await Table.ExecuteQueryAsync(query);
+            var query = new TableQuery<T>();
+            IList<T> items = await Table.ExecuteQueryAsync(query, cancellationToken);
 
             if (pagingContext?.PageSize > 0)
             {
-                objs = objs
+                items = items
                     .OrderByDescending(l => l.Timestamp)
                     .Skip((int)(pagingContext.PageIndex * pagingContext.PageSize))
                     .Take((int)pagingContext.PageSize)
@@ -297,20 +294,20 @@ namespace Tardigrade.Framework.AzureStorage
             }
             else
             {
-                objs = objs.OrderByDescending(l => l.Timestamp).ToList();
+                items = items.OrderByDescending(l => l.Timestamp).ToList();
             }
 
-            return objs;
+            return items;
         }
 
         /// <summary>
         /// The includes parameter is not applicable to Azure Storage Tables.
-        /// <see cref="IReadOnlyRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{T, Pk}.Retrieve(Pk, Expression{Func{T, object}}[])"/>
         /// </summary>
         /// <exception cref="ArgumentException">The Partition and/or Row values of the primary key (id) parameter are null or empty.</exception>
         public virtual async Task<T> RetrieveAsync(
-            PK id,
-            CancellationToken cancellationToken = default(CancellationToken),
+            Pk id,
+            CancellationToken cancellationToken = default,
             params Expression<Func<T, object>>[] includes)
         {
             if (id == null)
@@ -333,12 +330,12 @@ namespace Tardigrade.Framework.AzureStorage
         {
             if (string.IsNullOrWhiteSpace(partitionKey))
             {
-                throw new ArgumentNullException("Unique identifier does not specify a Partition Key.", nameof(partitionKey));
+                throw new ArgumentNullException(nameof(partitionKey), "Unique identifier does not specify a Partition Key.");
             }
 
             if (string.IsNullOrWhiteSpace(rowKey))
             {
-                throw new ArgumentNullException("Unique identifier does not specify a Row Key.", nameof(rowKey));
+                throw new ArgumentNullException(nameof(rowKey), "Unique identifier does not specify a Row Key.");
             }
 
             // Create a retrieve operation that expects partition and row keys.
@@ -355,7 +352,7 @@ namespace Tardigrade.Framework.AzureStorage
             }
             else if (result.HttpStatusCode == (int)HttpStatusCode.NotFound)
             {
-                obj = default(T);
+                obj = default;
             }
             else
             {

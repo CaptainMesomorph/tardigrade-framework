@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Tardigrade.Framework.Services.Identity
 {
@@ -21,7 +22,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// Delete a role.
         /// </summary>
         /// <param name="role">Role to delete.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">role is null.</exception>
         /// <exception cref="Exceptions.IdentityException">Error deleting the role.</exception>
         Task DeleteAsync(TRole role);
@@ -33,6 +34,12 @@ namespace Tardigrade.Framework.Services.Identity
         /// <returns>True if the role exists; false otherwise.</returns>
         /// <exception cref="System.ArgumentNullException">roleName is null.</exception>
         Task<bool> ExistsAsync(string roleName);
+
+        /// <summary>
+        /// Retrieve all the roles available.
+        /// </summary>
+        /// <returns>All the roles if they exist; empty collection otherwise.</returns>
+        Task<IList<TRole>> RetrieveAsync();
 
         /// <summary>
         /// Retrieve a role with the specified unique identifier.
@@ -54,7 +61,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// Update a role.
         /// </summary>
         /// <param name="role">Role to update.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">role is null.</exception>
         /// <exception cref="Exceptions.IdentityException">Error updating the role.</exception>
         Task UpdateAsync(TRole role);

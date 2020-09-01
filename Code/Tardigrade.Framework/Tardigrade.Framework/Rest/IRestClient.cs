@@ -41,7 +41,7 @@ namespace Tardigrade.Framework.Rest
         /// <param name="payload">Object to create.</param>
         /// <param name="resource">Resource endpoint.</param>
         /// <returns>Response result.</returns>
-        /// <exception cref="System.ArgumentNullException">payload is nulll.</exception>
+        /// <exception cref="System.ArgumentNullException">payload is null.</exception>
         /// <exception cref="Exceptions.RestException">Error creating the object.</exception>
         Response<Result> Post<Payload, Result>(Payload payload, string resource = null) where Result : new();
 
@@ -52,7 +52,7 @@ namespace Tardigrade.Framework.Rest
         /// <param name="payload">Object to create.</param>
         /// <param name="resource">Resource endpoint.</param>
         /// <returns>Response result.</returns>
-        /// <exception cref="System.ArgumentNullException">payload is nulll.</exception>
+        /// <exception cref="System.ArgumentNullException">payload is null.</exception>
         /// <exception cref="Exceptions.RestException">Error creating the object.</exception>
         Response<string> Post<Payload>(Payload payload, string resource = null);
 
@@ -63,7 +63,7 @@ namespace Tardigrade.Framework.Rest
         /// <param name="obj">Object to update.</param>
         /// <param name="resource">Resource endpoint.</param>
         /// <returns>Response result.</returns>
-        /// <exception cref="System.ArgumentNullException">obj is nulll.</exception>
+        /// <exception cref="System.ArgumentNullException">obj is null.</exception>
         /// <exception cref="Exceptions.RestException">Error updating the object.</exception>
         Response Put<Payload>(Payload obj, string resource);
     }

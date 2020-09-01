@@ -54,6 +54,28 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IIdentityUserManager{T}.AddRolesAsync(T, string[])"/>
+        /// </summary>
+        public async Task AddRolesAsync(ApplicationUser user, params string[] roles)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            roles = roles.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToArray();
+
+            if (roles.Any())
+            {
+                IdentityResult result = await userManager.AddToRolesAsync(user.Id, roles);
+
+                if (!result.Succeeded)
+                {
+                    IEnumerable<IdentityError> errors = result.Errors.Select(e => new IdentityError("AddRolesFailed", e));
+
+                    throw new IdentityException($"Add roles failed; unable to add roles for {user.UserName}.", errors);
+                }
+            }
+        }
+
+        /// <summary>
         /// <see cref="IIdentityUserManager{T}.CheckPasswordAsync(T, string)"/>
         /// </summary>
         public async Task<bool> CheckPasswordAsync(ApplicationUser user, string password)
@@ -183,6 +205,16 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IIdentityUserManager{T}.GetRolesAsync(T)"/>
+        /// </summary>
+        public async Task<IList<string>> GetRolesAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            return await userManager.GetRolesAsync(user.Id);
+        }
+
+        /// <summary>
         /// <see cref="IIdentityUserManager{T}.IsEmailConfirmedAsync(T)"/>
         /// </summary>
         public async Task<bool> IsEmailConfirmedAsync(ApplicationUser user)
@@ -228,6 +260,28 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
                 IEnumerable<IdentityError> errors = result.Errors.Select(e => new IdentityError("RemovePasswordFailed", e));
 
                 throw new IdentityException($"Remove password failed; unable to remove password for {user.UserName}.", errors);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IIdentityUserManager{T}.RemoveRolesAsync(T, string[])"/>
+        /// </summary>
+        public async Task RemoveRolesAsync(ApplicationUser user, params string[] roles)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            roles = roles.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToArray();
+
+            if (roles.Any())
+            {
+                IdentityResult result = await userManager.RemoveFromRolesAsync(user.Id, roles);
+
+                if (!result.Succeeded)
+                {
+                    IEnumerable<IdentityError> errors = result.Errors.Select(e => new IdentityError("RemoveRolesFailed", e));
+
+                    throw new IdentityException($"Remove roles failed; unable to remove roles for {user.UserName}.", errors);
+                }
             }
         }
 

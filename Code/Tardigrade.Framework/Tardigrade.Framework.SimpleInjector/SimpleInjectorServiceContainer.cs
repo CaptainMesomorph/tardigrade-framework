@@ -25,17 +25,10 @@ namespace Tardigrade.Framework.SimpleInjector
         /// </summary>
         /// <param name="container">Existing service container to use. If null, a new service container instance is created.</param>
         /// <param name="verifyImmediately">If true, verify services during instantiation. If false, defer verification with a call to Verify().</param>
-        public SimpleInjectorServiceContainer(Container container = null, bool verifyImmediately = true)
+        protected SimpleInjectorServiceContainer(Container container = null, bool verifyImmediately = true)
         {
             // Create the services container.
-            if (container == null)
-            {
-                Container = new Container();
-            }
-            else
-            {
-                Container = container;
-            }
+            Container = container ?? new Container();
 
             try
             {
@@ -87,9 +80,8 @@ namespace Tardigrade.Framework.SimpleInjector
         {
             string message = null;
 
-            if (exception is ReflectionTypeLoadException)
+            if (exception is ReflectionTypeLoadException typeLoadException)
             {
-                ReflectionTypeLoadException typeLoadException = exception as ReflectionTypeLoadException;
                 StringBuilder stringBuilder = new StringBuilder();
 
                 foreach (Exception loaderException in typeLoadException.LoaderExceptions)

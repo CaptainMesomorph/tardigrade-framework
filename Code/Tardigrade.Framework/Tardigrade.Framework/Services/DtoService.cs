@@ -15,25 +15,24 @@ namespace Tardigrade.Framework.Services
     /// <summary>
     /// <see cref="IDtoService{Model, ModelPk, Dto, DtoPk}"/>
     /// </summary>
-    public class DtoService<Model, ModelPk, Dto, DtoPk>
-        : IObjectService<Dto, DtoPk>, IDtoService<Model, ModelPk, Dto, DtoPk>
+    public class DtoService<Model, ModelPk, Dto, DtoPk> : IDtoService<Model, ModelPk, Dto, DtoPk>
         where Model : class
         where Dto : IHasUniqueIdentifier<DtoPk>
     {
         /// <summary>
         /// Service class used to encode/decode key values.
         /// </summary>
-        protected IKeyEncoder<DtoPk, DtoPk> KeyEncoder { get; private set; }
+        protected IKeyEncoder<DtoPk, DtoPk> KeyEncoder { get; }
 
         /// <summary>
         /// Mapper class for transforming from one object type to another.
         /// </summary>
-        protected IMapper Mapper { get; private set; }
+        protected IMapper Mapper { get; }
 
         /// <summary>
         /// Service class associated with the domain model object.
         /// </summary>
-        protected IObjectService<Model, ModelPk> ObjectService { get; private set; }
+        protected IObjectService<Model, ModelPk> ObjectService { get; }
 
         /// <summary>
         /// Create an instance of this service.
@@ -92,13 +91,13 @@ namespace Tardigrade.Framework.Services
         /// <summary>
         /// <see cref="IObjectService{Dto, DtoPk}.Create(Dto)"/>
         /// </summary>
-        public virtual Dto Create(Dto dto)
+        public virtual Dto Create(Dto item)
         {
             try
             {
-                Model model = Mapper.Map<Model>(dto);
+                var model = Mapper.Map<Model>(item);
                 model = ObjectService.Create(model);
-                Dto created = Mapper.Map<Dto>(model);
+                var created = Mapper.Map<Dto>(model);
 
                 if (KeyEncoder != null)
                 {
@@ -116,17 +115,17 @@ namespace Tardigrade.Framework.Services
         /// <summary>
         /// <see cref="IObjectService{Dto, DtoPk}.Create(IEnumerable{Dto})"/>
         /// </summary>
-        public virtual IEnumerable<Dto> Create(IEnumerable<Dto> dtos)
+        public virtual IEnumerable<Dto> Create(IEnumerable<Dto> items)
         {
             try
             {
-                IEnumerable<Model> models = Mapper.Map<IEnumerable<Model>>(dtos);
+                var models = Mapper.Map<IEnumerable<Model>>(items);
                 models = ObjectService.Create(models);
-                IEnumerable<Dto> created = Mapper.Map<IEnumerable<Dto>>(models);
+                List<Dto> created = Mapper.Map<IEnumerable<Dto>>(models).ToList();
 
                 if (KeyEncoder != null)
                 {
-                    created.ToList().ForEach(d => d.Id = KeyEncoder.Encode(d.Id));
+                    created.ForEach(d => d.Id = KeyEncoder.Encode(d.Id));
                 }
 
                 return created;
@@ -140,13 +139,13 @@ namespace Tardigrade.Framework.Services
         /// <summary>
         /// <see cref="IObjectService{Dto, DtoPk}.CreateAsync(Dto, CancellationToken)"/>
         /// </summary>
-        public virtual async Task<Dto> CreateAsync(Dto dto, CancellationToken cancellationToken = default)
+        public virtual async Task<Dto> CreateAsync(Dto item, CancellationToken cancellationToken = default)
         {
             try
             {
-                Model model = Mapper.Map<Model>(dto);
-                model = await ObjectService.CreateAsync(model);
-                Dto created = Mapper.Map<Dto>(model);
+                var model = Mapper.Map<Model>(item);
+                model = await ObjectService.CreateAsync(model, cancellationToken);
+                var created = Mapper.Map<Dto>(model);
 
                 if (KeyEncoder != null)
                 {
@@ -165,18 +164,18 @@ namespace Tardigrade.Framework.Services
         /// <see cref="IObjectService{Dto, DtoPk}.CreateAsync(IEnumerable{Dto}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<IEnumerable<Dto>> CreateAsync(
-            IEnumerable<Dto> dtos,
+            IEnumerable<Dto> items,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                IEnumerable<Model> models = Mapper.Map<IEnumerable<Model>>(dtos);
-                models = await ObjectService.CreateAsync(models);
-                IEnumerable<Dto> created = Mapper.Map<IEnumerable<Dto>>(models);
+                var models = Mapper.Map<IEnumerable<Model>>(items);
+                models = await ObjectService.CreateAsync(models, cancellationToken);
+                List<Dto> created = Mapper.Map<IEnumerable<Dto>>(models).ToList();
 
                 if (KeyEncoder != null)
                 {
-                    created.ToList().ForEach(d => d.Id = KeyEncoder.Encode(d.Id));
+                    created.ForEach(d => d.Id = KeyEncoder.Encode(d.Id));
                 }
 
                 return created;
@@ -190,19 +189,19 @@ namespace Tardigrade.Framework.Services
         /// <summary>
         /// <see cref="IObjectService{Dto, DtoPk}.Delete(Dto)"/>
         /// </summary>
-        public virtual void Delete(Dto dto)
+        public virtual void Delete(Dto item)
         {
-            Model model = Mapper.Map<Model>(dto);
+            var model = Mapper.Map<Model>(item);
             ObjectService.Delete(model);
         }
 
         /// <summary>
         /// <see cref="IObjectService{Dto, DtoPk}.DeleteAsync(Dto, CancellationToken)"/>
         /// </summary>
-        public virtual async Task DeleteAsync(Dto dto, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(Dto item, CancellationToken cancellationToken = default)
         {
-            Model model = Mapper.Map<Model>(dto);
-            await ObjectService.DeleteAsync(model);
+            var model = Mapper.Map<Model>(item);
+            await ObjectService.DeleteAsync(model, cancellationToken);
         }
 
         /// <summary>
@@ -217,13 +216,13 @@ namespace Tardigrade.Framework.Services
                     id = KeyEncoder.Decode(id);
                 }
 
-                ModelPk modelId = Mapper.Map<ModelPk>(id);
+                var modelId = Mapper.Map<ModelPk>(id);
 
                 return ObjectService.Exists(modelId);
             }
             catch (EncodingException e)
             {
-                throw new ServiceException($"Error determing whether an object of type {typeof(Dto).Name} with unique identifier of {id} exists.", e);
+                throw new ServiceException($"Error determining whether an object of type {typeof(Dto).Name} with unique identifier of {id} exists.", e);
             }
         }
 
@@ -239,13 +238,13 @@ namespace Tardigrade.Framework.Services
                     id = KeyEncoder.Decode(id);
                 }
 
-                ModelPk modelId = Mapper.Map<ModelPk>(id);
+                var modelId = Mapper.Map<ModelPk>(id);
 
-                return await ObjectService.ExistsAsync(modelId);
+                return await ObjectService.ExistsAsync(modelId, cancellationToken);
             }
             catch (EncodingException e)
             {
-                throw new ServiceException($"Error determing whether an object of type {typeof(Dto).Name} with unique identifier of {id} exists.", e);
+                throw new ServiceException($"Error determining whether an object of type {typeof(Dto).Name} with unique identifier of {id} exists.", e);
             }
         }
 
@@ -263,21 +262,21 @@ namespace Tardigrade.Framework.Services
                     id = KeyEncoder.Decode(id);
                 }
 
-                Dto dto = default(Dto);
-                ModelPk modelId = Mapper.Map<ModelPk>(id);
+                Dto item = default;
+                var modelId = Mapper.Map<ModelPk>(id);
                 Model model = ObjectService.Retrieve(modelId);
 
                 if (model != null)
                 {
-                    dto = Mapper.Map<Dto>(model);
+                    item = Mapper.Map<Dto>(model);
 
                     if (KeyEncoder != null)
                     {
-                        dto.Id = KeyEncoder.Encode(dto.Id);
+                        item.Id = KeyEncoder.Encode(item.Id);
                     }
                 }
 
-                return dto;
+                return item;
             }
             catch (EncodingException e)
             {
@@ -309,20 +308,20 @@ namespace Tardigrade.Framework.Services
         {
             try
             {
-                List<Dto> dtos = new List<Dto>();
+                var items = new List<Dto>();
                 IEnumerable<Model> models = ObjectService.Retrieve(filter, pagingContext, sortCondition, includes);
 
                 if (models?.Count() > 0)
                 {
-                    dtos = Mapper.Map<List<Dto>>(models);
+                    items = Mapper.Map<List<Dto>>(models);
 
                     if (KeyEncoder != null)
                     {
-                        dtos.ForEach(d => d.Id = KeyEncoder.Encode(d.Id));
+                        items.ForEach(d => d.Id = KeyEncoder.Encode(d.Id));
                     }
                 }
 
-                return dtos;
+                return items;
             }
             catch (EncodingException e)
             {
@@ -345,21 +344,21 @@ namespace Tardigrade.Framework.Services
                     id = KeyEncoder.Decode(id);
                 }
 
-                Dto dto = default(Dto);
-                ModelPk modelId = Mapper.Map<ModelPk>(id);
-                Model model = await ObjectService.RetrieveAsync(modelId);
+                Dto item = default;
+                var modelId = Mapper.Map<ModelPk>(id);
+                Model model = await ObjectService.RetrieveAsync(modelId, cancellationToken);
 
                 if (model != null)
                 {
-                    dto = Mapper.Map<Dto>(model);
+                    item = Mapper.Map<Dto>(model);
 
                     if (KeyEncoder != null)
                     {
-                        dto.Id = KeyEncoder.Encode(dto.Id);
+                        item.Id = KeyEncoder.Encode(item.Id);
                     }
                 }
 
-                return dto;
+                return item;
             }
             catch (EncodingException e)
             {
@@ -393,7 +392,7 @@ namespace Tardigrade.Framework.Services
         {
             try
             {
-                List<Dto> dtos = new List<Dto>();
+                var items = new List<Dto>();
                 IEnumerable<Model> models = await ObjectService.RetrieveAsync(
                     filter,
                     pagingContext,
@@ -403,15 +402,15 @@ namespace Tardigrade.Framework.Services
 
                 if (models?.Count() > 0)
                 {
-                    dtos = Mapper.Map<List<Dto>>(models);
+                    items = Mapper.Map<List<Dto>>(models);
 
                     if (KeyEncoder != null)
                     {
-                        dtos.ForEach(d => d.Id = KeyEncoder.Encode(d.Id));
+                        items.ForEach(d => d.Id = KeyEncoder.Encode(d.Id));
                     }
                 }
 
-                return dtos;
+                return items;
             }
             catch (EncodingException e)
             {
@@ -422,29 +421,29 @@ namespace Tardigrade.Framework.Services
         /// <summary>
         /// <see cref="IObjectService{Dto, DtoPk}.Update(Dto)"/>
         /// </summary>
-        public virtual void Update(Dto dto)
+        public virtual void Update(Dto item)
         {
-            if (dto == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(dto));
+                throw new ArgumentNullException(nameof(item));
             }
 
             try
             {
                 if (KeyEncoder != null)
                 {
-                    dto.Id = KeyEncoder.Decode(dto.Id);
+                    item.Id = KeyEncoder.Decode(item.Id);
                 }
 
-                ModelPk modelId = Mapper.Map<ModelPk>(dto.Id);
+                var modelId = Mapper.Map<ModelPk>(item.Id);
                 Model originalModel = ObjectService.Retrieve(modelId);
 
                 if (originalModel == null)
                 {
-                    throw new NotFoundException($"Error updating an object of type {typeof(Dto).Name} as identifier of {dto.Id} not found.");
+                    throw new NotFoundException($"Error updating an object of type {typeof(Dto).Name} as identifier of {item.Id} not found.");
                 }
 
-                Mapper.Map(dto, originalModel);
+                Mapper.Map(item, originalModel);
                 ObjectService.Update(originalModel);
             }
             catch (EncodingException e)
@@ -456,30 +455,30 @@ namespace Tardigrade.Framework.Services
         /// <summary>
         /// <see cref="IObjectService{Dto, DtoPk}.UpdateAsync(Dto, CancellationToken)"/>
         /// </summary>
-        public virtual async Task UpdateAsync(Dto dto, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateAsync(Dto item, CancellationToken cancellationToken = default)
         {
-            if (dto == null)
+            if (item == null)
             {
-                throw new ArgumentNullException(nameof(dto));
+                throw new ArgumentNullException(nameof(item));
             }
 
             try
             {
                 if (KeyEncoder != null)
                 {
-                    dto.Id = KeyEncoder.Decode(dto.Id);
+                    item.Id = KeyEncoder.Decode(item.Id);
                 }
 
-                ModelPk modelId = Mapper.Map<ModelPk>(dto.Id);
-                Model originalModel = await ObjectService.RetrieveAsync(modelId);
+                var modelId = Mapper.Map<ModelPk>(item.Id);
+                Model originalModel = await ObjectService.RetrieveAsync(modelId, cancellationToken);
 
                 if (originalModel == null)
                 {
-                    throw new NotFoundException($"Error updating an object of type {typeof(Dto).Name} as identifier of {dto.Id} not found.");
+                    throw new NotFoundException($"Error updating an object of type {typeof(Dto).Name} as identifier of {item.Id} not found.");
                 }
 
-                Mapper.Map(dto, originalModel);
-                await ObjectService.UpdateAsync(originalModel);
+                Mapper.Map(item, originalModel);
+                await ObjectService.UpdateAsync(originalModel, cancellationToken);
             }
             catch (EncodingException e)
             {

@@ -8,7 +8,7 @@ namespace Tardigrade.Framework.AzureStorage.Tests
     /// </summary>
     public class ServiceProviderFixture : IDisposable
     {
-        public IServiceContainer Container { get; private set; }
+        public IServiceContainer Container { get; }
 
         public ServiceProviderFixture()
         {

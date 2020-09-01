@@ -28,7 +28,8 @@ namespace Tardigrade.Framework.Serialization.Resolvers
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
 
-            if (property.PropertyType.IsClass && property.PropertyType != typeof(string))
+            if (property.PropertyType != null &&
+                (property.PropertyType.IsClass && property.PropertyType != typeof(string)))
             {
                 property.ShouldSerialize = obj => false;
             }

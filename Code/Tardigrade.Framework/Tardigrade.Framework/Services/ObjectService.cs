@@ -11,25 +11,25 @@ using Tardigrade.Framework.Persistence;
 namespace Tardigrade.Framework.Services
 {
     /// <summary>
-    /// <see cref="IObjectService{T, PK}"/>
+    /// <see cref="IObjectService{T, Pk}"/>
     /// </summary>
-    public class ObjectService<T, PK> : IObjectService<T, PK> where T : class
+    public class ObjectService<T, Pk> : IObjectService<T, Pk> where T : class
     {
         /// <summary>
         /// Repository associated with the service.
         /// </summary>
-        protected IRepository<T, PK> Repository { get; private set; }
+        protected IRepository<T, Pk> Repository { get; }
 
         /// <summary>
         /// Create an instance of this class.
         /// </summary>
-        public ObjectService(IRepository<T, PK> repository)
+        public ObjectService(IRepository<T, Pk> repository)
         {
             Repository = repository;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Count(Expression{Func{T, bool}})"/>
+        /// <see cref="IObjectService{T, Pk}.Count(Expression{Func{T, bool}})"/>
         /// </summary>
         public virtual int Count(Expression<Func<T, bool>> filter = null)
         {
@@ -44,7 +44,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
+        /// <see cref="IObjectService{T, Pk}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<int> CountAsync(
             Expression<Func<T, bool>> filter = null,
@@ -61,13 +61,13 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Create(IEnumerable{T})"/>
+        /// <see cref="IObjectService{T, Pk}.Create(IEnumerable{T})"/>
         /// </summary>
-        public virtual IEnumerable<T> Create(IEnumerable<T> objs)
+        public virtual IEnumerable<T> Create(IEnumerable<T> items)
         {
             try
             {
-                return Repository.CreateBulk(objs);
+                return Repository.CreateBulk(items);
             }
             catch (RepositoryException e)
             {
@@ -76,13 +76,13 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Create(T)"/>
+        /// <see cref="IObjectService{T, Pk}.Create(T)"/>
         /// </summary>
-        public virtual T Create(T obj)
+        public virtual T Create(T item)
         {
             try
             {
-                return Repository.Create(obj);
+                return Repository.Create(item);
             }
             catch (RepositoryException e)
             {
@@ -91,15 +91,15 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IObjectService{T, Pk}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<IEnumerable<T>> CreateAsync(
-            IEnumerable<T> objs,
+            IEnumerable<T> items,
             CancellationToken cancellationToken = default)
         {
             try
             {
-                return await Repository.CreateBulkAsync(objs, cancellationToken);
+                return await Repository.CreateBulkAsync(items, cancellationToken);
             }
             catch (RepositoryException e)
             {
@@ -108,13 +108,13 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.CreateAsync(T, CancellationToken)"/>
+        /// <see cref="IObjectService{T, Pk}.CreateAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task<T> CreateAsync(T obj, CancellationToken cancellationToken = default)
+        public virtual async Task<T> CreateAsync(T item, CancellationToken cancellationToken = default)
         {
             try
             {
-                return await Repository.CreateAsync(obj, cancellationToken);
+                return await Repository.CreateAsync(item, cancellationToken);
             }
             catch (RepositoryException e)
             {
@@ -123,13 +123,13 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Delete(T)"/>
+        /// <see cref="IObjectService{T, Pk}.Delete(T)"/>
         /// </summary>
-        public virtual void Delete(T obj)
+        public virtual void Delete(T item)
         {
             try
             {
-                Repository.Delete(obj);
+                Repository.Delete(item);
             }
             catch (RepositoryException e)
             {
@@ -138,13 +138,13 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.DeleteAsync(T, CancellationToken)"/>
+        /// <see cref="IObjectService{T, Pk}.DeleteAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task DeleteAsync(T obj, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(T item, CancellationToken cancellationToken = default)
         {
             try
             {
-                await Repository.DeleteAsync(obj, cancellationToken);
+                await Repository.DeleteAsync(item, cancellationToken);
             }
             catch (RepositoryException e)
             {
@@ -153,9 +153,9 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Exists(PK)"/>
+        /// <see cref="IObjectService{T, Pk}.Exists(Pk)"/>
         /// </summary>
-        public virtual bool Exists(PK id)
+        public virtual bool Exists(Pk id)
         {
             try
             {
@@ -163,14 +163,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (Exception e)
             {
-                throw new ServiceException($"Error determing whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
+                throw new ServiceException($"Error determining whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
             }
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.ExistsAsync(PK, CancellationToken)"/>
+        /// <see cref="IObjectService{T, Pk}.ExistsAsync(Pk, CancellationToken)"/>
         /// </summary>
-        public virtual async Task<bool> ExistsAsync(PK id, CancellationToken cancellationToken = default)
+        public virtual async Task<bool> ExistsAsync(Pk id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -178,12 +178,12 @@ namespace Tardigrade.Framework.Services
             }
             catch (Exception e)
             {
-                throw new ServiceException($"Error determing whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
+                throw new ServiceException($"Error determining whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
             }
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
+        /// <see cref="IObjectService{T, Pk}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
         /// </summary>
         public virtual IEnumerable<T> Retrieve(
             Expression<Func<T, bool>> filter = null,
@@ -202,9 +202,9 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// <see cref="IObjectService{T, Pk}.Retrieve(Pk, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public virtual T Retrieve(PK id, params Expression<Func<T, object>>[] includes)
+        public virtual T Retrieve(Pk id, params Expression<Func<T, object>>[] includes)
         {
             try
             {
@@ -217,7 +217,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IObjectService{T, Pk}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
         /// </summary>
         public virtual async Task<IEnumerable<T>> RetrieveAsync(
             Expression<Func<T, bool>> filter = null,
@@ -237,10 +237,10 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IObjectService{T, Pk}.RetrieveAsync(Pk, CancellationToken, Expression{Func{T, object}}[])"/>
         /// </summary>
         public virtual async Task<T> RetrieveAsync(
-            PK id,
+            Pk id,
             CancellationToken cancellationToken = default,
             params Expression<Func<T, object>>[] includes)
         {
@@ -255,13 +255,13 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Update(T)"/>
+        /// <see cref="IObjectService{T, Pk}.Update(T)"/>
         /// </summary>
-        public virtual void Update(T obj)
+        public virtual void Update(T item)
         {
             try
             {
-                Repository.Update(obj);
+                Repository.Update(item);
             }
             catch (RepositoryException e)
             {
@@ -270,13 +270,13 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.UpdateAsync(T, CancellationToken)"/>
+        /// <see cref="IObjectService{T, Pk}.UpdateAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task UpdateAsync(T obj, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateAsync(T item, CancellationToken cancellationToken = default)
         {
             try
             {
-                await Repository.UpdateAsync(obj, cancellationToken);
+                await Repository.UpdateAsync(item, cancellationToken);
             }
             catch (RepositoryException e)
             {

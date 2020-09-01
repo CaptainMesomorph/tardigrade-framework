@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Tardigrade.Framework.AspNetCore.Models.Identity;
 using Tardigrade.Framework.Exceptions;
@@ -49,10 +50,31 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (!result.Succeeded)
             {
-                IEnumerable<Framework.Models.Errors.IdentityError> errors =
-                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Add password failed; unable to add password for {user.UserName}.", errors);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IIdentityUserManager{T}.AddRolesAsync(T, string[])"/>
+        /// </summary>
+        public async Task AddRolesAsync(ApplicationUser user, params string[] roles)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            roles = roles.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToArray();
+
+            if (roles.Any())
+            {
+                IdentityResult result = await userManager.AddToRolesAsync(user, roles);
+
+                if (!result.Succeeded)
+                {
+                    var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                    throw new IdentityException($"Add roles failed; unable to add roles for {user.UserName}.", errors);
+                }
             }
         }
 
@@ -81,8 +103,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (!result.Succeeded)
             {
-                IEnumerable<Framework.Models.Errors.IdentityError> errors =
-                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Confirm email failed; unable to confirm email for {user.UserName}.", errors);
             }
@@ -101,8 +122,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (!result.Succeeded)
             {
-                IEnumerable<Framework.Models.Errors.IdentityError> errors =
-                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Create user failed; unable to create user with email {user.Email}.", errors);
             }
@@ -182,6 +202,16 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IIdentityUserManager{T}.GetRolesAsync(T)"/>
+        /// </summary>
+        public async Task<IList<string>> GetRolesAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            return await userManager.GetRolesAsync(user);
+        }
+
+        /// <summary>
         /// <see cref="IIdentityUserManager{T}.IsEmailConfirmedAsync(T)"/>
         /// </summary>
         public async Task<bool> IsEmailConfirmedAsync(ApplicationUser user)
@@ -224,10 +254,31 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (!result.Succeeded)
             {
-                IEnumerable<Framework.Models.Errors.IdentityError> errors =
-                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Remove password failed; unable to remove password for {user.UserName}.", errors);
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IIdentityUserManager{T}.RemoveRolesAsync(T, string[])"/>
+        /// </summary>
+        public async Task RemoveRolesAsync(ApplicationUser user, params string[] roles)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            roles = roles.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToArray();
+
+            if (roles.Any())
+            {
+                IdentityResult result = await userManager.RemoveFromRolesAsync(user, roles);
+
+                if (!result.Succeeded)
+                {
+                    var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                    throw new IdentityException($"Remove roles failed; unable to remove roles for {user.UserName}.", errors);
+                }
             }
         }
 
@@ -246,8 +297,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (!result.Succeeded)
             {
-                IEnumerable<Framework.Models.Errors.IdentityError> errors =
-                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Reset password failed; unable to reset password for {user.UserName}.", errors);
             }
@@ -355,8 +405,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (!result.Succeeded)
             {
-                IEnumerable<Framework.Models.Errors.IdentityError> errors =
-                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Update user failed; unable to update user {user.UserName}.", errors);
             }
@@ -373,8 +422,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (!result.Succeeded)
             {
-                IEnumerable<Framework.Models.Errors.IdentityError> errors =
-                    mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Update security stamp failed; unable to update security stamp for {user.UserName}.", errors);
             }

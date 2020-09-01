@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Tardigrade.Framework.AspNet.Models.Identity;
@@ -103,6 +104,14 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
             bool exists = await roleManager.RoleExistsAsync(roleName);
 
             return exists;
+        }
+
+        /// <summary>
+        /// <see cref="IIdentityRoleManager{T}.RetrieveAsync()"/>
+        /// </summary>
+        public async Task<IList<ApplicationRole>> RetrieveAsync()
+        {
+            return await roleManager.Roles.ToListAsync();
         }
 
         /// <summary>

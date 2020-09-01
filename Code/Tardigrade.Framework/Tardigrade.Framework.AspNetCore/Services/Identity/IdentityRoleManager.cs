@@ -107,6 +107,14 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IIdentityRoleManager{T}.RetrieveAsync()"/>
+        /// </summary>
+        public async Task<IList<ApplicationRole>> RetrieveAsync()
+        {
+            return await Task.Run(() => roleManager.Roles.ToList());
+        }
+
+        /// <summary>
         /// <see cref="IIdentityRoleManager{T}.RetrieveAsync(string)"/>
         /// </summary>
         public async Task<ApplicationRole> RetrieveAsync(string roleId)

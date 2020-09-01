@@ -24,7 +24,7 @@ namespace Tardigrade.Framework.Models.Errors
         /// <param name="message">Message associated with the error.</param>
         /// <param name="objectInstance">Object associated with the failed operation.</param>
         /// <exception cref="ArgumentNullException">objectId is null, or message is null or empty.</exception>
-        public ObjectError(PK objectId, string message, T objectInstance = default(T)) : base(message)
+        public ObjectError(PK objectId, string message, T objectInstance = default) : base(message)
         {
             if (objectId == null)
             {

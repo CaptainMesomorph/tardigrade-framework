@@ -5,12 +5,12 @@ using System.IO;
 namespace Tardigrade.Framework.RestSharp.Serializers
 {
     /// <summary>
-    /// Default JSON serializer for request bodies
-    /// Doesn't currently use the SerializeAs attribute, defers to Newtonsoft's attributes
+    /// Default JSON serializer for request bodies.
+    /// Doesn't currently use the SerializeAs attribute, defers to Newtonsoft attributes.
     /// </summary>
     public class NewtonsoftJsonSerializer : ISerializer
     {
-        private readonly Newtonsoft.Json.JsonSerializer serializer;
+        private readonly JsonSerializer serializer;
 
         /// <summary>
         /// Default serializer
@@ -19,18 +19,19 @@ namespace Tardigrade.Framework.RestSharp.Serializers
         {
             ContentType = "application/json";
 
-            serializer = new Newtonsoft.Json.JsonSerializer
-            {
-                //MissingMemberHandling = MissingMemberHandling.Ignore,
-                //NullValueHandling = NullValueHandling.Include,
-                //DefaultValueHandling = DefaultValueHandling.Include
-            };
+            //serializer = new JsonSerializer
+            //{
+            //    MissingMemberHandling = MissingMemberHandling.Ignore,
+            //    NullValueHandling = NullValueHandling.Include,
+            //    DefaultValueHandling = DefaultValueHandling.Include
+            //};
+            serializer = new JsonSerializer();
         }
 
         /// <summary>
         /// Default serializer with overload for allowing custom Json.NET settings
         /// </summary>
-        public NewtonsoftJsonSerializer(Newtonsoft.Json.JsonSerializer serializer)
+        public NewtonsoftJsonSerializer(JsonSerializer serializer)
         {
             ContentType = "application/json";
             this.serializer = serializer;
@@ -65,12 +66,12 @@ namespace Tardigrade.Framework.RestSharp.Serializers
         {
             using (StringWriter stringWriter = new StringWriter())
             {
-                using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter))
+                using (var jsonTextWriter = new JsonTextWriter(stringWriter))
                 {
                     jsonTextWriter.Formatting = Formatting.Indented;
                     jsonTextWriter.QuoteChar = '"';
                     serializer.Serialize(jsonTextWriter, obj);
-                    string result = stringWriter.ToString();
+                    var result = stringWriter.ToString();
 
                     return result;
                 }

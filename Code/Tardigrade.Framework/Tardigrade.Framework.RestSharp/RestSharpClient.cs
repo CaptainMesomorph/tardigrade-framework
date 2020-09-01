@@ -15,7 +15,7 @@ namespace Tardigrade.Framework.RestSharp
         /// <summary>
         /// Underlying REST client.
         /// </summary>
-        protected RestClient RestClient { get; private set; }
+        protected RestClient RestClient { get; }
 
         /// <summary>
         /// Instantiate an instance of this class.

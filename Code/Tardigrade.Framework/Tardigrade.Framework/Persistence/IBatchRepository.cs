@@ -5,8 +5,8 @@
     /// collection of objects individually, and success or failure applies to each individual object in the collection.
     /// </summary>
     /// <typeparam name="T">Object type associated with the repository operations.</typeparam>
-    /// <typeparam name="PK">Unique identifier type for the object type.</typeparam>
-    public interface IBatchRepository<T, PK>
+    /// <typeparam name="Pk">Unique identifier type for the object type.</typeparam>
+    public interface IBatchRepository<T, Pk>
     {
     }
 }

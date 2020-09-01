@@ -20,7 +20,7 @@ namespace Tardigrade.Framework.Exceptions
         /// <summary>
         /// <see cref="BaseException()"/>
         /// </summary>
-        protected IdentityException() : base()
+        protected IdentityException()
         {
         }
 

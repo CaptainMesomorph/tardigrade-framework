@@ -2,15 +2,15 @@ using Xunit;
 
 namespace Tardigrade.Framework.ZXingNet.Tests
 {
-    public class QrCodeProcessor_Test
+    public class QrCodeProcessorTest
     {
         [Fact]
         public void GenerateAndSave_New_Success()
         {
             // Arrange.
-            string data = "https://www.news.com.au";
-            string filename = "QR Code.bmp";
-            CustomQrCodeProcessor processor = new CustomQrCodeProcessor();
+            var data = "https://www.news.com.au";
+            var filename = "QR Code.bmp";
+            var processor = new CustomQrCodeProcessor();
 
             // Act.
             processor.Generate(data, filename);
@@ -23,8 +23,8 @@ namespace Tardigrade.Framework.ZXingNet.Tests
         public void GenerateAndScan_New_Success()
         {
             // Arrange.
-            string url = "https://www.news.com.au";
-            QrCodeProcessor processor = new QrCodeProcessor();
+            var url = "https://www.news.com.au";
+            var processor = new QrCodeProcessor();
 
             // Act.
             byte[] image = processor.Generate(url);

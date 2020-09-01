@@ -10,12 +10,12 @@ namespace Tardigrade.Framework.Patterns.DependencyInjection
         /// <summary>
         /// Managed collection of services.
         /// </summary>
-        protected IServiceCollection Services { get; private set; }
+        protected IServiceCollection Services { get; }
 
         /// <summary>
         /// Service provider for retrieving service instances.
         /// </summary>
-        protected ServiceProvider ServiceProvider { get; private set; }
+        protected ServiceProvider ServiceProvider { get; }
 
         /// <summary>
         /// Create an instance of this service container.

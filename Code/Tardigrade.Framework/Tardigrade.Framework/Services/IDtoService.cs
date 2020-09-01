@@ -15,7 +15,7 @@ namespace Tardigrade.Framework.Services
     /// <typeparam name="ModelPk">Unique identifier type for the model object type.</typeparam>
     /// <typeparam name="Dto">Data Transfer Object type associated with the service operations.</typeparam>
     /// <typeparam name="DtoPk">Unique identifier type for the Data Transfer Object type.</typeparam>
-    public interface IDtoService<Model, ModelPk, Dto, DtoPk> : IObjectService<Dto, DtoPk>
+    public interface IDtoService<Model, ModelPk, Dto, in DtoPk> : IObjectService<Dto, DtoPk>
     {
         /// <summary>
         /// Alternate count method that is based upon the Model type instead of the Data Transfer Object type.
@@ -29,7 +29,7 @@ namespace Tardigrade.Framework.Services
         /// </summary>
         Task<int> CountAsync(
             Expression<Func<Model, bool>> filter = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Alternate retrieve method that filters on the Model type instead of the Data Transfer Object type.
@@ -49,7 +49,7 @@ namespace Tardigrade.Framework.Services
             Expression<Func<Model, bool>> filter = null,
             PagingContext pagingContext = null,
             Func<IQueryable<Model>, IOrderedQueryable<Model>> sortCondition = null,
-            CancellationToken cancellationToken = default(CancellationToken),
+            CancellationToken cancellationToken = default,
             params Expression<Func<Model, object>>[] includes);
     }
 }

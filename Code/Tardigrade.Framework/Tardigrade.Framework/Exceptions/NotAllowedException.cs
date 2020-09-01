@@ -13,7 +13,7 @@ namespace Tardigrade.Framework.Exceptions
         /// <summary>
         /// <see cref="BaseException()"/>
         /// </summary>
-        protected NotAllowedException() : base()
+        protected NotAllowedException()
         {
         }
 

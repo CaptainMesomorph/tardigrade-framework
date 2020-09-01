@@ -13,10 +13,10 @@ namespace Tardigrade.Framework.Extensions
         /// </summary>
         /// <typeparam name="T">Type associated with the collection.</typeparam>
         /// <param name="source">The collection to check.</param>
-        /// <returns>True if the colection is null or contains no items; false otherwise.</returns>
-        public static bool IsNulOrEmpty<T>(this IEnumerable<T> source)
+        /// <returns>True if the collection is null or contains no items; false otherwise.</returns>
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> source)
         {
-            return (source == null ? true : (source.Count() == 0));
+            return source == null || !source.Any();
         }
 
         /// <summary>

@@ -10,18 +10,15 @@ namespace Tardigrade.Framework.RestSharp.Serializers
     /// </summary>
     public class NewtonsoftJsonDeserializer : IDeserializer
     {
-        private static readonly Lazy<NewtonsoftJsonDeserializer> lazyInstance = new Lazy<NewtonsoftJsonDeserializer>();
+        private static readonly Lazy<NewtonsoftJsonDeserializer> LazyInstance = new Lazy<NewtonsoftJsonDeserializer>();
 
         /// <summary>
         /// Create lazy loaded singleton instance.
         /// </summary>
-        public static NewtonsoftJsonDeserializer Instance
-        {
-            get { return lazyInstance.Value; }
-        }
+        public static NewtonsoftJsonDeserializer Instance => LazyInstance.Value;
 
         /// <summary>
-        /// Not used for JSON deserialisation.
+        /// Not used for JSON deserialization.
         /// </summary>
         public string DateFormat { get; set; }
 
@@ -34,12 +31,12 @@ namespace Tardigrade.Framework.RestSharp.Serializers
         }
 
         /// <summary>
-        /// Not used for JSON deserialisation.
+        /// Not used for JSON deserialization.
         /// </summary>
         public string Namespace { get; set; }
 
         /// <summary>
-        /// Not used for JSON deserialisation.
+        /// Not used for JSON deserialization.
         /// </summary>
         public string RootElement { get; set; }
     }

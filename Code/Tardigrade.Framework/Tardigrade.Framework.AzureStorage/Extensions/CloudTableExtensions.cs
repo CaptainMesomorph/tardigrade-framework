@@ -1,4 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -23,7 +23,7 @@ namespace Tardigrade.Framework.AzureStorage.Extensions
         public static async Task<IList<T>> ExecuteQueryAsync<T>(
             this CloudTable table,
             TableQuery<T> query,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
             where T : ITableEntity, new()
         {
             if (query == null)
@@ -31,20 +31,20 @@ namespace Tardigrade.Framework.AzureStorage.Extensions
                 throw new ArgumentNullException(nameof(query));
             }
 
-            TableQuery<T> runningQuery = new TableQuery<T>()
+            var runningQuery = new TableQuery<T>()
             {
                 FilterString = query.FilterString,
                 SelectColumns = query.SelectColumns,
                 TakeCount = query.TakeCount
             };
 
-            List<T> items = new List<T>();
+            var items = new List<T>();
             TableContinuationToken token = null;
 
             do
             {
                 runningQuery.TakeCount = query.TakeCount - items.Count;
-                TableQuerySegment<T> segment = await table.ExecuteQuerySegmentedAsync(runningQuery, token);
+                TableQuerySegment<T> segment = await table.ExecuteQuerySegmentedAsync(runningQuery, token, cancellationToken);
                 token = segment.ContinuationToken;
                 items.AddRange(segment);
             } while (

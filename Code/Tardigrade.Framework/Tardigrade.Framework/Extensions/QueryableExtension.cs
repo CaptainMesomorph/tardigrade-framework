@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 
 namespace Tardigrade.Framework.Extensions
 {
     /// <summary>
     /// This static class contains extension methods for IQueryable.
     /// </summary>
-    public static class IQueryableExtension
+    public static class QueryableExtension
     {
         /// <summary>
         /// Apply a sort condition based upon a string of the format: <![CDATA[[<property>:ASC|DESC,]+]]>. For example,
@@ -18,7 +17,7 @@ namespace Tardigrade.Framework.Extensions
         /// <param name="source">IQueryable this extension is applied to.</param>
         /// <param name="sortBy">String containing the sort condition.</param>
         /// <returns>An IQueryable with the sort condition applied.</returns>
-        /// <exception cref="ArgumentException">Formay of sortBy is invalid.</exception>
+        /// <exception cref="ArgumentException">Format of sortBy is invalid.</exception>
         /// <exception cref="ArgumentNullException">source is null, or sortBy is null or empty.</exception>
         public static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> source, string sortBy)
         {
@@ -33,9 +32,9 @@ namespace Tardigrade.Framework.Extensions
             {
                 string[] condition = sortItem.Trim().Split(':');
 
-                if (condition.Count() != 2)
+                if (condition.Length != 2)
                 {
-                    throw new ArgumentException("Format of sort condition invalid; propery/order pair incorrectly defined.", nameof(sortBy));
+                    throw new ArgumentException("Format of sort condition invalid; property/order pair incorrectly defined.", nameof(sortBy));
                 }
 
                 string property = condition[0].Trim();

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Tardigrade.Framework.Services.Identity
 {
@@ -13,10 +14,20 @@ namespace Tardigrade.Framework.Services.Identity
         /// </summary>
         /// <param name="user">Application user whose password should be set.</param>
         /// <param name="password">Password to set.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or password is null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">Add password failed due to an unknown reason.</exception>
         Task AddPasswordAsync(TUser user, string password);
+
+        /// <summary>
+        /// Add the user to a role or roles. Null or empty roles will be ignored.
+        /// </summary>
+        /// <param name="user">Application user to add the role(s) to.</param>
+        /// <param name="roles">Role(s) to add to the user.</param>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        /// <exception cref="Exceptions.IdentityException">Add role failed due to an unknown reason.</exception>
+        Task AddRolesAsync(TUser user, params string[] roles);
 
         /// <summary>
         /// Check whether the given password is valid for the specified application user.
@@ -32,7 +43,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// </summary>
         /// <param name="user">Application user to validate the token against.</param>
         /// <param name="token">Email confirmation token to validate.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or token is null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">Confirm email failed due to an unknown reason.</exception>
         Task ConfirmEmailAsync(TUser user, string token);
@@ -81,6 +92,14 @@ namespace Tardigrade.Framework.Services.Identity
         Task<int> GetAccessFailedCountAsync(TUser user);
 
         /// <summary>
+        /// Retrieve all roles associated with the given user.
+        /// </summary>
+        /// <param name="user">Application user to check.</param>
+        /// <returns>Roles associated with the user if they exist; an empty collection otherwise.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        Task<IList<string>> GetRolesAsync(TUser user);
+
+        /// <summary>
         /// Check whether the email address for the specified user has been verified.
         /// </summary>
         /// <param name="user">Application user whose email confirmation status should be returned.</param>
@@ -109,10 +128,20 @@ namespace Tardigrade.Framework.Services.Identity
         /// Remove an application user's password.
         /// </summary>
         /// <param name="user">Application user whose password should be removed.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         /// <exception cref="Exceptions.IdentityException">Remove password failed due to an unknown reason.</exception>
         Task RemovePasswordAsync(TUser user);
+
+        /// <summary>
+        /// Remove the user from a role or roles. Null or empty roles will be ignored.
+        /// </summary>
+        /// <param name="user">Application user to remove the role(s) from.</param>
+        /// <param name="roles">Role(s) to remove from the user.</param>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        /// <exception cref="Exceptions.IdentityException">Remove role(s) failed due to an unknown reason.</exception>
+        Task RemoveRolesAsync(TUser user, params string[] roles);
 
         /// <summary>
         /// Reset the application user's password to the specified new password after validating the given password
@@ -121,7 +150,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="user">Application user whose password should be reset.</param>
         /// <param name="token">Password reset token to verify.</param>
         /// <param name="newPassword">New password to set if reset token verification succeeds.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or token null or empty, or newPassword null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">Reset password failed due to an unknown reason.</exception>
         Task ResetPasswordAsync(TUser user, string token, string newPassword);
@@ -156,7 +185,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="user">Application user to sign-in.</param>
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
         /// <param name="authenticationMethod">Name of the method used to authenticate the user.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         Task SignInAsync(TUser user, bool isPersistent = false, string authenticationMethod = null);
 
@@ -167,7 +196,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// <param name="password">Password to attempt sign-in with.</param>
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
         /// <param name="lockoutOnFailure">Flag indicating if the user account should be locked if the sign-in fails.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">user is null, or password is null or empty.</exception>
         /// <exception cref="Exceptions.IdentityException">User sign-in failed due to an unknown reason.</exception>
         /// <exception cref="Exceptions.LockedOutException">Sign-in failed because user is locked out.</exception>
@@ -182,14 +211,14 @@ namespace Tardigrade.Framework.Services.Identity
         /// <summary>
         /// Signs the current user out of the application.
         /// </summary>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         Task SignOutAsync();
 
         /// <summary>
         /// Update the specified user.
         /// </summary>
         /// <param name="user">Application user to update.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         /// <exception cref="Exceptions.IdentityException">User update failed due to an unknown reason.</exception>
         Task UpdateAsync(TUser user);
@@ -198,7 +227,7 @@ namespace Tardigrade.Framework.Services.Identity
         /// Regenerate the security stamp for the specified user.
         /// </summary>
         /// <param name="user">Application user whose security stamp should be regenerated.</param>
-        /// <returns>Task object representing the asynchronous operation.</returns>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="System.ArgumentNullException">user is null.</exception>
         /// <exception cref="Exceptions.IdentityException">User update failed due to an unknown reason.</exception>
         Task UpdateSecurityStampAsync(TUser user);

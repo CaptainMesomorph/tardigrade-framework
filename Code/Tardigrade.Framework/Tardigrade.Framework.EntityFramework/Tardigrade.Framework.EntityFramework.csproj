@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;net461</TargetFrameworks>
-    <Version>9.2.1</Version>
+    <Version>9.3.0</Version>
     <Authors>Rafidzal Rafiq</Authors>
     <Product>Tardigrade Framework Library (Entity Framework Integration)</Product>
     <Description>Software framework for supporting coding best practices.</Description>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="6.4.0" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
   </ItemGroup>
 
   <ItemGroup>

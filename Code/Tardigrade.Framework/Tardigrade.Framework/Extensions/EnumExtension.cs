@@ -16,11 +16,11 @@ namespace Tardigrade.Framework.Extensions
         /// <returns>Description value if exists; enumeration value as a string otherwise.</returns>
         public static string ToDescription(this Enum enumeration)
         {
-            DisplayAttribute descriptionAttribute = (DisplayAttribute)enumeration.GetType()
+            DisplayAttribute descriptionAttribute = (DisplayAttribute)enumeration
+                .GetType()
                 .GetField(enumeration.ToString())
                 .GetCustomAttributes(false)
-                .Where(a => a is DisplayAttribute)
-                .FirstOrDefault();
+                .FirstOrDefault(a => a is DisplayAttribute);
             string description = (descriptionAttribute != null ? descriptionAttribute.Description : enumeration.ToString());
 
             return description;
@@ -34,7 +34,7 @@ namespace Tardigrade.Framework.Extensions
         /// <param name="value">Integer value to convert.</param>
         /// <param name="defaultValue">Default enumerated type value to use if integer value is not within a valid range.</param>
         /// <returns>Enumerated type value.</returns>
-        public static T ToEnum<T>(this int value, T defaultValue = default(T)) where T : struct, IComparable, IConvertible, IFormattable
+        public static T ToEnum<T>(this int value, T defaultValue = default) where T : struct, IComparable, IConvertible, IFormattable
         {
             if (!typeof(T).IsEnum)
             {
@@ -59,7 +59,7 @@ namespace Tardigrade.Framework.Extensions
         /// <param name="value">String value to convert.</param>
         /// <param name="defaultValue">Default enumerated type value to use if string value is not within a valid range.</param>
         /// <returns>Enumerated type value.</returns>
-        public static T ToEnum<T>(this string value, T defaultValue = default(T)) where T : struct, IComparable, IConvertible, IFormattable
+        public static T ToEnum<T>(this string value, T defaultValue = default) where T : struct, IComparable, IConvertible, IFormattable
         {
             if (!typeof(T).IsEnum)
             {
@@ -81,11 +81,11 @@ namespace Tardigrade.Framework.Extensions
         /// <returns>Name value if exists; enumeration value as a string otherwise.</returns>
         public static string ToName(this Enum enumeration)
         {
-            DisplayAttribute displayAttribute = (DisplayAttribute)enumeration.GetType()
+            DisplayAttribute displayAttribute = (DisplayAttribute)enumeration
+                .GetType()
                 .GetField(enumeration.ToString())
                 .GetCustomAttributes(false)
-                .Where(a => a is DisplayAttribute)
-                .FirstOrDefault();
+                .FirstOrDefault(a => a is DisplayAttribute);
             string name = (displayAttribute != null ? displayAttribute.Name : enumeration.ToString());
 
             return name;

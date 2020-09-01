@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Tardigrade.Framework.AspNetCore.Mappers
 {
     /// <summary>
-    /// Automapper mapping profile for types associated with the application user identity framework.
+    /// AutoMapper mapping profile for types associated with the application user identity framework.
     /// </summary>
     public class IdentityProfile : Profile
     {
