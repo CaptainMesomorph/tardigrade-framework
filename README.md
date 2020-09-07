@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Sept 7, 2020 - 11.2.0 Replaced usage of GetAwaiter().GetResult()**
+
+- Replaced usage of "GetAwaiter().GetResult()" with "AsyncHelper.RunSync(() => asyncMethod())" in the AzureStorage project due to upgrade issues moving to the Microsoft.Azure.Cosmos.Table NuGet package.
+
 **Sept 1, 2020 - 11.1.0 Reverted Repository class changes from previous release**
 
 - Reverted changes to the Create operations of the Repository class in the EntityFrameworkCore project that rejected object IDs set to their "default" values.
