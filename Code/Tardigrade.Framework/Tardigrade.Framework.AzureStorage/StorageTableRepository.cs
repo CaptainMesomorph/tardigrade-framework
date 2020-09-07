@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tardigrade.Framework.AzureStorage.Models;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Helpers;
 using Tardigrade.Framework.Persistence;
 
 namespace Tardigrade.Framework.AzureStorage
@@ -44,7 +45,7 @@ namespace Tardigrade.Framework.AzureStorage
             try
             {
                 // Execute the insert operation.
-                result = Table.ExecuteAsync(operation).GetAwaiter().GetResult();
+                result = AsyncHelper.RunSync(() => Table.ExecuteAsync(operation));
             }
             // https://stackoverflow.com/questions/44799524/azure-table-storage-throwing-exception-on-insert-409-conflict
             catch (StorageException e) when (e.RequestInformation.HttpStatusCode == (int)HttpStatusCode.Conflict)
@@ -168,7 +169,7 @@ namespace Tardigrade.Framework.AzureStorage
             try
             {
                 // Execute the operation.
-                TableResult result = Table.ExecuteAsync(operation).GetAwaiter().GetResult();
+                TableResult result = AsyncHelper.RunSync(() => Table.ExecuteAsync(operation));
 
                 if (result.HttpStatusCode != (int)HttpStatusCode.OK)
                 {
@@ -256,7 +257,7 @@ namespace Tardigrade.Framework.AzureStorage
                 TableOperation insertOrReplaceOperation = TableOperation.Replace(item);
 
                 // Execute the operation.
-                Table.ExecuteAsync(insertOrReplaceOperation).GetAwaiter().GetResult();
+                AsyncHelper.RunSync(() => Table.ExecuteAsync(insertOrReplaceOperation));
             }
             catch (Exception e)
             {

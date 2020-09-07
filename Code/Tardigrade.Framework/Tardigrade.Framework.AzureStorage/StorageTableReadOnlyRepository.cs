@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Tardigrade.Framework.AzureStorage.Extensions;
 using Tardigrade.Framework.AzureStorage.Models;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Helpers;
 using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
 
@@ -62,7 +63,7 @@ namespace Tardigrade.Framework.AzureStorage
             // Create the table if it doesn't exist.
             try
             {
-                Table.CreateIfNotExistsAsync().GetAwaiter().GetResult();
+                AsyncHelper.RunSync(() => Table.CreateIfNotExistsAsync());
             }
             catch (StorageException e) when (e.InnerException is HttpRequestException)
             {
@@ -169,7 +170,7 @@ namespace Tardigrade.Framework.AzureStorage
             {
                 // Construct the query operation for all objects.
                 var query = new TableQuery<T>();
-                items = Table.ExecuteQueryAsync(query).GetAwaiter().GetResult();
+                items = AsyncHelper.RunSync(() => Table.ExecuteQueryAsync(query));
 
                 if (pagingContext?.PageSize > 0)
                 {
@@ -237,7 +238,7 @@ namespace Tardigrade.Framework.AzureStorage
             // Execute the operation.
             try
             {
-                result = Table.ExecuteAsync(retrieveOperation).GetAwaiter().GetResult();
+                result = AsyncHelper.RunSync(() => Table.ExecuteAsync(retrieveOperation));
             }
             catch (Exception e)
             {
