@@ -4,6 +4,11 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Sept 15, 2020 - 11.3.0 Updated IdentityUserManager implementations to include DeleteAsync**
+
+- Updated IdentityUserManager implementations to include a DeleteAsync() method.
+- Updated NuGet packages.
+
 **Sept 7, 2020 - 11.2.0 Replaced usage of GetAwaiter().GetResult()**
 
 - Replaced usage of "GetAwaiter().GetResult()" with "AsyncHelper.RunSync(() => asyncMethod())" in the AzureStorage project due to upgrade issues moving to the Microsoft.Azure.Cosmos.Table NuGet package.
