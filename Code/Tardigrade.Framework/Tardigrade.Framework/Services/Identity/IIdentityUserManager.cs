@@ -59,6 +59,15 @@ namespace Tardigrade.Framework.Services.Identity
         Task<TUser> CreateAsync(TUser user, string password);
 
         /// <summary>
+        /// Delete the specified user.
+        /// </summary>
+        /// <param name="user">Application user to delete.</param>
+        /// <returns>Task object representing the asynchronous operation result.</returns>
+        /// <exception cref="System.ArgumentNullException">user is null.</exception>
+        /// <exception cref="Exceptions.IdentityException">User deletion failed due to an unknown reason.</exception>
+        Task DeleteAsync(TUser user);
+
+        /// <summary>
         /// Generate an email confirmation token for the specified user.
         /// </summary>
         /// <param name="user">Application user to generate an email confirmation token for.</param>

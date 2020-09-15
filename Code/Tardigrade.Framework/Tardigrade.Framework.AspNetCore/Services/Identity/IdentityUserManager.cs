@@ -131,6 +131,23 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         }
 
         /// <summary>
+        /// <see cref="IIdentityUserManager{T}.DeleteAsync(T)"/>
+        /// </summary>
+        public async Task DeleteAsync(ApplicationUser user)
+        {
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            IdentityResult result = await userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+
+                throw new IdentityException($"Delete user failed; unable to delete user {user.UserName}.", errors);
+            }
+        }
+
+        /// <summary>
         /// <see cref="IDisposable.Dispose()"/>
         /// </summary>
         public void Dispose()
