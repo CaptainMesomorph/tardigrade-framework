@@ -4,6 +4,11 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Sept 18, 2020 - 11.4.0 Enhanced the Repository layer to handle derived types from a class hierarchy**
+
+- Enhanced the Repository layer of the EntityFramework project to handle derived types from a class hierarchy.
+- Renamed the Repository classes of the EntityFramework project to remove the "EntityFramework" prefix.
+
 **Sept 15, 2020 - 11.3.0 Updated IdentityUserManager implementations to include DeleteAsync**
 
 - Updated IdentityUserManager implementations to include a DeleteAsync() method.
