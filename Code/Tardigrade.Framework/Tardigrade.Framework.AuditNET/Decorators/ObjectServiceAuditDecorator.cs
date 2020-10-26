@@ -624,11 +624,12 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         public async Task UpdateAsync(T item, CancellationToken cancellationToken = new CancellationToken())
         {
             AuditScope auditScope = null;
+            T original = await readOnlyRepository.RetrieveAsync(item.Id);
             bool isServiceException = false;
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Update", () => item);
+                auditScope = await AuditScope.CreateAsync($"{typeof(T).Name}:Update", () => original);
                 auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{typeof(T).FullName}";
 
@@ -641,6 +642,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                     isServiceException = true;
                     throw;
                 }
+
+                original = item;
             }
             catch
             {
