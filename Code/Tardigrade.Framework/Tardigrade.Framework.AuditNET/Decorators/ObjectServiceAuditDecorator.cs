@@ -11,6 +11,8 @@ using Tardigrade.Framework.Persistence;
 using Tardigrade.Framework.Services;
 using Tardigrade.Framework.Services.Users;
 
+// ReSharper disable AccessToModifiedClosure
+
 namespace Tardigrade.Framework.AuditNET.Decorators
 {
     /// <summary>
@@ -18,7 +20,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
     /// </summary>
     /// <typeparam name="TEntity">Object type associated with the service operations.</typeparam>
     /// <typeparam name="TKey">Unique identifier type for the object type.</typeparam>
-    public class ObjectServiceAuditDecorator<TEntity, TKey> : IObjectService<TEntity, TKey> where TEntity : IHasUniqueIdentifier<TKey>
+    public class ObjectServiceAuditDecorator<TEntity, TKey>
+        : IObjectService<TEntity, TKey> where TEntity : IHasUniqueIdentifier<TKey>
     {
         private readonly IObjectService<TEntity, TKey> decoratedService;
         private readonly IReadOnlyRepository<TEntity, TKey> readOnlyRepository;
@@ -142,10 +145,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     throw;
                 }
-                else
-                {
-                    // TODO: Ignore and log the exception raised by the auditing framework.
-                }
+
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
 
             return created;
@@ -183,10 +184,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     throw;
                 }
-                else
-                {
-                    // TODO: Ignore and log the exception raised by the auditing framework.
-                }
+
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
 
             return created;
@@ -225,10 +224,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     throw;
                 }
-                else
-                {
-                    // TODO: Ignore and log the exception raised by the auditing framework.
-                }
+
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
             finally
             {
@@ -244,7 +241,9 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <summary>
         /// <see cref="IObjectService{T, PK}.CreateAsync(T, CancellationToken)"/>
         /// </summary>
-        public async Task<TEntity> CreateAsync(TEntity item, CancellationToken cancellationToken = new CancellationToken())
+        public async Task<TEntity> CreateAsync(
+            TEntity item,
+            CancellationToken cancellationToken = new CancellationToken())
         {
             TEntity created = default;
             AuditScope auditScope = null;
@@ -272,10 +271,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     throw;
                 }
-                else
-                {
-                    // TODO: Ignore and log the exception raised by the auditing framework.
-                }
+
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
             finally
             {
@@ -301,6 +298,9 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     auditScope.Event.Environment.UserName = userContext.CurrentUser;
                     auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+
+                    // Set the deleted item to null. This prevents Audit.NET from replicating the audit details of the
+                    // "Old" object into "New".
                     item = default;
                 }
             }
@@ -323,6 +323,10 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 auditScope = await AuditScope.CreateAsync($"{typeof(TEntity).Name}:Delete", () => item);
                 auditScope.Event.Environment.UserName = userContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+
+                // Set the deleted item to null. This prevents Audit.NET from replicating the audit details of the
+                // "Old" object into "New".
+                // ReSharper disable once RedundantAssignment
                 item = default;
             }
             catch
@@ -413,7 +417,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            List<TEntity> retrieved = decoratedService.Retrieve(filter, pagingContext, sortCondition, includes).ToList();
+            IEnumerable<TEntity> retrieved =
+                decoratedService.Retrieve(filter, pagingContext, sortCondition, includes).ToList();
 
             try
             {
@@ -471,10 +476,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     throw;
                 }
-                else
-                {
-                    // TODO: Ignore and log the exception raised by the auditing framework.
-                }
+
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
 
             return retrieved;
@@ -490,17 +493,19 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             CancellationToken cancellationToken = new CancellationToken(),
             params Expression<Func<TEntity, object>>[] includes)
         {
-            IEnumerable<TEntity> retrieved = await decoratedService.RetrieveAsync(
+            IEnumerable<TEntity> entities = await decoratedService.RetrieveAsync(
                 filter,
                 pagingContext,
                 sortCondition,
                 cancellationToken,
                 includes);
+            IEnumerable<TEntity> retrieved = entities.ToList();
             AuditScope auditScope = null;
 
             try
             {
-                // Due to size constraints, only audit the number of objects retrieved rather than the objects themselves.
+                // Due to size constraints, only audit the number of objects retrieved rather than the objects
+                // themselves.
                 var options = new AuditScopeOptions
                 {
                     EventType = $"{typeof(TEntity).Name}:Retrieve+",
@@ -561,10 +566,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     throw;
                 }
-                else
-                {
-                    // TODO: Ignore and log the exception raised by the auditing framework.
-                }
+
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
             finally
             {
@@ -602,7 +605,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                         throw;
                     }
 
-                    // Assign the updated item back to the original. This allows Audit.NET to determine what was changed.
+                    // Assign the updated item back to the original. This allows Audit.NET to determine what was
+                    // changed.
                     original = item;
                 }
             }
@@ -612,10 +616,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     throw;
                 }
-                else
-                {
-                    // TODO: Ignore and log the exception raised by the auditing framework.
-                }
+
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
         }
 
@@ -654,10 +656,8 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 {
                     throw;
                 }
-                else
-                {
-                    // TODO: Ignore and log the exception raised by the auditing framework.
-                }
+
+                // TODO: Ignore and log the exception raised by the auditing framework.
             }
             finally
             {
