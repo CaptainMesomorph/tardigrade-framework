@@ -36,7 +36,9 @@ namespace Tardigrade.Framework.EntityFramework
     /// <typeparam name="TDerivedEntity">Derived type associated with the repository operations.</typeparam>
     /// <typeparam name="TKey">Unique identifier type for the object type.</typeparam>
     public class Repository<TBaseEntity, TDerivedEntity, TKey>
-        : ReadOnlyRepository<TBaseEntity, TDerivedEntity, TKey>, IRepository<TDerivedEntity, TKey>
+        : ReadOnlyRepository<TBaseEntity, TDerivedEntity, TKey>,
+            IRepository<TDerivedEntity, TKey>,
+            IBulkRepository<TDerivedEntity>
         where TBaseEntity : class
         where TDerivedEntity : class, TBaseEntity
     {

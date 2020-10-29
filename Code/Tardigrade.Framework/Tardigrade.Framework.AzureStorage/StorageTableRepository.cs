@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -128,26 +127,6 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{TEntity}.CreateBulk(IEnumerable{TEntity})"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual IEnumerable<TEntity> CreateBulk(IEnumerable<TEntity> items)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IBulkRepository{TEntity}.CreateBulk(IEnumerable{TEntity})"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual Task<IEnumerable<TEntity>> CreateBulkAsync(
-            IEnumerable<TEntity> items,
-            CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// <see cref="IRepository{TEntity, TKey}.Delete(TEntity)"/>
         /// </summary>
         /// <exception cref="ArgumentNullException">The item parameter is null, or does not contain either a Partition Key or Row Key.</exception>
@@ -217,24 +196,6 @@ namespace Tardigrade.Framework.AzureStorage
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{TEntity}.DeleteBulk(IEnumerable{TEntity})"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual void DeleteBulk(IEnumerable<TEntity> items)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IBulkRepository{TEntity}.DeleteBulkAsync(IEnumerable{TEntity}, CancellationToken)"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual Task DeleteBulkAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// <see cref="IRepository{TEntity, TKey}.Update(TEntity)"/>
         /// </summary>
         /// <exception cref="ArgumentNullException">The item parameter is null, or does not contain either a Partition Key or Row Key.</exception>
@@ -290,24 +251,6 @@ namespace Tardigrade.Framework.AzureStorage
 
             // Execute the operation.
             await Table.ExecuteAsync(insertOrReplaceOperation, cancellationToken);
-        }
-
-        /// <summary>
-        /// <see cref="IBulkRepository{TEntity}.UpdateBulk(IEnumerable{TEntity})"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual void UpdateBulk(IEnumerable<TEntity> items)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// <see cref="IBulkRepository{TEntity}.UpdateBulkAsync(IEnumerable{TEntity}, CancellationToken)"/>
-        /// </summary>
-        /// <exception cref="NotImplementedException">To be implemented.</exception>
-        public virtual Task UpdateBulkAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
         }
     }
 }

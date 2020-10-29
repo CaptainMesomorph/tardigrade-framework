@@ -15,7 +15,8 @@ namespace Tardigrade.Framework.EntityFrameworkCore
     /// <see cref="IRepository{TEntity, TKey}"/>
     /// <a href="https://stackoverflow.com/questions/40132380/ef-cannot-apply-operator-to-operands-of-type-tid-and-tid">EF - Cannot apply operator '==' to operands of type 'TId' and 'TId'</a>
     /// </summary>
-    public class Repository<TEntity, TKey> : ReadOnlyRepository<TEntity, TKey>, IRepository<TEntity, TKey>
+    public class Repository<TEntity, TKey>
+        : ReadOnlyRepository<TEntity, TKey>, IRepository<TEntity, TKey>, IBulkRepository<TEntity>
         where TEntity : class, IHasUniqueIdentifier<TKey>
         where TKey : IEquatable<TKey>
     {

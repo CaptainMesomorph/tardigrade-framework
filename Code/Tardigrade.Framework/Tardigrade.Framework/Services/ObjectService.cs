@@ -16,6 +16,11 @@ namespace Tardigrade.Framework.Services
     public class ObjectService<TEntity, TKey> : IObjectService<TEntity, TKey> where TEntity : class
     {
         /// <summary>
+        /// Bulk operations repository associated with the service.
+        /// </summary>
+        protected IBulkRepository<TEntity> BulkRepository { get; }
+
+        /// <summary>
         /// Repository associated with the service.
         /// </summary>
         protected IRepository<TEntity, TKey> Repository { get; }
@@ -26,6 +31,7 @@ namespace Tardigrade.Framework.Services
         public ObjectService(IRepository<TEntity, TKey> repository)
         {
             Repository = repository;
+            BulkRepository = repository as IBulkRepository<TEntity>;
         }
 
         /// <summary>
@@ -62,12 +68,16 @@ namespace Tardigrade.Framework.Services
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Create(IEnumerable{T})"/>
+        /// <exception cref="NotSupportedException">Underlying repository layer does not support bulk operations.</exception>
         /// </summary>
         public virtual IEnumerable<TEntity> Create(IEnumerable<TEntity> items)
         {
+            if (BulkRepository == null)
+                throw new NotSupportedException("Underlying repository layer does not support bulk operations.");
+
             try
             {
-                return Repository.CreateBulk(items);
+                return BulkRepository.CreateBulk(items);
             }
             catch (RepositoryException e)
             {
@@ -92,14 +102,18 @@ namespace Tardigrade.Framework.Services
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <exception cref="NotSupportedException">Underlying repository layer does not support bulk operations.</exception>
         /// </summary>
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(
             IEnumerable<TEntity> items,
             CancellationToken cancellationToken = default)
         {
+            if (BulkRepository == null)
+                throw new NotSupportedException("Underlying repository layer does not support bulk operations.");
+
             try
             {
-                return await Repository.CreateBulkAsync(items, cancellationToken);
+                return await BulkRepository.CreateBulkAsync(items, cancellationToken);
             }
             catch (RepositoryException e)
             {

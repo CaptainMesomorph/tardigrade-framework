@@ -11,7 +11,7 @@ namespace Tardigrade.Framework.Persistence
     /// </summary>
     /// <typeparam name="TEntity">Object type associated with the repository operations.</typeparam>
     /// <typeparam name="TKey">Unique identifier type for the object type.</typeparam>
-    public interface IRepository<TEntity, in TKey> : IReadOnlyRepository<TEntity, TKey>, IBulkRepository<TEntity>
+    public interface IRepository<TEntity, in TKey> : IReadOnlyRepository<TEntity, TKey>
     {
         /// <summary>
         /// Create an instance of the object type.

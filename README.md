@@ -7,6 +7,7 @@ Framework for supporting coding best practices.
 **Oct 29, 2020 - 11.5.0 Resolved issue with UpdateAsync method of the Audit Decorator**
 
 - Resolved an issue with the UpdateAsync method of the Audit Decorator.
+- Redesigned the IRepository interface so that it no longer extends the IBulkRepository interface. Instead implementing classes need to implement IBulkRepository explicitly.
 - Renamed the Repository classes of the EntityFrameworkCore project to remove the "EntityFrameworkCore" prefix.
 - General code clean-up based on ReSharper recommendations.
 - Updated third-party NuGet packages.
