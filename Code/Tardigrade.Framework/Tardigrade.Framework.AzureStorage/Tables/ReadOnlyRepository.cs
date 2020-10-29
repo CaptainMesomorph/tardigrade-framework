@@ -14,13 +14,13 @@ using Tardigrade.Framework.Helpers;
 using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
 
-namespace Tardigrade.Framework.AzureStorage
+namespace Tardigrade.Framework.AzureStorage.Tables
 {
     /// <summary>
     /// Repository layer that is based on Azure Storage Tables.
     /// <see cref="IReadOnlyRepository{TEntity, TKey}"/>
     /// </summary>
-    public class StorageTableReadOnlyRepository<TEntity, TKey> : IReadOnlyRepository<TEntity, TKey>
+    public class ReadOnlyRepository<TEntity, TKey> : IReadOnlyRepository<TEntity, TKey>
         where TEntity : ITableEntity, new()
         where TKey : ITableKey
     {
@@ -39,7 +39,7 @@ namespace Tardigrade.Framework.AzureStorage
         /// <exception cref="FormatException">Storage Account name in storageConnectionString is not recognised.</exception>
         /// <exception cref="FormatException">Storage Account name and key combination in storageConnectionString is invalid.</exception>
         /// <exception cref="FormatException">A Storage Account endpoint in storageConnectionString is invalid.</exception>
-        public StorageTableReadOnlyRepository(string connectionString, string tableName)
+        public ReadOnlyRepository(string connectionString, string tableName)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
             {

@@ -8,21 +8,20 @@ using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Helpers;
 using Tardigrade.Framework.Persistence;
 
-namespace Tardigrade.Framework.AzureStorage
+namespace Tardigrade.Framework.AzureStorage.Tables
 {
     /// <summary>
     /// Repository layer that is based on Azure Storage Tables.
     /// <see cref="IRepository{TEntity, TKey}"/>
     /// </summary>
-    public class StorageTableRepository<TEntity, TKey>
-        : StorageTableReadOnlyRepository<TEntity, TKey>, IRepository<TEntity, TKey>
+    public class Repository<TEntity, TKey> : ReadOnlyRepository<TEntity, TKey>, IRepository<TEntity, TKey>
         where TEntity : ITableEntity, new()
         where TKey : ITableKey
     {
         /// <summary>
-        /// <see cref="StorageTableReadOnlyRepository{TEntity, TKey}"/>
+        /// <see cref="ReadOnlyRepository{TEntity, TKey}"/>
         /// </summary>
-        public StorageTableRepository(string connectionString, string tableName) : base(connectionString, tableName)
+        public Repository(string connectionString, string tableName) : base(connectionString, tableName)
         {
         }
 
