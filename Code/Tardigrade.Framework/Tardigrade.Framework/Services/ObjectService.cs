@@ -13,17 +13,17 @@ namespace Tardigrade.Framework.Services
     /// <summary>
     /// <see cref="IObjectService{T, Pk}"/>
     /// </summary>
-    public class ObjectService<T, Pk> : IObjectService<T, Pk> where T : class
+    public class ObjectService<TEntity, TKey> : IObjectService<TEntity, TKey> where TEntity : class
     {
         /// <summary>
         /// Repository associated with the service.
         /// </summary>
-        protected IRepository<T, Pk> Repository { get; }
+        protected IRepository<TEntity, TKey> Repository { get; }
 
         /// <summary>
         /// Create an instance of this class.
         /// </summary>
-        public ObjectService(IRepository<T, Pk> repository)
+        public ObjectService(IRepository<TEntity, TKey> repository)
         {
             Repository = repository;
         }
@@ -31,7 +31,7 @@ namespace Tardigrade.Framework.Services
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Count(Expression{Func{T, bool}})"/>
         /// </summary>
-        public virtual int Count(Expression<Func<T, bool>> filter = null)
+        public virtual int Count(Expression<Func<TEntity, bool>> filter = null)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error calculating the number of objects of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error calculating the number of objects of type {typeof(TEntity).Name}.", e);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Tardigrade.Framework.Services
         /// <see cref="IObjectService{T, Pk}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<int> CountAsync(
-            Expression<Func<T, bool>> filter = null,
+            Expression<Func<TEntity, bool>> filter = null,
             CancellationToken cancellationToken = default)
         {
             try
@@ -56,14 +56,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error calculating the number of objects of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error calculating the number of objects of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Create(IEnumerable{T})"/>
         /// </summary>
-        public virtual IEnumerable<T> Create(IEnumerable<T> items)
+        public virtual IEnumerable<TEntity> Create(IEnumerable<TEntity> items)
         {
             try
             {
@@ -71,14 +71,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error creating an object of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error creating an object of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Create(T)"/>
         /// </summary>
-        public virtual T Create(T item)
+        public virtual TEntity Create(TEntity item)
         {
             try
             {
@@ -86,15 +86,15 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error creating an object of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error creating an object of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
         /// </summary>
-        public virtual async Task<IEnumerable<T>> CreateAsync(
-            IEnumerable<T> items,
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(
+            IEnumerable<TEntity> items,
             CancellationToken cancellationToken = default)
         {
             try
@@ -103,14 +103,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error creating an object of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error creating an object of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.CreateAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task<T> CreateAsync(T item, CancellationToken cancellationToken = default)
+        public virtual async Task<TEntity> CreateAsync(TEntity item, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -118,14 +118,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error creating an object of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error creating an object of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Delete(T)"/>
         /// </summary>
-        public virtual void Delete(T item)
+        public virtual void Delete(TEntity item)
         {
             try
             {
@@ -133,14 +133,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error deleting an object of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error deleting an object of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.DeleteAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task DeleteAsync(T item, CancellationToken cancellationToken = default)
+        public virtual async Task DeleteAsync(TEntity item, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -148,14 +148,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error deleting an object of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error deleting an object of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Exists(Pk)"/>
         /// </summary>
-        public virtual bool Exists(Pk id)
+        public virtual bool Exists(TKey id)
         {
             try
             {
@@ -163,14 +163,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (Exception e)
             {
-                throw new ServiceException($"Error determining whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
+                throw new ServiceException($"Error determining whether an object of type {typeof(TEntity).Name} with unique identifier of {id} exists.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.ExistsAsync(Pk, CancellationToken)"/>
         /// </summary>
-        public virtual async Task<bool> ExistsAsync(Pk id, CancellationToken cancellationToken = default)
+        public virtual async Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -178,18 +178,18 @@ namespace Tardigrade.Framework.Services
             }
             catch (Exception e)
             {
-                throw new ServiceException($"Error determining whether an object of type {typeof(T).Name} with unique identifier of {id} exists.", e);
+                throw new ServiceException($"Error determining whether an object of type {typeof(TEntity).Name} with unique identifier of {id} exists.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public virtual IEnumerable<T> Retrieve(
-            Expression<Func<T, bool>> filter = null,
+        public virtual IEnumerable<TEntity> Retrieve(
+            Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            params Expression<Func<T, object>>[] includes)
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
+            params Expression<Func<TEntity, object>>[] includes)
         {
             try
             {
@@ -197,14 +197,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error retrieving objects of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error retrieving objects of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Retrieve(Pk, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public virtual T Retrieve(Pk id, params Expression<Func<T, object>>[] includes)
+        public virtual TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes)
         {
             try
             {
@@ -212,19 +212,19 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error retrieving an object of type {typeof(T).Name} with a unique identifier of {id}.", e);
+                throw new ServiceException($"Error retrieving an object of type {typeof(TEntity).Name} with a unique identifier of {id}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public virtual async Task<IEnumerable<T>> RetrieveAsync(
-            Expression<Func<T, bool>> filter = null,
+        public virtual async Task<IEnumerable<TEntity>> RetrieveAsync(
+            Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
             CancellationToken cancellationToken = default,
-            params Expression<Func<T, object>>[] includes)
+            params Expression<Func<TEntity, object>>[] includes)
         {
             try
             {
@@ -232,17 +232,17 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error retrieving objects of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error retrieving objects of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.RetrieveAsync(Pk, CancellationToken, Expression{Func{T, object}}[])"/>
         /// </summary>
-        public virtual async Task<T> RetrieveAsync(
-            Pk id,
+        public virtual async Task<TEntity> RetrieveAsync(
+            TKey id,
             CancellationToken cancellationToken = default,
-            params Expression<Func<T, object>>[] includes)
+            params Expression<Func<TEntity, object>>[] includes)
         {
             try
             {
@@ -250,14 +250,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error retrieving an object of type {typeof(T).Name} with a unique identifier of {id}.", e);
+                throw new ServiceException($"Error retrieving an object of type {typeof(TEntity).Name} with a unique identifier of {id}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.Update(T)"/>
         /// </summary>
-        public virtual void Update(T item)
+        public virtual void Update(TEntity item)
         {
             try
             {
@@ -265,14 +265,14 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error updating an object of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error updating an object of type {typeof(TEntity).Name}.", e);
             }
         }
 
         /// <summary>
         /// <see cref="IObjectService{T, Pk}.UpdateAsync(T, CancellationToken)"/>
         /// </summary>
-        public virtual async Task UpdateAsync(T item, CancellationToken cancellationToken = default)
+        public virtual async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -280,7 +280,7 @@ namespace Tardigrade.Framework.Services
             }
             catch (RepositoryException e)
             {
-                throw new ServiceException($"Error updating an object of type {typeof(T).Name}.", e);
+                throw new ServiceException($"Error updating an object of type {typeof(TEntity).Name}.", e);
             }
         }
     }

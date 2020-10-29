@@ -9,8 +9,8 @@ namespace Tardigrade.Framework.Persistence
     /// Base repository interface of bulk operations on objects of a particular type. Bulk operations process a
     /// collection of objects at once, and success or failure applies to the collection as a whole.
     /// </summary>
-    /// <typeparam name="T">Object type associated with the repository operations.</typeparam>
-    public interface IBulkRepository<T>
+    /// <typeparam name="TEntity">Object type associated with the repository operations.</typeparam>
+    public interface IBulkRepository<TEntity>
     {
         /// <summary>
         /// Create multiple instances of the object type.
@@ -19,7 +19,7 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>Instances created (including allocated unique identifiers).</returns>
         /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
-        IEnumerable<T> CreateBulk(IEnumerable<T> items);
+        IEnumerable<TEntity> CreateBulk(IEnumerable<TEntity> items);
 
         /// <summary>
         /// Create multiple instances of the object type.
@@ -29,7 +29,7 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>Instances created (including allocated unique identifiers).</returns>
         /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error creating the objects.</exception>
-        Task<IEnumerable<T>> CreateBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TEntity>> CreateBulkAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete multiple instances.
@@ -37,7 +37,7 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="items">Instances to delete.</param>
         /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the objects.</exception>
-        void DeleteBulk(IEnumerable<T> items);
+        void DeleteBulk(IEnumerable<TEntity> items);
 
         /// <summary>
         /// Delete multiple instances.
@@ -47,7 +47,7 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the objects.</exception>
-        Task DeleteBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default);
+        Task DeleteBulkAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update multiple instances.
@@ -55,7 +55,7 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="items">Instances to update.</param>
         /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the objects.</exception>
-        void UpdateBulk(IEnumerable<T> items);
+        void UpdateBulk(IEnumerable<TEntity> items);
 
         /// <summary>
         /// Update multiple instances.
@@ -65,6 +65,6 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>Task object representing the asynchronous operation result.</returns>
         /// <exception cref="ArgumentNullException">The items parameter is null or empty.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the objects.</exception>
-        Task UpdateBulkAsync(IEnumerable<T> items, CancellationToken cancellationToken = default);
+        Task UpdateBulkAsync(IEnumerable<TEntity> items, CancellationToken cancellationToken = default);
     }
 }
