@@ -4,6 +4,13 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Oct 29, 2020 - 11.5.0 Resolved issue with UpdateAsync method of the Audit Decorator**
+
+- Resolved an issue with the UpdateAsync method of the Audit Decorator.
+- Renamed the Repository classes of the EntityFrameworkCore project to remove the "EntityFrameworkCore" prefix.
+- General code clean-up based on ReSharper recommendations.
+- Updated third-party NuGet packages.
+
 **Sept 18, 2020 - 11.4.0 Enhanced the Repository layer to handle derived types from a class hierarchy**
 
 - Enhanced the Repository layer of the EntityFramework project to handle derived types from a class hierarchy.

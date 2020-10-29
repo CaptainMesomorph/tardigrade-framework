@@ -15,7 +15,7 @@ using Tardigrade.Framework.Persistence;
 namespace Tardigrade.Framework.EntityFramework
 {
     /// <summary>
-    /// <see cref="IReadOnlyRepository{T, PK}"/>
+    /// <see cref="IReadOnlyRepository{TEntity, TKey}"/>
     /// </summary>
     public class ReadOnlyRepository<TEntity, TKey> : ReadOnlyRepository<TEntity, TEntity, TKey> where TEntity : class
     {
@@ -32,7 +32,7 @@ namespace Tardigrade.Framework.EntityFramework
 
     /// <summary>
     /// Read-only repository for a derived type from a type inheritance hierarchy.
-    /// <see cref="IReadOnlyRepository{T, PK}"/>
+    /// <see cref="IReadOnlyRepository{TEntity, TKey}"/>
     /// </summary>
     /// <typeparam name="TBaseEntity">Base type associated with the repository operations.</typeparam>
     /// <typeparam name="TDerivedEntity">Derived type associated with the repository operations.</typeparam>
@@ -87,7 +87,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.Count(Expression{Func{T, bool}})"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.Count(Expression{Func{TEntity, bool}})"/>
         /// </summary>
         public virtual int Count(Expression<Func<TDerivedEntity, bool>> filter = null)
         {
@@ -104,7 +104,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.CountAsync(Expression{Func{TEntity, bool}}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<int> CountAsync(
             Expression<Func<TDerivedEntity, bool>> filter = null,
@@ -125,7 +125,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.Exists(PK)"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.Exists(TKey)"/>
         /// </summary>
         public virtual bool Exists(TKey id)
         {
@@ -144,7 +144,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.ExistsAsync(PK, CancellationToken)"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.ExistsAsync(TKey, CancellationToken)"/>
         /// </summary>
         public virtual async Task<bool> ExistsAsync(
             TKey id,
@@ -158,7 +158,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.Retrieve(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
         public virtual IEnumerable<TDerivedEntity> Retrieve(
             Expression<Func<TDerivedEntity, bool>> filter = null,
@@ -170,7 +170,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.Retrieve(TKey, Expression{Func{TEntity, object}}[])"/>
         /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
         /// <a href="https://docs.microsoft.com/en-au/ef/ef6/querying/related-data">Loading Related Entities</a>
         /// <a href="https://devblogs.microsoft.com/csharpfaq/how-can-i-get-objects-and-property-values-from-expression-trees/">How can I get objects and property values from expression trees?</a>
@@ -225,7 +225,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.RetrieveAsync(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, CancellationToken, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
         public virtual async Task<IEnumerable<TDerivedEntity>> RetrieveAsync(
             Expression<Func<TDerivedEntity, bool>> filter = null,
@@ -238,7 +238,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.RetrieveAsync(TKey, CancellationToken, Expression{Func{TEntity, object}}[])"/>
         /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
         /// <a href="https://docs.microsoft.com/en-au/ef/ef6/querying/related-data">Loading Related Entities</a>
         /// <a href="https://devblogs.microsoft.com/csharpfaq/how-can-i-get-objects-and-property-values-from-expression-trees/">How can I get objects and property values from expression trees?</a>

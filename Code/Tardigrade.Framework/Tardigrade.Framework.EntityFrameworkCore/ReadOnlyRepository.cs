@@ -14,12 +14,12 @@ using Tardigrade.Framework.Persistence;
 namespace Tardigrade.Framework.EntityFrameworkCore
 {
     /// <summary>
-    /// <see cref="IRepository{T, Pk}"/>
+    /// <see cref="IReadOnlyRepository{TEntity, TKey}"/>
     /// <a href="https://stackoverflow.com/questions/40132380/ef-cannot-apply-operator-to-operands-of-type-tid-and-tid">EF - Cannot apply operator '==' to operands of type 'TId' and 'TId'</a>
     /// </summary>
-    public class EntityFrameworkCoreReadOnlyRepository<T, Pk> : IReadOnlyRepository<T, Pk>
-        where T : class, IHasUniqueIdentifier<Pk>
-        where Pk : IEquatable<Pk>
+    public class ReadOnlyRepository<TEntity, TKey> : IReadOnlyRepository<TEntity, TKey>
+        where TEntity : class, IHasUniqueIdentifier<TKey>
+        where TKey : IEquatable<TKey>
     {
         /// <summary>
         /// Database context.
@@ -31,79 +31,80 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         /// <param name="dbContext">Database context used to define a Unit of Work.</param>
         /// <exception cref="ArgumentNullException">dbContext is null.</exception>"
-        /// <exception cref="RepositoryException">Object type T is not recognised in the dbContext.</exception>
-        public EntityFrameworkCoreReadOnlyRepository(DbContext dbContext)
+        /// <exception cref="RepositoryException">Object type TEntity is not recognised in the dbContext.</exception>
+        public ReadOnlyRepository(DbContext dbContext)
         {
             DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
-            if (DbContext.Set<T>() == null)
+            if (DbContext.Set<TEntity>() == null)
             {
-                throw new RepositoryException($"Object type {typeof(T).Name} is not recognised in the DbContext.");
+                throw new RepositoryException(
+                    $"Object type {typeof(TEntity).Name} is not recognised in the DbContext.");
             }
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, Pk}.Count(Expression{Func{T, bool}})"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.Count(Expression{Func{TEntity, bool}})"/>
         /// </summary>
-        public virtual int Count(Expression<Func<T, bool>> filter = null)
+        public virtual int Count(Expression<Func<TEntity, bool>> filter = null)
         {
             try
             {
-                return filter == null ? DbContext.Set<T>().Count() : DbContext.Set<T>().Count(filter);
+                return filter == null ? DbContext.Set<TEntity>().Count() : DbContext.Set<TEntity>().Count(filter);
             }
             catch (OverflowException e)
             {
                 throw new RepositoryException(
-                    $"Count failed; more than {int.MaxValue} objects of type {typeof(T).Name} exist.",
+                    $"Count failed; more than {int.MaxValue} objects of type {typeof(TEntity).Name} exist.",
                     e);
             }
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, Pk}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.CountAsync(Expression{Func{TEntity, bool}}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<int> CountAsync(
-            Expression<Func<T, bool>> filter = null,
+            Expression<Func<TEntity, bool>> filter = null,
             CancellationToken cancellationToken = default)
         {
             try
             {
                 return filter == null
-                    ? await DbContext.Set<T>().CountAsync(cancellationToken)
-                    : await DbContext.Set<T>().CountAsync(filter, cancellationToken);
+                    ? await DbContext.Set<TEntity>().CountAsync(cancellationToken)
+                    : await DbContext.Set<TEntity>().CountAsync(filter, cancellationToken);
             }
             catch (OverflowException e)
             {
                 throw new RepositoryException(
-                    $"Count failed; more than {int.MaxValue} objects of type {typeof(T).Name} exist.",
+                    $"Count failed; more than {int.MaxValue} objects of type {typeof(TEntity).Name} exist.",
                     e);
             }
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, Pk}.Exists(Pk)"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.Exists(TKey)"/>
         /// </summary>
-        public virtual bool Exists(Pk id)
+        public virtual bool Exists(TKey id)
         {
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return DbContext.Set<T>().Any(o => o.Id.Equals(id));
+            return DbContext.Set<TEntity>().Any(o => o.Id.Equals(id));
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, Pk}.ExistsAsync(Pk, CancellationToken)"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.ExistsAsync(TKey, CancellationToken)"/>
         /// </summary>
-        public virtual async Task<bool> ExistsAsync(Pk id, CancellationToken cancellationToken = default)
+        public virtual async Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = default)
         {
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await DbContext.Set<T>().AnyAsync(o => o.Id.Equals(id), cancellationToken);
+            return await DbContext.Set<TEntity>().AnyAsync(o => o.Id.Equals(id), cancellationToken);
         }
 
         /// <summary>
@@ -111,11 +112,11 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Query to retrieve an instance of the object type.</returns>
-        private IQueryable<T> FindQuery(params Expression<Func<T, object>>[] includes)
+        private IQueryable<TEntity> FindQuery(params Expression<Func<TEntity, object>>[] includes)
         {
-            IQueryable<T> query = DbContext.Set<T>();
+            IQueryable<TEntity> query = DbContext.Set<TEntity>();
 
-            foreach (Expression<Func<T, object>> include in includes.OrEmptyIfNull())
+            foreach (Expression<Func<TEntity, object>> include in includes.OrEmptyIfNull())
             {
                 query = query.Include(include);
             }
@@ -124,66 +125,66 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, Pk}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.Retrieve(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
-        public virtual IEnumerable<T> Retrieve(
-            Expression<Func<T, bool>> filter = null,
+        public virtual IEnumerable<TEntity> Retrieve(
+            Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            params Expression<Func<T, object>>[] includes)
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
+            params Expression<Func<TEntity, object>>[] includes)
         {
             return RetrieveQuery(filter, pagingContext, sortCondition, includes).ToList();
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, Pk}.Retrieve(Pk, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.Retrieve(TKey, Expression{Func{TEntity, object}}[])"/>
         /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
         /// </summary>
-        public virtual T Retrieve(Pk id, params Expression<Func<T, object>>[] includes)
+        public virtual TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes)
         {
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            T item = includes.IsNullOrEmpty() ?
-                DbContext.Set<T>().Find(id) : FindQuery(includes).SingleOrDefault(o => o.Id.Equals(id));
+            TEntity item = includes.IsNullOrEmpty() ?
+                DbContext.Set<TEntity>().Find(id) : FindQuery(includes).SingleOrDefault(o => o.Id.Equals(id));
 
             return item;
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, Pk}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.RetrieveAsync(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, CancellationToken, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
-        public virtual async Task<IEnumerable<T>> RetrieveAsync(
-            Expression<Func<T, bool>> filter = null,
+        public virtual async Task<IEnumerable<TEntity>> RetrieveAsync(
+            Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
             CancellationToken cancellationToken = default,
-            params Expression<Func<T, object>>[] includes)
+            params Expression<Func<TEntity, object>>[] includes)
         {
             return await RetrieveQuery(filter, pagingContext, sortCondition, includes).ToListAsync(cancellationToken);
         }
 
         /// <summary>
-        /// <see cref="IReadOnlyRepository{T, Pk}.RetrieveAsync(Pk, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IReadOnlyRepository{TEntity, TKey}.RetrieveAsync(TKey, CancellationToken, Expression{Func{TEntity, object}}[])"/>
         /// <a href="https://stackoverflow.com/questions/39434878/how-to-include-related-tables-in-dbset-find">How to include related tables in DbSet.Find()?</a>
         /// </summary>
-        public virtual async Task<T> RetrieveAsync(
-            Pk id,
+        public virtual async Task<TEntity> RetrieveAsync(
+            TKey id,
             CancellationToken cancellationToken = default,
-            params Expression<Func<T, object>>[] includes)
+            params Expression<Func<TEntity, object>>[] includes)
         {
             if (id == null)
             {
                 throw new ArgumentNullException(nameof(id));
             }
 
-            T item;
+            TEntity item;
 
             if (includes.IsNullOrEmpty())
             {
-                item = await DbContext.Set<T>().FindAsync(new object[] { id }, cancellationToken);
+                item = await DbContext.Set<TEntity>().FindAsync(new object[] { id }, cancellationToken);
             }
             else
             {
@@ -202,11 +203,11 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Query to retrieve all instances of the object type.</returns>
         /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>"
-        private IQueryable<T> RetrieveQuery(
-            Expression<Func<T, bool>> filter = null,
+        private IQueryable<TEntity> RetrieveQuery(
+            Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            params Expression<Func<T, object>>[] includes)
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
+            params Expression<Func<TEntity, object>>[] includes)
         {
             if (pagingContext != null && sortCondition == null)
             {
@@ -214,7 +215,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                     $"{nameof(sortCondition)} is required if {nameof(pagingContext)} is provided.");
             }
 
-            IQueryable<T> query = DbContext.Set<T>();
+            IQueryable<TEntity> query = DbContext.Set<TEntity>();
 
             if (filter != null)
             {
@@ -236,7 +237,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                 }
             }
 
-            foreach (Expression<Func<T, object>> include in includes.OrEmptyIfNull())
+            foreach (Expression<Func<TEntity, object>> include in includes.OrEmptyIfNull())
             {
                 query = query.Include(include);
             }

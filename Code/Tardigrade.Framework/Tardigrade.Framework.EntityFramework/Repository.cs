@@ -13,7 +13,7 @@ using Tardigrade.Framework.Persistence;
 namespace Tardigrade.Framework.EntityFramework
 {
     /// <summary>
-    /// <see cref="IRepository{T, Pk}"/>
+    /// <see cref="IRepository{TEntity, Pk}"/>
     /// </summary>
     public class Repository<TEntity, TKey> : Repository<TEntity, TEntity, TKey> where TEntity : class
     {
@@ -30,7 +30,7 @@ namespace Tardigrade.Framework.EntityFramework
 
     /// <summary>
     /// Repository for a derived type from a type inheritance hierarchy.
-    /// <see cref="IRepository{T, PK}"/>
+    /// <see cref="IRepository{TEntity, PK}"/>
     /// </summary>
     /// <typeparam name="TBaseEntity">Base type associated with the repository operations.</typeparam>
     /// <typeparam name="TDerivedEntity">Derived type associated with the repository operations.</typeparam>
@@ -45,13 +45,13 @@ namespace Tardigrade.Framework.EntityFramework
         /// </summary>
         /// <param name="dbContext">Database context used to define a Unit of Work.</param>
         /// <exception cref="ArgumentNullException">dbContext is null.</exception>"
-        /// <exception cref="RepositoryException">Object type T is not recognised in the dbContext.</exception>
+        /// <exception cref="RepositoryException">Object type TEntity is not recognised in the dbContext.</exception>
         public Repository(DbContext dbContext) : base(dbContext)
         {
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, Pk}.Create(T)"/>
+        /// <see cref="IRepository{TEntity, Pk}.Create(TEntity)"/>
         /// </summary>
         public virtual TDerivedEntity Create(TDerivedEntity item)
         {
@@ -99,7 +99,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, Pk}.CreateAsync(T, CancellationToken)"/>
+        /// <see cref="IRepository{TEntity, Pk}.CreateAsync(TEntity, CancellationToken)"/>
         /// </summary>
         public virtual async Task<TDerivedEntity> CreateAsync(TDerivedEntity item,
             CancellationToken cancellationToken = default)
@@ -138,7 +138,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T}.CreateBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{TEntity}.CreateBulk(IEnumerable{TEntity})"/>
         /// </summary>
         public virtual IEnumerable<TDerivedEntity> CreateBulk(IEnumerable<TDerivedEntity> items)
         {
@@ -166,7 +166,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T}.CreateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IBulkRepository{TEntity}.CreateBulkAsync(IEnumerable{TEntity}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<IEnumerable<TDerivedEntity>> CreateBulkAsync(
             IEnumerable<TDerivedEntity> items,
@@ -191,7 +191,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, Pk}.Delete(T)"/>
+        /// <see cref="IRepository{TEntity, Pk}.Delete(TEntity)"/>
         /// </summary>
         public virtual void Delete(TDerivedEntity item)
         {
@@ -237,7 +237,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, Pk}.DeleteAsync(T, CancellationToken)"/>
+        /// <see cref="IRepository{TEntity, Pk}.DeleteAsync(TEntity, CancellationToken)"/>
         /// </summary>
         public virtual async Task DeleteAsync(TDerivedEntity item, CancellationToken cancellationToken = default)
         {
@@ -278,7 +278,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T}.DeleteBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{TEntity}.DeleteBulk(IEnumerable{TEntity})"/>
         /// </summary>
         public virtual void DeleteBulk(IEnumerable<TDerivedEntity> items)
         {
@@ -304,7 +304,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T}.DeleteBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IBulkRepository{TEntity}.DeleteBulkAsync(IEnumerable{TEntity}, CancellationToken)"/>
         /// </summary>
         public virtual async Task DeleteBulkAsync(IEnumerable<TDerivedEntity> items,
             CancellationToken cancellationToken = default)
@@ -349,7 +349,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, Pk}.Update(T)"/>
+        /// <see cref="IRepository{TEntity, Pk}.Update(TEntity)"/>
         /// </summary>
         public virtual void Update(TDerivedEntity item)
         {
@@ -396,7 +396,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IRepository{T, Pk}.UpdateAsync(T, CancellationToken)"/>
+        /// <see cref="IRepository{TEntity, Pk}.UpdateAsync(TEntity, CancellationToken)"/>
         /// </summary>
         public virtual async Task UpdateAsync(TDerivedEntity item, CancellationToken cancellationToken = default)
         {
@@ -433,7 +433,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T}.UpdateBulk(IEnumerable{T})"/>
+        /// <see cref="IBulkRepository{TEntity}.UpdateBulk(IEnumerable{TEntity})"/>
         /// </summary>
         public virtual void UpdateBulk(IEnumerable<TDerivedEntity> items)
         {
@@ -469,7 +469,7 @@ namespace Tardigrade.Framework.EntityFramework
         }
 
         /// <summary>
-        /// <see cref="IBulkRepository{T}.UpdateBulkAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IBulkRepository{TEntity}.UpdateBulkAsync(IEnumerable{TEntity}, CancellationToken)"/>
         /// </summary>
         public virtual async Task UpdateBulkAsync(IEnumerable<TDerivedEntity> items,
             CancellationToken cancellationToken = default)
