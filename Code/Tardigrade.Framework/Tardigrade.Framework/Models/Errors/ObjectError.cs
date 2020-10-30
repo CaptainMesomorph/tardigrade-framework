@@ -5,17 +5,17 @@ namespace Tardigrade.Framework.Models.Errors
     /// <summary>
     /// Error associated with an operation on an object.
     /// </summary>
-    public class ObjectError<T, PK> : Error
+    public class ObjectError<TEntity, TKey> : Error
     {
         /// <summary>
         /// Unique identifier of the object associated with the failed operation.
         /// </summary>
-        public PK ObjectId { get; protected set; }
+        public TKey ObjectId { get; protected set; }
 
         /// <summary>
         /// Object associated with the failed operation.
         /// </summary>
-        public T ObjectInstance { get; protected set; }
+        public TEntity ObjectInstance { get; protected set; }
 
         /// <summary>
         /// Create an instance of this class.
@@ -24,7 +24,7 @@ namespace Tardigrade.Framework.Models.Errors
         /// <param name="message">Message associated with the error.</param>
         /// <param name="objectInstance">Object associated with the failed operation.</param>
         /// <exception cref="ArgumentNullException">objectId is null, or message is null or empty.</exception>
-        public ObjectError(PK objectId, string message, T objectInstance = default) : base(message)
+        public ObjectError(TKey objectId, string message, TEntity objectInstance = default) : base(message)
         {
             if (objectId == null)
             {

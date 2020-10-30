@@ -9,9 +9,9 @@ namespace Tardigrade.Framework.Persistence
     /// type.
     /// <a href="https://cpratt.co/truly-generic-repository/">A Truly Generic Repository, Part 1</a>
     /// </summary>
-    /// <typeparam name="T">Object type associated with the repository operations.</typeparam>
-    /// <typeparam name="Pk">Unique identifier type for the object type.</typeparam>
-    public interface IRepository<T, in Pk> : IReadOnlyRepository<T, Pk>, IBulkRepository<T>
+    /// <typeparam name="TEntity">Object type associated with the repository operations.</typeparam>
+    /// <typeparam name="TKey">Unique identifier type for the object type.</typeparam>
+    public interface IRepository<TEntity, in TKey> : IReadOnlyRepository<TEntity, TKey>
     {
         /// <summary>
         /// Create an instance of the object type.
@@ -22,7 +22,7 @@ namespace Tardigrade.Framework.Persistence
         /// <exception cref="ArgumentNullException">The item parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error creating the object.</exception>
         /// <exception cref="Exceptions.ValidationException">Object to create contains invalid values.</exception>
-        T Create(T item);
+        TEntity Create(TEntity item);
 
         /// <summary>
         /// Create an instance of the object type.
@@ -34,7 +34,7 @@ namespace Tardigrade.Framework.Persistence
         /// <exception cref="ArgumentNullException">The item parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error creating the object.</exception>
         /// <exception cref="Exceptions.ValidationException">Object to create contains invalid values.</exception>
-        Task<T> CreateAsync(T item, CancellationToken cancellationToken = default);
+        Task<TEntity> CreateAsync(TEntity item, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Delete an instance.
@@ -43,7 +43,7 @@ namespace Tardigrade.Framework.Persistence
         /// <exception cref="ArgumentNullException">The item parameter is null.</exception>
         /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
-        void Delete(T item);
+        void Delete(TEntity item);
 
         /// <summary>
         /// Delete an instance.
@@ -54,7 +54,7 @@ namespace Tardigrade.Framework.Persistence
         /// <exception cref="ArgumentNullException">The item parameter is null.</exception>
         /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error deleting the object.</exception>
-        Task DeleteAsync(T item, CancellationToken cancellationToken = default);
+        Task DeleteAsync(TEntity item, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Update an instance.
@@ -64,7 +64,7 @@ namespace Tardigrade.Framework.Persistence
         /// <exception cref="Exceptions.NotFoundException">Object to delete does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the object.</exception>
         /// <exception cref="Exceptions.ValidationException">Object to update contains invalid values.</exception>
-        void Update(T item);
+        void Update(TEntity item);
 
         /// <summary>
         /// Update an instance.
@@ -76,6 +76,6 @@ namespace Tardigrade.Framework.Persistence
         /// <exception cref="Exceptions.NotFoundException">Object to update does not exist.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error updating the object.</exception>
         /// <exception cref="Exceptions.ValidationException">Object to update contains invalid values.</exception>
-        Task UpdateAsync(T item, CancellationToken cancellationToken = default);
+        Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default);
     }
 }

@@ -3,12 +3,12 @@
     /// <summary>
     /// Interface for defining a domain model with a unique identifier.
     /// </summary>
-    /// <typeparam name="PK">Type of the unique identifier.</typeparam>
-    public interface IHasUniqueIdentifier<PK>
+    /// <typeparam name="TKey">Type of the unique identifier.</typeparam>
+    public interface IHasUniqueIdentifier<TKey>
     {
         /// <summary>
         /// Unique identifier.
         /// </summary>
-        PK Id { get; set; }
+        TKey Id { get; set; }
     }
 }

@@ -12,17 +12,17 @@ namespace Tardigrade.Framework.Patterns.Decorator
     /// <typeparam name="TCommand">Type of (data) object associated with the Command Handler.</typeparam>
     public class UnitOfWorkDecorator<TCommand> : ICommandHandler<TCommand>
     {
-        private readonly ICommandHandler<TCommand> decoratee;
+        private readonly ICommandHandler<TCommand> decoratedHandler;
         private readonly IUnitOfWork unitOfWork;
 
         /// <summary>
         /// Create an instance of this Decorator.
         /// </summary>
-        /// <param name="decoratee">Command Handler that is being decorated.</param>
+        /// <param name="decoratedHandler">Command Handler that is being decorated.</param>
         /// <param name="unitOfWork">Unit of Work manager.</param>
-        public UnitOfWorkDecorator(ICommandHandler<TCommand> decoratee, IUnitOfWork unitOfWork)
+        public UnitOfWorkDecorator(ICommandHandler<TCommand> decoratedHandler, IUnitOfWork unitOfWork)
         {
-            this.decoratee = decoratee;
+            this.decoratedHandler = decoratedHandler;
             this.unitOfWork = unitOfWork;
         }
 
@@ -36,7 +36,7 @@ namespace Tardigrade.Framework.Patterns.Decorator
 
             try
             {
-                decoratee.Handle(command);
+                decoratedHandler.Handle(command);
                 unitOfWork.Commit();
             }
             catch (Exception)

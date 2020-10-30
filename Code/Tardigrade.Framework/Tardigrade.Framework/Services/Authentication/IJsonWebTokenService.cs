@@ -4,7 +4,7 @@
     /// Service interface for an authentication scheme based upon JSON Web Tokens (JWT).
     /// </summary>
     /// <typeparam name="T">Type that the JSON Web Token will be based upon.</typeparam>
-    public interface IJsonWebTokenService<T>
+    public interface IJsonWebTokenService<in T>
     {
         /// <summary>
         /// Generate a JSON Web Token for the given model.

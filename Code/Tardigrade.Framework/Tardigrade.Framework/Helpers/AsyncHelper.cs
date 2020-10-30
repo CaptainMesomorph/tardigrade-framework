@@ -17,7 +17,7 @@ namespace Tardigrade.Framework.Helpers
     /// </summary>
     public static class AsyncHelper
     {
-        private static readonly TaskFactory taskFactory = new TaskFactory(
+        private static readonly TaskFactory TaskFactory = new TaskFactory(
             CancellationToken.None,
             TaskCreationOptions.None,
             TaskContinuationOptions.None,
@@ -33,7 +33,7 @@ namespace Tardigrade.Framework.Helpers
             CultureInfo culture = CultureInfo.CurrentCulture;
             CultureInfo uiCulture = CultureInfo.CurrentUICulture;
 
-            taskFactory
+            TaskFactory
                 .StartNew(() =>
                 {
                     Thread.CurrentThread.CurrentCulture = culture;
@@ -57,7 +57,7 @@ namespace Tardigrade.Framework.Helpers
             CultureInfo culture = CultureInfo.CurrentCulture;
             CultureInfo uiCulture = CultureInfo.CurrentUICulture;
 
-            return taskFactory
+            return TaskFactory
                 .StartNew(() =>
                 {
                     Thread.CurrentThread.CurrentCulture = culture;

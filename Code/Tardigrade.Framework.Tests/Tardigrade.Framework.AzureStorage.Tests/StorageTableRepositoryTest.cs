@@ -1,4 +1,5 @@
 using System;
+using Tardigrade.Framework.AzureStorage.Tables;
 using Tardigrade.Framework.AzureStorage.Tests.Models;
 using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Patterns.DependencyInjection;
@@ -22,7 +23,7 @@ namespace Tardigrade.Framework.AzureStorage.Tests
         {
             // Arrange.
             IRepository<FakeTableEntity, FakeTableKey> repository =
-                new StorageTableRepository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName);
+                new Repository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName);
             var entity = new FakeTableEntity() { PartitionKey = "Mock", RowKey = Guid.NewGuid().ToString() };
 
             // Act.
@@ -57,7 +58,7 @@ namespace Tardigrade.Framework.AzureStorage.Tests
             // Arrange.
 
             // Act.
-            Action actual = (() => _ = new StorageTableRepository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName));
+            Action actual = (() => _ = new Repository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName));
 
             // Assert.
             Assert.Throws<FormatException>(actual);
@@ -74,7 +75,7 @@ namespace Tardigrade.Framework.AzureStorage.Tests
             // Arrange.
 
             // Act.
-            Action actual = (() => _ = new StorageTableRepository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName));
+            Action actual = (() => _ = new Repository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName));
 
             // Assert.
             Assert.Throws<ArgumentNullException>(actual);

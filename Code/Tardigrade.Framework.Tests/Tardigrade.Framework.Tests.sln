@@ -13,6 +13,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.RestSh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.ZXingNet.Tests", "Tardigrade.Framework.ZXingNet.Tests\Tardigrade.Framework.ZXingNet.Tests.csproj", "{258ED01D-C416-4304-AFBB-712D7B12CA4D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AzureStorage", "..\Tardigrade.Framework\Tardigrade.Framework.AzureStorage\Tardigrade.Framework.AzureStorage.csproj", "{522E7A57-780B-40F7-A828-1ECBB74722B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.RestSharp", "..\Tardigrade.Framework\Tardigrade.Framework.RestSharp\Tardigrade.Framework.RestSharp.csproj", "{8D35F671-12A3-416C-80A6-D8BC4E15B52A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.ZXingNet", "..\Tardigrade.Framework\Tardigrade.Framework.ZXingNet\Tardigrade.Framework.ZXingNet.csproj", "{A749CCBC-62AA-44A4-BD99-56C3668EAEC2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework", "..\Tardigrade.Framework\Tardigrade.Framework\Tardigrade.Framework.csproj", "{39F3F47D-FE79-475A-8E87-C154ECB859E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +47,22 @@ Global
 		{258ED01D-C416-4304-AFBB-712D7B12CA4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{258ED01D-C416-4304-AFBB-712D7B12CA4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{258ED01D-C416-4304-AFBB-712D7B12CA4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{522E7A57-780B-40F7-A828-1ECBB74722B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{522E7A57-780B-40F7-A828-1ECBB74722B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{522E7A57-780B-40F7-A828-1ECBB74722B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{522E7A57-780B-40F7-A828-1ECBB74722B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D35F671-12A3-416C-80A6-D8BC4E15B52A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D35F671-12A3-416C-80A6-D8BC4E15B52A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D35F671-12A3-416C-80A6-D8BC4E15B52A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D35F671-12A3-416C-80A6-D8BC4E15B52A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A749CCBC-62AA-44A4-BD99-56C3668EAEC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A749CCBC-62AA-44A4-BD99-56C3668EAEC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A749CCBC-62AA-44A4-BD99-56C3668EAEC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A749CCBC-62AA-44A4-BD99-56C3668EAEC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39F3F47D-FE79-475A-8E87-C154ECB859E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39F3F47D-FE79-475A-8E87-C154ECB859E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39F3F47D-FE79-475A-8E87-C154ECB859E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39F3F47D-FE79-475A-8E87-C154ECB859E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

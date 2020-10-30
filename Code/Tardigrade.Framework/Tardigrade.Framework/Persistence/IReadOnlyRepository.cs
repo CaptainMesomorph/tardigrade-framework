@@ -13,9 +13,9 @@ namespace Tardigrade.Framework.Persistence
     /// type.
     /// <a href="https://cpratt.co/truly-generic-repository/">A Truly Generic Repository, Part 1</a>
     /// </summary>
-    /// <typeparam name="T">Object type associated with the repository operations.</typeparam>
-    /// <typeparam name="Pk">Unique identifier type for the object type.</typeparam>
-    public interface IReadOnlyRepository<T, in Pk>
+    /// <typeparam name="TEntity">Object type associated with the repository operations.</typeparam>
+    /// <typeparam name="TKey">Unique identifier type for the object type.</typeparam>
+    public interface IReadOnlyRepository<TEntity, in TKey>
     {
         /// <summary>
         /// Calculate the number of objects in the repository.
@@ -23,7 +23,7 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="filter">Filter condition.</param>
         /// <returns>Number of objects in the repository.</returns>
         /// <exception cref="Exceptions.RepositoryException">Error calculating the number of objects.</exception>
-        int Count(Expression<Func<T, bool>> filter = null);
+        int Count(Expression<Func<TEntity, bool>> filter = null);
 
         /// <summary>
         /// Calculate the number of objects in the repository.
@@ -32,7 +32,7 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
         /// <returns>Number of objects in the repository.</returns>
         /// <exception cref="Exceptions.RepositoryException">Error calculating the number of objects.</exception>
-        Task<int> CountAsync(Expression<Func<T, bool>> filter = null, CancellationToken cancellationToken = default);
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> filter = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Check for existence of an instance by unique identifier.
@@ -41,7 +41,7 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>True if the instance exists; false otherwise.</returns>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error checking for existence of an object.</exception>
-        bool Exists(Pk id);
+        bool Exists(TKey id);
 
         /// <summary>
         /// Check for existence of an instance by unique identifier.
@@ -51,7 +51,7 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>True if the instance exists; false otherwise.</returns>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error checking for existence of an object.</exception>
-        Task<bool> ExistsAsync(Pk id, CancellationToken cancellationToken = default);
+        Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieve all instances of the object type. If paging parameters are provided, a range of objects is
@@ -65,11 +65,11 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>All instances if any; empty collection otherwise.</returns>
         /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>"
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the objects.</exception>
-        IEnumerable<T> Retrieve(
-            Expression<Func<T, bool>> filter = null,
+        IEnumerable<TEntity> Retrieve(
+            Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
-            params Expression<Func<T, object>>[] includes);
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
+            params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         /// Retrieve an instance by unique identifier.
@@ -79,7 +79,7 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>Instance if found; null otherwise.</returns>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the object.</exception>
-        T Retrieve(Pk id, params Expression<Func<T, object>>[] includes);
+        TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         /// Retrieve all instances of the object type. If paging parameters are provided, a range of objects is
@@ -94,12 +94,12 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>All instances if any; empty collection otherwise.</returns>
         /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>"
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the objects.</exception>
-        Task<IEnumerable<T>> RetrieveAsync(
-            Expression<Func<T, bool>> filter = null,
+        Task<IEnumerable<TEntity>> RetrieveAsync(
+            Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> sortCondition = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
             CancellationToken cancellationToken = default,
-            params Expression<Func<T, object>>[] includes);
+            params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         /// Retrieve an instance by unique identifier.
@@ -110,9 +110,9 @@ namespace Tardigrade.Framework.Persistence
         /// <returns>Instance if found; null otherwise.</returns>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the object.</exception>
-        Task<T> RetrieveAsync(
-            Pk id,
+        Task<TEntity> RetrieveAsync(
+            TKey id,
             CancellationToken cancellationToken = default,
-            params Expression<Func<T, object>>[] includes);
+            params Expression<Func<TEntity, object>>[] includes);
     }
 }
