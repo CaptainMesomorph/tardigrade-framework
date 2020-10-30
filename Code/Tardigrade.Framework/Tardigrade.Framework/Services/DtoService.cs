@@ -13,9 +13,9 @@ using Tardigrade.Framework.Security.Privacy;
 namespace Tardigrade.Framework.Services
 {
     /// <summary>
-    /// <see cref="IDtoService{Model, ModelPk, Dto, DtoPk}"/>
+    /// <see cref="IDtoService{TEntity, TDto, TDtoKey}"/>
     /// </summary>
-    public class DtoService<TEntity, TEntityKey, TDto, TDtoKey> : IDtoService<TEntity, TEntityKey, TDto, TDtoKey>
+    public class DtoService<TEntity, TEntityKey, TDto, TDtoKey> : IDtoService<TEntity, TDto, TDtoKey>
         where TEntity : class
         where TDto : IHasUniqueIdentifier<TDtoKey>
     {
@@ -51,7 +51,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Count(Expression{Func{Dto, bool}})"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.Count(Expression{Func{TDto, bool}})"/>
         /// </summary>
         /// <exception cref="NotImplementedException">Not supported.</exception>
         public virtual int Count(Expression<Func<TDto, bool>> filter = null)
@@ -60,7 +60,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IDtoService{Model, ModelPk, Dto, DtoPk}.Count(Expression{Func{Model, bool}})"/>
+        /// <see cref="IDtoService{TEntity, TDto, TDtoKey}.Count(Expression{Func{TEntity, bool}})"/>
         /// </summary>
         public virtual int Count(Expression<Func<TEntity, bool>> filter = null)
         {
@@ -68,7 +68,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.CountAsync(Expression{Func{Dto, bool}}, CancellationToken)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.CountAsync(Expression{Func{TDto, bool}}, CancellationToken)"/>
         /// </summary>
         /// <exception cref="NotImplementedException">Not supported.</exception>
         public virtual Task<int> CountAsync(
@@ -79,7 +79,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IDtoService{Model, ModelPk, Dto, DtoPk}.CountAsync(Expression{Func{Model, bool}}, CancellationToken)"/>
+        /// <see cref="IDtoService{TEntity, TDto, TDtoKey}.CountAsync(Expression{Func{TEntity, bool}}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<int> CountAsync(
             Expression<Func<TEntity, bool>> filter = null,
@@ -89,7 +89,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Create(Dto)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.Create(TDto)"/>
         /// </summary>
         public virtual TDto Create(TDto item)
         {
@@ -113,7 +113,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Create(IEnumerable{Dto})"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.Create(IEnumerable{TDto})"/>
         /// </summary>
         public virtual IEnumerable<TDto> Create(IEnumerable<TDto> items)
         {
@@ -137,7 +137,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.CreateAsync(Dto, CancellationToken)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.CreateAsync(TDto, CancellationToken)"/>
         /// </summary>
         public virtual async Task<TDto> CreateAsync(TDto item, CancellationToken cancellationToken = default)
         {
@@ -161,7 +161,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.CreateAsync(IEnumerable{Dto}, CancellationToken)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.CreateAsync(IEnumerable{TDto}, CancellationToken)"/>
         /// </summary>
         public virtual async Task<IEnumerable<TDto>> CreateAsync(
             IEnumerable<TDto> items,
@@ -187,7 +187,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Delete(Dto)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.Delete(TDto)"/>
         /// </summary>
         public virtual void Delete(TDto item)
         {
@@ -196,7 +196,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.DeleteAsync(Dto, CancellationToken)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.DeleteAsync(TDto, CancellationToken)"/>
         /// </summary>
         public virtual async Task DeleteAsync(TDto item, CancellationToken cancellationToken = default)
         {
@@ -205,7 +205,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Exists(DtoPk)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.Exists(TDtoKey)"/>
         /// </summary>
         public virtual bool Exists(TDtoKey id)
         {
@@ -227,7 +227,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.ExistsAsync(DtoPk, CancellationToken)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.ExistsAsync(TDtoKey, CancellationToken)"/>
         /// </summary>
         public virtual async Task<bool> ExistsAsync(TDtoKey id, CancellationToken cancellationToken = default)
         {
@@ -249,7 +249,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Retrieve(DtoPk, Expression{Func{Dto, object}}[])"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.Retrieve(TDtoKey, Expression{Func{TDto, object}}[])"/>
         /// </summary>
         /// <param name="id">Unique identifier for the instance.</param>
         /// <param name="includes">Not supported.</param>
@@ -285,7 +285,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Retrieve(Expression{Func{Dto, bool}}, PagingContext, Func{IQueryable{Dto}, IOrderedQueryable{Dto}}, Expression{Func{Dto, object}}[])"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.Retrieve(Expression{Func{TDto, bool}}, PagingContext, Func{IQueryable{TDto}, IOrderedQueryable{TDto}}, Expression{Func{TDto, object}}[])"/>
         /// </summary>
         /// <exception cref="NotImplementedException">Not supported.</exception>
         public virtual IEnumerable<TDto> Retrieve(
@@ -298,7 +298,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IDtoService{Model, ModelPk, Dto, DtoPk}.Retrieve(Expression{Func{Model, bool}}, PagingContext, Func{IQueryable{Model}, IOrderedQueryable{Model}}, Expression{Func{Model, object}}[])"/>
+        /// <see cref="IDtoService{TEntity, TDto, TDtoKey}.Retrieve(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
         public virtual IEnumerable<TDto> Retrieve(
             Expression<Func<TEntity, bool>> filter = null,
@@ -330,7 +330,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.RetrieveAsync(DtoPk, CancellationToken, Expression{Func{Dto, object}}[])"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.RetrieveAsync(TDtoKey, CancellationToken, Expression{Func{TDto, object}}[])"/>
         /// </summary>
         public virtual async Task<TDto> RetrieveAsync(
             TDtoKey id,
@@ -367,7 +367,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.RetrieveAsync(Expression{Func{Dto, bool}}, PagingContext, Func{IQueryable{Dto}, IOrderedQueryable{Dto}}, CancellationToken, Expression{Func{Dto, object}}[])"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.RetrieveAsync(Expression{Func{TDto, bool}}, PagingContext, Func{IQueryable{TDto}, IOrderedQueryable{TDto}}, CancellationToken, Expression{Func{TDto, object}}[])"/>
         /// </summary>
         /// <exception cref="NotImplementedException">Not supported.</exception>
         public virtual Task<IEnumerable<TDto>> RetrieveAsync(
@@ -381,7 +381,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IDtoService{Model, ModelPk, Dto, DtoPk}.Retrieve(Expression{Func{Model, bool}}, PagingContext, Func{IQueryable{Model}, IOrderedQueryable{Model}}, Expression{Func{Model, object}}[])"/>
+        /// <see cref="IDtoService{TEntity, TDto, TDtoKey}.Retrieve(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
         public virtual async Task<IEnumerable<TDto>> RetrieveAsync(
             Expression<Func<TEntity, bool>> filter = null,
@@ -419,7 +419,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.Update(Dto)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.Update(TDto)"/>
         /// </summary>
         public virtual void Update(TDto item)
         {
@@ -453,7 +453,7 @@ namespace Tardigrade.Framework.Services
         }
 
         /// <summary>
-        /// <see cref="IObjectService{Dto, DtoPk}.UpdateAsync(Dto, CancellationToken)"/>
+        /// <see cref="IObjectService{TDto, TDtoKey}.UpdateAsync(TDto, CancellationToken)"/>
         /// </summary>
         public virtual async Task UpdateAsync(TDto item, CancellationToken cancellationToken = default)
         {
