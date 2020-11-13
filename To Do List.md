@@ -8,5 +8,6 @@ Framework for supporting coding best practices.
   - https://www.nuget.org/packages/Azure.Storage.Blobs
   - https://www.nuget.org/packages/Azure.Storage.Queues/
   - https://www.nuget.org/packages/Azure.Storage.Files.Shares/
-- Move the IdentityUserDbContext class from the EntityFramework project to the AspNet project.
-- Move the IdentityUserDbContext class from the EntityFrameworkCore project to the AspNetCore project.
+- Create a new Tardigrade.Framework.IdentityAspNet project. Move any identity-related classes to this project from the AspNet project.
+- Create a new Tardigrade.Framework.IdentityAspNetCore project. Move any identity-related classes to this project from the AspNetCore project and the EntityFrameworkCore project (including the IdentityUserDbContext class).
+- Create a Configuration Provider that reads configuration key-value pairs from a database using Entity Framework (https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1#custom-configuration-provider).
