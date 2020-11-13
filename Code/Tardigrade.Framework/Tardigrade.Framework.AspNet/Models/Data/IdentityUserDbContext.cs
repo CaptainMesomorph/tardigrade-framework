@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using Tardigrade.Framework.AspNet.Models.Identity;
 
-namespace Tardigrade.Framework.EntityFramework.Data
+namespace Tardigrade.Framework.AspNet.Models.Data
 {
     /// <summary>
     /// Entity Framework database context for use with ASP.NET Identity.

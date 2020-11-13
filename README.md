@@ -4,6 +4,14 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Nov 13, 2020 - 12.1.0 Created classes for managing application configuration settings**
+
+- Created classes for managing application configuration settings.
+- Moved the IdentityUserDbContext class from the EntityFramework project to the AspNet project.
+- Removed the unused test project Tardigrade.Framework.EntityFramework.Tests.
+- Added unit tests for the new application configuration functionality.
+- Updated NuGet packages.
+
 **Oct 30, 2020 - 12.0.0 Resolved issue with UpdateAsync method of the Audit Decorator**
 
 - Resolved an issue with the UpdateAsync method of the Audit Decorator.

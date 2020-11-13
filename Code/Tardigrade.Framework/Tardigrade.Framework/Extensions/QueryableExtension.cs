@@ -4,7 +4,7 @@ using System.Linq;
 namespace Tardigrade.Framework.Extensions
 {
     /// <summary>
-    /// This static class contains extension methods for IQueryable.
+    /// This static class contains extension methods for the IQueryable interface.
     /// </summary>
     public static class QueryableExtension
     {
