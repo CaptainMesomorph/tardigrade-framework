@@ -86,10 +86,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual bool Exists(TKey id)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
             return DbContext.Set<TEntity>().Any(o => o.Id.Equals(id));
         }
@@ -99,10 +96,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual async Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = default)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
             return await DbContext.Set<TEntity>().AnyAsync(o => o.Id.Equals(id), cancellationToken);
         }
@@ -142,10 +136,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
             TEntity item = includes.IsNullOrEmpty() ?
                 DbContext.Set<TEntity>().Find(id) : FindQuery(includes).SingleOrDefault(o => o.Id.Equals(id));
@@ -175,10 +166,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             CancellationToken cancellationToken = default,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
             TEntity item;
 
@@ -230,7 +218,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                 {
                     // Using a variable rather than a calculation in the EF/LINQ query is required as (for some
                     // unknown reason) the calculation result does not properly cast to an int.
-                    int skip = (int)(pagingContext.PageIndex * pagingContext.PageSize);
+                    var skip = (int)(pagingContext.PageIndex * pagingContext.PageSize);
                     query = query
                         .Skip(skip)
                         .Take((int)pagingContext.PageSize);

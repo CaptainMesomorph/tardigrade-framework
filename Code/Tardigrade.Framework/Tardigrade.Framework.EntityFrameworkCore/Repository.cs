@@ -36,10 +36,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <exception cref="ValidationException">Not supported.</exception>
         public virtual TEntity Create(TEntity item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
             if (item.Id != null && Exists(item.Id))
             {
@@ -71,10 +68,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <exception cref="ValidationException">Not supported.</exception>
         public virtual async Task<TEntity> CreateAsync(TEntity item, CancellationToken cancellationToken = default)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
             if (item.Id != null && (await ExistsAsync(item.Id, cancellationToken)))
             {
@@ -103,10 +97,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual IEnumerable<TEntity> CreateBulk(IEnumerable<TEntity> items)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            if (items == null) throw new ArgumentNullException(nameof(items));
 
             DbContext.BulkInsert((IList<TEntity>)items);
 
@@ -122,10 +113,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             IEnumerable<TEntity> items,
             CancellationToken cancellationToken = default)
         {
-            if (items == null)
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            if (items == null) throw new ArgumentNullException(nameof(items));
 
             await DbContext.BulkInsertAsync((IList<TEntity>)items, cancellationToken: cancellationToken);
 
@@ -137,10 +125,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual void Delete(TEntity item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
             if (item.Id == null || !Exists(item.Id))
             {
@@ -172,10 +157,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual async Task DeleteAsync(TEntity item, CancellationToken cancellationToken = default)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
             if (item.Id == null || !await ExistsAsync(item.Id, cancellationToken))
             {
@@ -207,10 +189,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual void DeleteBulk(IEnumerable<TEntity> items)
         {
-            if (items.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            if (items.IsNullOrEmpty()) throw new ArgumentNullException(nameof(items));
 
             DbContext.BulkDelete((IList<TEntity>)items);
         }
@@ -224,10 +203,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             IEnumerable<TEntity> items,
             CancellationToken cancellationToken = default)
         {
-            if (items.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            if (items.IsNullOrEmpty()) throw new ArgumentNullException(nameof(items));
 
             await DbContext.BulkDeleteAsync((IList<TEntity>)items, cancellationToken: cancellationToken);
         }
@@ -239,10 +215,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <exception cref="ValidationException">Not supported.</exception>
         public virtual void Update(TEntity item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
             if (item.Id == null || !Exists(item.Id))
             {
@@ -271,10 +244,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <exception cref="ValidationException">Not supported.</exception>
         public virtual async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
+            if (item == null) throw new ArgumentNullException(nameof(item));
 
             if (item.Id == null || !await ExistsAsync(item.Id, cancellationToken))
             {
@@ -301,10 +271,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual void UpdateBulk(IEnumerable<TEntity> items)
         {
-            if (items.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            if (items.IsNullOrEmpty()) throw new ArgumentNullException(nameof(items));
 
             DbContext.BulkUpdate((IList<TEntity>)items);
         }
@@ -318,10 +285,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             IEnumerable<TEntity> items,
             CancellationToken cancellationToken = default)
         {
-            if (items.IsNullOrEmpty())
-            {
-                throw new ArgumentNullException(nameof(items));
-            }
+            if (items.IsNullOrEmpty()) throw new ArgumentNullException(nameof(items));
 
             await DbContext.BulkUpdateAsync((IList<TEntity>)items, cancellationToken: cancellationToken);
         }

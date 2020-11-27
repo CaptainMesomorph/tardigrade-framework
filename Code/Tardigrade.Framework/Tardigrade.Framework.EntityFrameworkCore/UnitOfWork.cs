@@ -11,7 +11,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
     public sealed class UnitOfWork : IUnitOfWork, IDisposable
     {
         private IDbContextTransaction transaction;
-        private int count = 0;
+        private int count;
 
         /// <summary>
         /// Database context.
@@ -24,7 +24,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// <param name="dbContext">Database context used to define a Unit of Work.</param>
         public UnitOfWork(DbContext dbContext)
         {
-            this.DbContext = dbContext;
+            DbContext = dbContext;
         }
 
         /// <summary>
