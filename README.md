@@ -4,6 +4,20 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Nov 27, 2020 - 13.0.0 Enhanced ApplicationManager to support database application settings**
+
+- Enhanced the ApplicationConfigration class to enable the use of multiple configuration sources.
+- Created configuration sources for reading application settings from a database (for both Entity Framework and Entity Framework Core).
+- Created utility classes for the Expression class.
+- Updated the EntityFrameworkCore project from .NET Core 3.0 to 3.1.
+- Updated the AspNetCore project from supporting both .NET Core 2.2 and 3.0 to just 3.1.
+- Renamed the LegacyConfigurationProvider and LegacyConfigurationSource classes to LegacySettingsConfigurationProvider and LegacySettingsConfigurationSource respectively.
+- Added a project to the Tests solution for holding shared resources.
+- Reactored the unit tests for reading application settings to enable better code reuse.
+- Created EntityFramework and EntityFrameworkCore test projects containing unit tests for reading application settings from an SQLite database.
+- Added unit tests for the new utility classes.
+- Updated NuGet packages.
+
 **Nov 13, 2020 - 12.1.0 Created classes for managing application configuration settings**
 
 - Created classes for managing application configuration settings.

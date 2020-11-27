@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Tardigrade.Framework\Tardigrade.Framework\Tardigrade.Framework.csproj" />
+    <ProjectReference Include="..\Tardigrade.Shared.Tests\Tardigrade.Shared.Tests.csproj" />
   </ItemGroup>
 
 </Project>

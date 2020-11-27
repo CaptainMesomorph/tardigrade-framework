@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 
 namespace Tardigrade.Framework.Configurations
 {
@@ -18,9 +18,10 @@ namespace Tardigrade.Framework.Configurations
         public string this[string key] { get => config[key]; set => config[key] = value; }
 
         /// <summary>
-        /// Load application settings into this class from the following configuration sources in the order specified.
+        /// Load application settings into this class from the provided configuration sources in the order specified.
         /// If a configuration source is loaded and the key already exists from a previous source, the latest value
-        /// overwrites the previous value.
+        /// overwrites the previous value. If no configuration sources are provided, then the following default sources
+        /// will be used.
         ///
         ///   1. app.config file
         ///   2. appsettings.json file
@@ -31,16 +32,29 @@ namespace Tardigrade.Framework.Configurations
         ///
         /// <a href="https://devblogs.microsoft.com/premier-developer/order-of-precedence-when-configuring-asp-net-core/">Order of Precedence when Configuring ASP.NET Core</a>
         /// </summary>
-        /// <param name="jsonFile">Name of the JSON configuration file.</param>
-        /// <param name="basePath">Base path to the application configuration file. If null, the current directory is used.</param>
-        public ApplicationConfiguration(string jsonFile = DefaultJsonFile, string basePath = null)
+        /// <param name="configurationSources">Collection of configuration key/value sources.</param>
+        public ApplicationConfiguration(params IConfigurationSource[] configurationSources)
         {
-            config = new ConfigurationBuilder()
-                .SetBasePath(basePath ?? Directory.GetCurrentDirectory())
-                .Add(new LegacyConfigurationSource())
-                .AddJsonFile(jsonFile, true, true)
-                .AddEnvironmentVariables()
-                .Build();
+            if (configurationSources.Any())
+            {
+                var builder = new ConfigurationBuilder();
+
+                foreach (IConfigurationSource configurationSource in configurationSources)
+                {
+                    builder.Add(configurationSource);
+                }
+
+                builder.AddEnvironmentVariables();
+                config = builder.Build();
+            }
+            else
+            {
+                config = new ConfigurationBuilder()
+                    .Add(new LegacySettingsConfigurationSource())
+                    .AddJsonFile(DefaultJsonFile, true, true)
+                    .AddEnvironmentVariables()
+                    .Build();
+            }
         }
 
         /// <inheritdoc/>
