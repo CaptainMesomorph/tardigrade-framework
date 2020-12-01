@@ -15,7 +15,8 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
     {
         private readonly UnitTestFixture fixture;
         private readonly ITestOutputHelper output;
-        private readonly IRepository<User, Guid> repository;
+        private readonly IRepository<UserCredential, Guid> userCredentialRepository;
+        private readonly IRepository<User, Guid> userRepository;
 
         private static string Output(User obj)
         {
@@ -35,60 +36,76 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             this.output = output;
             this.fixture = fixture;
 
-            repository = this.fixture.Container.GetService<IRepository<User, Guid>>();
+            userCredentialRepository = this.fixture.Container.GetService<IRepository<UserCredential, Guid>>();
+            userRepository = this.fixture.Container.GetService<IRepository<User, Guid>>();
         }
 
-        // TODO: Investigate why CreateBulk does not create associated child entities.
-        //[Theory]
-        //[InlineData(5)]
-        //public void CreateMultiple_NewObjects_Success(uint newObjectsCount)
-        //{
-        //    // Arrange.
-        //    int count = repository.Count();
-        //    output.WriteLine($"Total number of users is {count}.");
-        //    IEnumerable<User> multipleOriginals = DataFactory.CreateUsers(newObjectsCount);
+        [Theory]
+        [InlineData(5)]
+        public void CreateMultiple_NewObjects_Success(uint newObjectsCount)
+        {
+            // Arrange.
+            int count = userRepository.Count();
+            output.WriteLine($"Total number of users is {count}.");
+            IEnumerable<User> multipleOriginals = DataFactory.CreateUsers(newObjectsCount);
 
-        //    // Act.
-        //    IEnumerable<User> multipleCreated = ((IBulkRepository<User>)repository).CreateBulk(multipleOriginals);
-        //    output.WriteLine($"Created {multipleCreated.Count()} new users.");
+            // Act.
+            IEnumerable<User> multipleCreated =
+                ((IBulkRepository<User>)userRepository).CreateBulk(multipleOriginals).ToList();
+            var userCredentials = new List<UserCredential>();
 
-        //    // Assert.
-        //    int updatedCount = repository.Count();
-        //    output.WriteLine($"Total number of users has been increased to {updatedCount}.");
-        //    Assert.Equal(count + newObjectsCount, updatedCount);
-        //}
+            foreach (User user in multipleCreated)
+            {
+                foreach (UserCredential userCredential in user.UserCredentials)
+                {
+                    userCredential.UserId = user.Id;
+                }
+
+                userCredentials.AddRange(user.UserCredentials);
+            }
+
+            _ = ((IBulkRepository<UserCredential>)userCredentialRepository).CreateBulk(userCredentials).ToList();
+            output.WriteLine($"Created {multipleCreated.Count()} new users.");
+
+            // Assert.
+            int updatedCount = userRepository.Count();
+            output.WriteLine($"Total number of users has been increased to {updatedCount}.");
+            Assert.Equal(count + newObjectsCount, updatedCount);
+
+            ((IBulkRepository<User>)userRepository).DeleteBulk(multipleCreated);
+        }
 
         [Fact]
         public void Crud_NewObject_Success()
         {
-            int originalCount = repository.Count();
+            int originalCount = userRepository.Count();
             output.WriteLine($"Total number of users before executing CRUD operation is {originalCount}.");
 
             // Create.
             User original = DataFactory.CreateUser();
-            User created = repository.Create(original);
+            User created = userRepository.Create(original);
             output.WriteLine($"Created new user:\n{Output(created)}");
             Assert.Equal(original.Id, created.Id);
 
             // Retrieve single.
-            User retrieved = repository.Retrieve(created.Id);
+            User retrieved = userRepository.Retrieve(created.Id);
             output.WriteLine($"Retrieved newly created user:\n{Output(retrieved)}");
             Assert.Equal(created.Id, retrieved.Id);
 
             // Update.
             retrieved.ModifiedBy = "muppet";
-            repository.Update(retrieved);
-            User updated = repository.Retrieve(retrieved.Id);
+            userRepository.Update(retrieved);
+            User updated = userRepository.Retrieve(retrieved.Id);
             output.WriteLine($"Updated the ModifiedBy property of the newly created user:\n{Output(updated)}");
             Assert.Equal(retrieved.Id, updated.Id);
             Assert.Equal("muppet", updated.ModifiedBy);
 
             // Delete.
-            repository.Delete(created);
-            User deleted = repository.Retrieve(created.Id);
+            userRepository.Delete(created);
+            User deleted = userRepository.Retrieve(created.Id);
             output.WriteLine($"Successfully deleted user {created.Id} - {deleted == null}.");
             Assert.Null(deleted);
-            int currentCount = repository.Count();
+            int currentCount = userRepository.Count();
             output.WriteLine($"Total number of users after executing CRUD operation is {currentCount}.");
             Assert.Equal(originalCount, currentCount);
         }
@@ -99,7 +116,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Arrange.
 
             // Act.
-            bool exists = repository.Exists(fixture.ReferenceUser.Id);
+            bool exists = userRepository.Exists(fixture.ReferenceUser.Id);
 
             // Assert.
             output.WriteLine($"Existing user found - {exists}.");
@@ -112,7 +129,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Arrange.
 
             // Act.
-            IEnumerable<User> items = repository.Retrieve().ToList();
+            IEnumerable<User> items = userRepository.Retrieve().ToList();
             output.WriteLine("All users:");
 
             foreach (User item in items)
@@ -130,7 +147,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Arrange.
 
             // Act.
-            IEnumerable<User> items = repository
+            IEnumerable<User> items = userRepository
                 .Retrieve(includes: u => u.UserCredentials.Select(uc => uc.Credentials))
                 .ToList();
             output.WriteLine("All eager loaded users:");
@@ -149,7 +166,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Arrange.
 
             // Act.
-            User retrieved = repository.Retrieve(
+            User retrieved = userRepository.Retrieve(
                 fixture.ReferenceUser.Id,
                 u => u.UserCredentials.Select(uc => uc.Credentials.Select(c => c.Issuers)));
             output.WriteLine($"Eager loaded existing user:\n{Output(retrieved)}");
@@ -169,11 +186,11 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Arrange.
             User original = DataFactory.CreateUser();
             original.CreatedDate = DateTime.Now;
-            User created = repository.Create(original);
+            User created = userRepository.Create(original);
             output.WriteLine($"Created new user:\n{Output(created)}");
 
             // Act.
-            User latest = repository
+            User latest = userRepository
                 .Retrieve(sortCondition: p => p.OrderByDescending(o => o.CreatedDate))
                 .FirstOrDefault();
             output.WriteLine($"Most recently created user:\n{Output(latest)}");
@@ -182,7 +199,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             Assert.NotNull(latest);
             Assert.Equal(created.Id, latest.Id);
 
-            repository.Delete(created);
+            userRepository.Delete(created);
         }
     }
 }

@@ -21,6 +21,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
             // Inject business services.
             services.AddScoped<DbContext, TestDataDbContext>();
             services.AddScoped<IRepository<User, Guid>, Repository<User, Guid>>();
+            services.AddScoped<IRepository<UserCredential, Guid>, Repository<UserCredential, Guid>>();
         }
     }
 }

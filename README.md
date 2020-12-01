@@ -9,6 +9,7 @@ Framework for supporting coding best practices.
 - Enhanced the ApplicationConfigration class to enable the use of multiple configuration sources.
 - Created configuration sources for reading application settings from a database (for both Entity Framework and Entity Framework Core).
 - Resolved an issue with "Includes" of associated entities when calling the retrieve methods of the repository code in the EntityFrameworkCore project.
+- Updated the CreateBulk and CreateBulkAsync methods of the EntityFrameworkCore Repository class to enable creation of associated child entities.
 - Created utility classes for the Expression class.
 - Updated the EntityFrameworkCore project from .NET Core 3.0 to 3.1.
 - Updated the AspNetCore project from supporting both .NET Core 2.2 and 3.0 to just 3.1.
