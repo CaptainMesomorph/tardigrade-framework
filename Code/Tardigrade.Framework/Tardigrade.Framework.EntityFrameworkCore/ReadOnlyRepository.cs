@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Extensions;
+using Tardigrade.Framework.Helpers;
 using Tardigrade.Framework.Models.Domain;
 using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
@@ -112,7 +113,16 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
             foreach (Expression<Func<TEntity, object>> include in includes.OrEmptyIfNull())
             {
-                query = query.Include(include);
+                bool parseSuccessful = ExpressionHelper.TryParsePath(include.Body, out string includePath);
+
+                if (parseSuccessful && !string.IsNullOrEmpty(includePath))
+                {
+                    query = query.Include(includePath);
+                }
+                else
+                {
+                    throw new InvalidOperationException("An Include expression could not be parsed.");
+                }
             }
 
             return query;
@@ -227,7 +237,16 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
             foreach (Expression<Func<TEntity, object>> include in includes.OrEmptyIfNull())
             {
-                query = query.Include(include);
+                bool parseSuccessful = ExpressionHelper.TryParsePath(include.Body, out string includePath);
+
+                if (parseSuccessful && !string.IsNullOrEmpty(includePath))
+                {
+                    query = query.Include(includePath);
+                }
+                else
+                {
+                    throw new InvalidOperationException("An Include expression could not be parsed.");
+                }
             }
 
             return query;

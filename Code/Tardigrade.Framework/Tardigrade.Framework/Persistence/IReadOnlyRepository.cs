@@ -63,7 +63,8 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="sortCondition">Condition used to define sorting.</param>
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>All instances if any; empty collection otherwise.</returns>
-        /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>"
+        /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>
+        /// <exception cref="InvalidOperationException">An includes expression could not be parsed.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the objects.</exception>
         IEnumerable<TEntity> Retrieve(
             Expression<Func<TEntity, bool>> filter = null,
@@ -78,6 +79,7 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Instance if found; null otherwise.</returns>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
+        /// <exception cref="InvalidOperationException">An includes expression could not be parsed.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the object.</exception>
         TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes);
 
@@ -92,7 +94,8 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>All instances if any; empty collection otherwise.</returns>
-        /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>"
+        /// <exception cref="ArgumentException">A sortCondition is required if pagingContext is provided.</exception>
+        /// <exception cref="InvalidOperationException">An includes expression could not be parsed.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the objects.</exception>
         Task<IEnumerable<TEntity>> RetrieveAsync(
             Expression<Func<TEntity, bool>> filter = null,
@@ -109,6 +112,7 @@ namespace Tardigrade.Framework.Persistence
         /// <param name="includes">A list of related objects to include in the query results.</param>
         /// <returns>Instance if found; null otherwise.</returns>
         /// <exception cref="ArgumentNullException">The id parameter is null.</exception>
+        /// <exception cref="InvalidOperationException">An includes expression could not be parsed.</exception>
         /// <exception cref="Exceptions.RepositoryException">Error retrieving the object.</exception>
         Task<TEntity> RetrieveAsync(
             TKey id,

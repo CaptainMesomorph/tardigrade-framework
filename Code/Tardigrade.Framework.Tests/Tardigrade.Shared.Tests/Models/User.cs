@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using Tardigrade.Framework.Models.Domain;
+﻿using System.Collections.Generic;
 
-namespace Tardigrade.Framework.Tests.Models
+namespace Tardigrade.Shared.Tests.Models
 {
-    internal class User : IHasUniqueIdentifier<Guid>
+    public class User : BaseModel
     {
         public string Email { get; set; }
-        public Guid Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+
+        // One-to-many navigation properties.
+
         public virtual ICollection<UserCredential> UserCredentials { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace Tardigrade.Framework.Helpers
         /// <a href="https://github.com/dotnet/ef6/blob/master/src/EntityFramework/Internal/DbHelpers.cs#L260">public static bool TryParsePath(Expression expression, out string path)</a>
         /// </summary>
         /// <param name="expression">The expression to parse.</param>
-        /// <param name="path">The expression parsed into an include path, or null if the expression did not match.</param>
+        /// <param name="path">The expression parsed into an include path, or null if the expression did not match (because expression.Body was not passed for instance).</param>
         /// <returns>True if matching succeeded; false if the expression could not be parsed.</returns>
         /// <exception cref="ArgumentNullException">expression is null.</exception>
         public static bool TryParsePath(Expression expression, out string path)

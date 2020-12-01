@@ -9,9 +9,10 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
 {
     public class ApplicationConfigurationDbTest : ApplicationConfigurationTest
     {
-        public ApplicationConfigurationDbTest()
-            : base(new ApplicationConfiguration(
-                new AppSettingsConfigurationSource(options => options.UseSqlite("Data Source=EntityFrameworkCoreTest.db"))))
+        public ApplicationConfigurationDbTest() : base(
+            new ApplicationConfiguration(
+                new AppSettingsConfigurationSource(
+                    options => options.UseSqlite("Data Source=EntityFrameworkCoreTest.db"))))
         {
         }
 

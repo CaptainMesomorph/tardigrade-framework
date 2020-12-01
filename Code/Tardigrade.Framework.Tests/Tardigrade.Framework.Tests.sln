@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.Entity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.EntityFramework.Tests", "Tardigrade.Framework.EntityFramework.Tests\Tardigrade.Framework.EntityFramework.Tests.csproj", "{0A7CC3CB-AC85-43FA-9CF6-B07C52BB48D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Shared.Tests", "Tardigrade.Shared.Tests\Tardigrade.Shared.Tests.csproj", "{2E4561D9-3154-4AE2-8114-239F27BF973D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Shared.Tests", "Tardigrade.Shared.Tests\Tardigrade.Shared.Tests.csproj", "{2E4561D9-3154-4AE2-8114-239F27BF973D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AspNetCore", "..\Tardigrade.Framework\Tardigrade.Framework.AspNetCore\Tardigrade.Framework.AspNetCore.csproj", "{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{2E4561D9-3154-4AE2-8114-239F27BF973D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E4561D9-3154-4AE2-8114-239F27BF973D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E4561D9-3154-4AE2-8114-239F27BF973D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
