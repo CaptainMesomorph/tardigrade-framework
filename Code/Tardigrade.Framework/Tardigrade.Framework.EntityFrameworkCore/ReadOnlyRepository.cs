@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Extensions;
+using Tardigrade.Framework.Helpers;
 using Tardigrade.Framework.Models.Domain;
 using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
@@ -86,10 +87,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual bool Exists(TKey id)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
             return DbContext.Set<TEntity>().Any(o => o.Id.Equals(id));
         }
@@ -99,10 +97,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual async Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = default)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
             return await DbContext.Set<TEntity>().AnyAsync(o => o.Id.Equals(id), cancellationToken);
         }
@@ -118,7 +113,16 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
             foreach (Expression<Func<TEntity, object>> include in includes.OrEmptyIfNull())
             {
-                query = query.Include(include);
+                bool parseSuccessful = ExpressionHelper.TryParsePath(include.Body, out string includePath);
+
+                if (parseSuccessful && !string.IsNullOrEmpty(includePath))
+                {
+                    query = query.Include(includePath);
+                }
+                else
+                {
+                    throw new InvalidOperationException("An Include expression could not be parsed.");
+                }
             }
 
             return query;
@@ -142,10 +146,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
         /// </summary>
         public virtual TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
             TEntity item = includes.IsNullOrEmpty() ?
                 DbContext.Set<TEntity>().Find(id) : FindQuery(includes).SingleOrDefault(o => o.Id.Equals(id));
@@ -175,10 +176,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
             CancellationToken cancellationToken = default,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
             TEntity item;
 
@@ -230,7 +228,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore
                 {
                     // Using a variable rather than a calculation in the EF/LINQ query is required as (for some
                     // unknown reason) the calculation result does not properly cast to an int.
-                    int skip = (int)(pagingContext.PageIndex * pagingContext.PageSize);
+                    var skip = (int)(pagingContext.PageIndex * pagingContext.PageSize);
                     query = query
                         .Skip(skip)
                         .Take((int)pagingContext.PageSize);
@@ -239,7 +237,16 @@ namespace Tardigrade.Framework.EntityFrameworkCore
 
             foreach (Expression<Func<TEntity, object>> include in includes.OrEmptyIfNull())
             {
-                query = query.Include(include);
+                bool parseSuccessful = ExpressionHelper.TryParsePath(include.Body, out string includePath);
+
+                if (parseSuccessful && !string.IsNullOrEmpty(includePath))
+                {
+                    query = query.Include(includePath);
+                }
+                else
+                {
+                    throw new InvalidOperationException("An Include expression could not be parsed.");
+                }
             }
 
             return query;

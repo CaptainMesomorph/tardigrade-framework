@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -16,34 +15,29 @@
     </Content>
   </ItemGroup>
 
-  <!-- Ad hoc fix to a known issue with app.config files and unit testing. -->
-  <!-- https://github.com/dotnet/runtime/issues/22720 -->
-  <!-- https://github.com/dotnet/runtime/issues/931 -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <None Update="app.config">
-      <Link>testhost.dll.config</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="Bogus" Version="32.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
-      <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="coverlet.collector" Version="1.3.0">
-      <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Tardigrade.Framework\Tardigrade.Framework\Tardigrade.Framework.csproj" />
-    <ProjectReference Include="..\Tardigrade.Shared.Tests\Tardigrade.Shared.Tests.csproj" />
+    <ProjectReference Include="..\..\Tardigrade.Framework\Tardigrade.Framework.EntityFrameworkCore\Tardigrade.Framework.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Tardigrade.Framework.Tests\Tardigrade.Framework.Tests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="EntityFrameworkCoreTest.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
