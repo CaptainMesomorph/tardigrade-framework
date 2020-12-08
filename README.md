@@ -4,6 +4,11 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Dec 8, 2020 - 13.1.0 Enhanced ConfigurationExtension to support more type casting options**
+
+- Enhanced ConfigurationExtension to support more type casting options.
+- Added unit tests for reading application settings that were of a type other than string.
+
 **Dec 1, 2020 - 13.0.0 Enhanced ApplicationManager to support database application settings**
 
 - Enhanced the ApplicationConfigration class to enable the use of multiple configuration sources.
