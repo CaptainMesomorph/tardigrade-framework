@@ -7,6 +7,7 @@ using Tardigrade.Framework.EntityFrameworkCore.Tests.Data;
 using Tardigrade.Framework.Patterns.DependencyInjection;
 using Tardigrade.Framework.Persistence;
 using Tardigrade.Shared.Tests.Models;
+using Tardigrade.Shared.Tests.Models.Blogs;
 
 namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
 {
@@ -20,6 +21,9 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
 
             // Inject business services.
             services.AddScoped<DbContext, TestDataDbContext>();
+            services.AddScoped<IRepository<Blog, Guid>, Repository<Blog, Guid>>();
+            services.AddScoped<IRepository<Person, Guid>, Repository<Person, Guid>>();
+            services.AddScoped<IRepository<Post, Guid>, Repository<Post, Guid>>();
             services.AddScoped<IRepository<User, Guid>, Repository<User, Guid>>();
             services.AddScoped<IRepository<UserCredential, Guid>, Repository<UserCredential, Guid>>();
         }

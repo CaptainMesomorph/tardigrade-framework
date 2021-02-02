@@ -7,6 +7,7 @@ using Tardigrade.Framework.Patterns.DependencyInjection;
 using Tardigrade.Framework.Persistence;
 using Tardigrade.Shared.Tests;
 using Tardigrade.Shared.Tests.Models;
+using Tardigrade.Shared.Tests.Models.Blogs;
 
 namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
 {
@@ -15,9 +16,12 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
     /// </summary>
     public class UnitTestFixture : IDisposable
     {
-        private readonly IRepository<User, Guid> repository;
+        private readonly IRepository<Blog, Guid> blogRepository;
+        private readonly IRepository<User, Guid> userRepository;
 
         public IServiceContainer Container { get; }
+
+        public Blog ReferenceBlog { get; }
 
         public User ReferenceUser { get; }
 
@@ -51,19 +55,27 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
         {
             Container = new UnitTestServiceContainer();
 
-            // Create a reference user for testing.
-            ReferenceUser = DataFactory.CreateUser();
-            repository = Container.GetService<IRepository<User, Guid>>();
-            _ = repository.Create(ReferenceUser);
-
             // Create and store SQL script for the test database.
             GenerateCreateScript(Container.GetService<DbContext>(), "Scripts/TestDataCreateScript.sql");
+
+            // Create a reference blog for testing.
+            ReferenceBlog = DataFactory.Blog;
+            blogRepository = Container.GetService<IRepository<Blog, Guid>>();
+            _ = blogRepository.Create(ReferenceBlog);
+
+            // Create a reference user for testing.
+            ReferenceUser = DataFactory.User;
+            userRepository = Container.GetService<IRepository<User, Guid>>();
+            _ = userRepository.Create(ReferenceUser);
         }
 
         public void Dispose()
         {
+            // Delete the reference blog.
+            if (blogRepository.Exists(ReferenceBlog.Id)) blogRepository.Delete(ReferenceBlog);
+
             // Delete the reference user.
-            repository.Delete(ReferenceUser);
+            userRepository.Delete(ReferenceUser);
         }
     }
 }

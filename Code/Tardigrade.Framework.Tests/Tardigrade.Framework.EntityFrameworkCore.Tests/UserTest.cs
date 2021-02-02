@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp;
 using Tardigrade.Framework.Persistence;
 using Tardigrade.Shared.Tests;
+using Tardigrade.Shared.Tests.Extensions;
 using Tardigrade.Shared.Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,36 +18,23 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
         private readonly IRepository<UserCredential, Guid> userCredentialRepository;
         private readonly IRepository<User, Guid> userRepository;
 
-        private static string Output(User obj)
-        {
-            var options = new JsonSerializerSettings
-            {
-                //ContractResolver = new IgnoreVirtualPropertyResolver(),
-                Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
-
-            return JsonConvert.SerializeObject(obj, options);
-        }
-
         public UserTest(UnitTestFixture fixture, ITestOutputHelper output)
         {
-            this.output = output;
             this.fixture = fixture;
+            this.output = output;
 
             userCredentialRepository = this.fixture.Container.GetService<IRepository<UserCredential, Guid>>();
             userRepository = this.fixture.Container.GetService<IRepository<User, Guid>>();
         }
 
-        [Theory]
-        [InlineData(5)]
-        public void CreateMultiple_NewObjects_Success(uint newObjectsCount)
+        [Fact]
+        public void CreateMultiple_NewObjects_Success()
         {
             // Arrange.
             int count = userRepository.Count();
             output.WriteLine($"Total number of users is {count}.");
-            IEnumerable<User> multipleOriginals = DataFactory.CreateUsers(newObjectsCount);
+            IEnumerable<User> multipleOriginals = DataFactory.Users;
+            int newObjectsCount = multipleOriginals.Count();
 
             // Act.
             IEnumerable<User> multipleCreated =
@@ -82,21 +69,21 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             output.WriteLine($"Total number of users before executing CRUD operation is {originalCount}.");
 
             // Create.
-            User original = DataFactory.CreateUser();
+            User original = DataFactory.User;
             User created = userRepository.Create(original);
-            output.WriteLine($"Created new user:\n{Output(created)}");
+            output.WriteLine($"Created new user:\n{created.ToJson()}");
             Assert.Equal(original.Id, created.Id);
 
             // Retrieve single.
             User retrieved = userRepository.Retrieve(created.Id);
-            output.WriteLine($"Retrieved newly created user:\n{Output(retrieved)}");
+            output.WriteLine($"Retrieved newly created user:\n{retrieved.ToJson()}");
             Assert.Equal(created.Id, retrieved.Id);
 
             // Update.
             retrieved.ModifiedBy = "muppet";
             userRepository.Update(retrieved);
             User updated = userRepository.Retrieve(retrieved.Id);
-            output.WriteLine($"Updated the ModifiedBy property of the newly created user:\n{Output(updated)}");
+            output.WriteLine($"Updated the ModifiedBy property of the newly created user:\n{updated.ToJson()}");
             Assert.Equal(retrieved.Id, updated.Id);
             Assert.Equal("muppet", updated.ModifiedBy);
 
@@ -108,6 +95,27 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             int currentCount = userRepository.Count();
             output.WriteLine($"Total number of users after executing CRUD operation is {currentCount}.");
             Assert.Equal(originalCount, currentCount);
+        }
+
+        [Fact]
+        public void Delete_NewObject_Success()
+        {
+            // Arrange.
+            User original = DataFactory.User;
+            User created = userRepository.Create(original);
+            output.WriteLine($"User to delete:\n{created.ToJson()}");
+            Assert.Equal(original.Id, created.Id);
+
+            // Act.
+            userRepository.Delete(created);
+
+            // Assert.
+            bool userExists = userRepository.Exists(original.Id);
+            Assert.False(userExists);
+            bool userCredentialExists = userCredentialRepository.Exists(original.UserCredentials.First().Id);
+            Assert.False(userCredentialExists);
+
+            output.WriteLine($"Successfully deleted user {original.Id}.");
         }
 
         [Fact]
@@ -134,7 +142,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
 
             foreach (User item in items)
             {
-                output.WriteLine($">>>> {Output(item)}");
+                output.WriteLine($">>>> {item.ToJson()}");
             }
 
             // Assert.
@@ -155,7 +163,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Assert.
             foreach (User item in items)
             {
-                output.WriteLine($">>>> {Output(item)}");
+                output.WriteLine($">>>> {item.ToJson()}");
                 Assert.False(item.UserCredentials.All(uc => uc.Credentials.All(c => c.Name == null)));
             }
         }
@@ -169,7 +177,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             User retrieved = userRepository.Retrieve(
                 fixture.ReferenceUser.Id,
                 u => u.UserCredentials.Select(uc => uc.Credentials.Select(c => c.Issuers)));
-            output.WriteLine($"Eager loaded existing user:\n{Output(retrieved)}");
+            output.WriteLine($"Eager loaded existing user:\n{retrieved.ToJson()}");
 
             // Assert.
             Assert.NotNull(retrieved);
@@ -184,16 +192,16 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
         public void RetrieveLatest_ExistingObject_Success()
         {
             // Arrange.
-            User original = DataFactory.CreateUser();
+            User original = DataFactory.User;
             original.CreatedDate = DateTime.Now;
             User created = userRepository.Create(original);
-            output.WriteLine($"Created new user:\n{Output(created)}");
+            output.WriteLine($"Created new user:\n{created.ToJson()}");
 
             // Act.
             User latest = userRepository
                 .Retrieve(sortCondition: p => p.OrderByDescending(o => o.CreatedDate))
                 .FirstOrDefault();
-            output.WriteLine($"Most recently created user:\n{Output(latest)}");
+            output.WriteLine($"Most recently created user:\n{latest.ToJson()}");
 
             // Assert.
             Assert.NotNull(latest);
