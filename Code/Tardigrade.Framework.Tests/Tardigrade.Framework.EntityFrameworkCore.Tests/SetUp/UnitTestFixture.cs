@@ -16,12 +16,17 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
     /// </summary>
     public class UnitTestFixture : IDisposable
     {
+        private static readonly object Lock = new object();
+
         private readonly IRepository<Blog, Guid> blogRepository;
+        private readonly IRepository<Person, Guid> personRepository;
         private readonly IRepository<User, Guid> userRepository;
 
         public IServiceContainer Container { get; }
 
         public Blog ReferenceBlog { get; }
+
+        public Person ReferencePerson { get; }
 
         public User ReferenceUser { get; }
 
@@ -46,9 +51,12 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
                 Directory.GetParent(Directory.GetCurrentDirectory());
             DirectoryInfo projectDirectory = binDirectory.Parent ?? binDirectory;
 
-            // Save the create script.
-            using var outputFile = new StreamWriter(Path.Combine(projectDirectory.FullName, scriptFilename));
-            outputFile.WriteLine(createScript);
+            lock (Lock)
+            {
+                // Save the create script.
+                using var outputFile = new StreamWriter(Path.Combine(projectDirectory.FullName, scriptFilename));
+                outputFile.WriteLine(createScript);
+            }
         }
 
         public UnitTestFixture()
@@ -58,12 +66,18 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
             // Create and store SQL script for the test database.
             GenerateCreateScript(Container.GetService<DbContext>(), "Scripts/TestDataCreateScript.sql");
 
-            // Create a reference blog for testing.
+            // Create a reference Blog for testing.
             ReferenceBlog = DataFactory.Blog;
+            ReferenceBlog.Posts = DataFactory.Posts;
             blogRepository = Container.GetService<IRepository<Blog, Guid>>();
             _ = blogRepository.Create(ReferenceBlog);
 
-            // Create a reference user for testing.
+            // Create a reference Person for testing.
+            ReferencePerson = DataFactory.CreatePerson();
+            personRepository = Container.GetService<IRepository<Person, Guid>>();
+            _ = personRepository.Create(ReferencePerson);
+
+            // Create a reference User for testing.
             ReferenceUser = DataFactory.User;
             userRepository = Container.GetService<IRepository<User, Guid>>();
             _ = userRepository.Create(ReferenceUser);
@@ -71,10 +85,13 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
 
         public void Dispose()
         {
-            // Delete the reference blog.
+            // Delete the reference Blog.
             if (blogRepository.Exists(ReferenceBlog.Id)) blogRepository.Delete(ReferenceBlog);
 
-            // Delete the reference user.
+            // Delete the reference Person.
+            if (personRepository.Exists(ReferencePerson.Id)) personRepository.Delete(ReferencePerson);
+
+            // Delete the reference User.
             userRepository.Delete(ReferenceUser);
         }
     }

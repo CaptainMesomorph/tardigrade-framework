@@ -33,6 +33,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
         {
             // Arrange.
             Blog original = DataFactory.Blog;
+            original.Posts = DataFactory.Posts;
             Blog created = blogRepository.Create(original);
             output.WriteLine($"Blog to delete:\n{created.ToJson()}");
             Assert.Equal(original.Id, created.Id);
@@ -56,10 +57,9 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             Person created = personRepository.Create(original);
             output.WriteLine($"Person to delete:\n{created.ToJson()}");
             Assert.Equal(original.Id, created.Id);
-            Person retrieved = personRepository.Retrieve(created.Id, p => p.OwnedBlog);
 
             // Act.
-            personRepository.Delete(retrieved);
+            personRepository.Delete(created);
 
             // Assert.
             bool personExists = personRepository.Exists(original.Id);
@@ -94,6 +94,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
         {
             // Arrange.
             Blog original = DataFactory.Blog;
+            original.Posts = DataFactory.Posts;
             Blog created = blogRepository.Create(original);
             output.WriteLine($"Posts to delete:\n{created.Posts.ToJson()}");
             created.Posts.Clear();
@@ -112,6 +113,26 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             }
 
             output.WriteLine($"Successfully deleted orphan posts from blog {original.Id}.");
+        }
+
+        [Fact]
+        public void Delete_PersonExists_Success()
+        {
+            // Arrange.
+            Person retrieved = personRepository.Retrieve(fixture.ReferencePerson.Id);
+            output.WriteLine($"Person to delete:\n{retrieved.ToJson()}");
+
+            // Act.
+            personRepository.Delete(retrieved);
+
+            // Assert.
+            bool personExists = personRepository.Exists(fixture.ReferencePerson.Id);
+            Assert.False(personExists);
+            bool blogExists = blogRepository.Exists(fixture.ReferencePerson.OwnedBlog.Id);
+            Assert.False(blogExists);
+            bool postExists = postRepository.Exists(fixture.ReferencePerson.Posts.First().Id);
+            Assert.False(postExists);
+            output.WriteLine($"Successfully deleted person {fixture.ReferencePerson.Id}.");
         }
     }
 }

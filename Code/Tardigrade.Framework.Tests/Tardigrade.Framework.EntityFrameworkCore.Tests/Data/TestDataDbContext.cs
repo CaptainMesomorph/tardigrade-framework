@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Tardigrade.Shared.Tests.Models;
 using Tardigrade.Shared.Tests.Models.Blogs;
 
@@ -31,7 +32,29 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.Data
             //modelBuilder.Entity<Person>()
             //    .HasOne(p => p.OwnedBlog)
             //    .WithOne(b => b.Owner)
-            //    .HasForeignKey<Blog>(b => b.OwnerId);
+            //    .HasForeignKey<Blog>("OwnerId");
+
+            //modelBuilder
+            //    .Entity<Blog>()
+            //    .Property<Guid>("OwnerId");
+
+            modelBuilder
+                .Entity<Blog>()
+                .HasOne(b => b.Owner)
+                .WithOne(p => p.OwnedBlog)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
+            //modelBuilder
+            //    .Entity<Post>()
+            //    .HasOne(pt => pt.Author)
+            //    .WithMany(pn => pn.Posts)
+            //    .HasForeignKey(pt => pt.AuthorId);
+
+            modelBuilder
+                .Entity<Post>()
+                .HasOne(p => p.Blog)
+                .WithMany(b => b.Posts)
+                .OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }

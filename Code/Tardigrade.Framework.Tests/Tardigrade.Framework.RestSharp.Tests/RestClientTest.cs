@@ -11,7 +11,7 @@ namespace Tardigrade.Framework.RestSharp.Tests
         {
             var tsaClient = new TsaClient(new Uri("https://api.smoothlms.com/v1/"));
             Response<object> response = tsaClient.Get<object>("https://api.smoothlms.com/v1/enrolment/5095/lesson/6331/launch?returnURL=https%3A%2F%2Ftikforce.com");
-            var content = response.Data.ToString();
+            var content = response.Data?.ToString();
             Console.Out.WriteLine($"{response.StatusCode}\n{content}");
         }
     }
