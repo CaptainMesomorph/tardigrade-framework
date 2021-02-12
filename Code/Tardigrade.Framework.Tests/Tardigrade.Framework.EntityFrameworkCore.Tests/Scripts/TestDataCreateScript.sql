@@ -54,15 +54,13 @@ CREATE TABLE "Posts" (
     "Id" TEXT NOT NULL CONSTRAINT "PK_Posts" PRIMARY KEY,
     "Content" TEXT NULL,
     "Title" TEXT NULL,
-    "AuthorId" TEXT NULL,
     "BlogId" TEXT NULL,
     "CreatedBy" TEXT NULL,
     "CreatedDate" TEXT NOT NULL,
     "IsDeleted" INTEGER NOT NULL,
     "ModifiedBy" TEXT NULL,
     "ModifiedDate" TEXT NOT NULL,
-    CONSTRAINT "FK_Posts_Blogs_BlogId" FOREIGN KEY ("BlogId") REFERENCES "Blogs" ("Id") ON DELETE RESTRICT,
-    CONSTRAINT "FK_Posts_Persons_AuthorId" FOREIGN KEY ("AuthorId") REFERENCES "Persons" ("Id") ON DELETE RESTRICT
+    CONSTRAINT "FK_Posts_Blogs_BlogId" FOREIGN KEY ("BlogId") REFERENCES "Blogs" ("Id") ON DELETE RESTRICT
 );
 
 
@@ -99,9 +97,6 @@ CREATE INDEX "IX_CredentialIssuers_CredentialId" ON "CredentialIssuers" ("Creden
 
 
 CREATE INDEX "IX_Credentials_UserCredentialId" ON "Credentials" ("UserCredentialId");
-
-
-CREATE INDEX "IX_Posts_AuthorId" ON "Posts" ("AuthorId");
 
 
 CREATE INDEX "IX_Posts_BlogId" ON "Posts" ("BlogId");

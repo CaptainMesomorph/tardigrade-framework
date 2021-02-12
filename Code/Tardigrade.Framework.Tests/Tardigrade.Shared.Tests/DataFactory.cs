@@ -119,7 +119,7 @@ namespace Tardigrade.Shared.Tests
             List<Post> posts = PostFaker.Generate(Random.Int(1, Random.Int(1, PostMaxCount)));
 
             person.OwnedBlog = blog;
-            person.Posts = posts;
+            //person.Posts = posts;
             blog.Posts = posts;
 
             return person;
