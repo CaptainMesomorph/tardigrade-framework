@@ -1,5 +1,7 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using System.Threading.Tasks;
+using Tardigrade.Framework.EntityFrameworkCore.Extensions;
 using Tardigrade.Shared.Tests.Models;
 using Tardigrade.Shared.Tests.Models.Blogs;
 
@@ -29,6 +31,11 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.Data
         /// <inheritdoc />
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            // Apply query filters to ignore soft deleted records.
+            modelBuilder.FilterSoftDeleted();
+
             //modelBuilder.Entity<Person>()
             //    .HasOne(p => p.OwnedBlog)
             //    .WithOne(b => b.Owner)
@@ -55,6 +62,26 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.Data
                 .HasOne(p => p.Blog)
                 .WithMany(b => b.Posts)
                 .OnDelete(DeleteBehavior.ClientCascade);
+        }
+
+        /// <inheritdoc />
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            // Soft deletion of records is applied.
+            this.ApplySoftDeletion();
+
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        /// <inheritdoc />
+        public override Task<int> SaveChangesAsync(
+            bool acceptAllChangesOnSuccess,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            // Soft deletion of records is applied.
+            this.ApplySoftDeletion();
+
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
         }
     }
 }
