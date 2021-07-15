@@ -13,7 +13,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Extensions
     public static class ModelBuilderExtension
     {
         /// <summary>
-        /// Create a query filter to ignore soft deleted entities (i.e. ISoftDeletable.IsDeleted = true).
+        /// Create a query filter to ignore soft deleted records (i.e. ISoftDeletable.IsDeleted = true).
         /// <a href="https://www.meziantou.net/entity-framework-core-soft-delete-using-query-filters.htm">Entity Framework Core: Soft Delete using Query Filters</a>
         /// <a href="https://github.com/dotnet/efcore/issues/18084">HasQueryFilter not working from Entity Framework Core 3.0</a>
         /// </summary>

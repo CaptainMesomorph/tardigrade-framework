@@ -24,7 +24,7 @@ namespace Tardigrade.Framework.Extensions
         /// <returns>Value associated with the application setting if it exists; the default value otherwise.</returns>
         /// <exception cref="ArgumentNullException">configuration is null; name is null or empty.</exception>
         /// <exception cref="FormatException">Value associated with the application setting does not represent a Boolean.</exception>
-        /// <exception cref="NotFoundException">Referenced application setting does not exist.</exception>
+        /// <exception cref="NotFoundException">A referenced application setting does not exist.</exception>
         public static bool? GetAsBoolean(this IConfiguration configuration, string name, bool? defaultValue = null)
         {
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
@@ -43,17 +43,18 @@ namespace Tardigrade.Framework.Extensions
         }
 
         /// <summary>
-        /// Get the Enum value for an application setting. If it does not exist, then the default value is returned.
+        /// Get the Enum value for an application setting (not case sensitive). If it does not exist, then the default
+        /// value is returned.
         /// This method leverages the <see cref="GetAsString">GetAsString</see> method.
         /// </summary>
-        /// <typeparam name="TEnum"></typeparam>
+        /// <typeparam name="TEnum">Type of the enumeration.</typeparam>
         /// <param name="configuration">IConfiguration associated with this extension.</param>
         /// <param name="name">Name of the application setting.</param>
         /// <param name="defaultValue">Default value returned in case the application setting does not exist.</param>
         /// <returns>Value associated with the application setting if it exists; the default value otherwise.</returns>
         /// <exception cref="ArgumentException">Value associated with the application setting is not an enumeration type.</exception>
         /// <exception cref="ArgumentNullException">configuration is null; name is null or empty.</exception>
-        /// <exception cref="NotFoundException">Referenced application setting does not exist.</exception>
+        /// <exception cref="NotFoundException">A referenced application setting does not exist.</exception>
         public static TEnum? GetAsEnum<TEnum>(
             this IConfiguration configuration,
             string name,
@@ -92,7 +93,7 @@ namespace Tardigrade.Framework.Extensions
         /// <returns>Value associated with the application setting if it exists; the default value otherwise.</returns>
         /// <exception cref="ArgumentNullException">configuration is null; name is null or empty.</exception>
         /// <exception cref="FormatException">Value associated with the application setting does not represent an Integer.</exception>
-        /// <exception cref="NotFoundException">Referenced application setting does not exist.</exception>
+        /// <exception cref="NotFoundException">A referenced application setting does not exist.</exception>
         /// <exception cref="OverflowException">Value associated with the application setting was either too large or too small for an Integer.</exception>
         public static int? GetAsInt(this IConfiguration configuration, string name, int? defaultValue = null)
         {
@@ -127,7 +128,7 @@ namespace Tardigrade.Framework.Extensions
         /// <param name="defaultValue">Default value returned in case the application setting does not exist.</param>
         /// <returns>Value associated with the application setting if it exists; the default value otherwise.</returns>
         /// <exception cref="ArgumentNullException">configuration is null; name is null or empty.</exception>
-        /// <exception cref="NotFoundException">Referenced application setting does not exist.</exception>
+        /// <exception cref="NotFoundException">A referenced application setting does not exist.</exception>
         public static string GetAsString(this IConfiguration configuration, string name, string defaultValue = null)
         {
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));

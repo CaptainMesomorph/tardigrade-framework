@@ -30,6 +30,9 @@ namespace Tardigrade.Framework.Configurations
         ///   5. Environment Variables
         ///   6. Command Line Arguments
         ///
+        /// If configuration sources are provided, then they will replace the app.config file source. The remaining
+        /// configuration sources remain.
+        ///
         /// <a href="https://devblogs.microsoft.com/premier-developer/order-of-precedence-when-configuring-asp-net-core/">Order of Precedence when Configuring ASP.NET Core</a>
         /// </summary>
         /// <param name="configurationSources">Collection of configuration key/value sources.</param>
@@ -44,6 +47,7 @@ namespace Tardigrade.Framework.Configurations
                     builder.Add(configurationSource);
                 }
 
+                builder.AddJsonFile(DefaultJsonFile, true, true);
                 builder.AddEnvironmentVariables();
                 config = builder.Build();
             }
