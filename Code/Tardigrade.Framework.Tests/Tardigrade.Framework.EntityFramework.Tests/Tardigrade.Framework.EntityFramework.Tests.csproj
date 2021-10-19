@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite">
-      <Version>1.0.113.6</Version>
+      <Version>1.0.115</Version>
     </PackageReference>
     <PackageReference Include="xunit">
       <Version>2.4.1</Version>
