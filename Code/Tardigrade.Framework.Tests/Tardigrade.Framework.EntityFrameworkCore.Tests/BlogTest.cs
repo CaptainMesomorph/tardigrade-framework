@@ -35,7 +35,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             Blog original = DataFactory.Blog;
             original.Posts = DataFactory.Posts;
             Blog created = blogRepository.Create(original);
-            output.WriteLine($"Blog to delete:\n{created.ToJson()}");
+            output.WriteLine($"Blog to delete:\n{created.ToNewtonsoftJson()}");
             Assert.Equal(original.Id, created.Id);
 
             // Act.
@@ -55,7 +55,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Arrange.
             Person original = DataFactory.CreatePerson();
             Person created = personRepository.Create(original);
-            output.WriteLine($"Person to delete:\n{created.ToJson()}");
+            output.WriteLine($"Person to delete:\n{created.ToNewtonsoftJson()}");
             Assert.Equal(original.Id, created.Id);
 
             // Act.
@@ -76,7 +76,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
         {
             // Arrange.
             Blog retrieved = blogRepository.Retrieve(fixture.ReferenceBlog.Id);
-            output.WriteLine($"Blog to delete:\n{retrieved.ToJson()}");
+            output.WriteLine($"Blog to delete:\n{retrieved.ToNewtonsoftJson()}");
 
             // Act.
             blogRepository.Delete(retrieved);
@@ -96,7 +96,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             Blog original = DataFactory.Blog;
             original.Posts = DataFactory.Posts;
             Blog created = blogRepository.Create(original);
-            output.WriteLine($"Posts to delete:\n{created.Posts.ToJson()}");
+            output.WriteLine($"Posts to delete:\n{created.Posts.ToNewtonsoftJson()}");
             created.Posts.Clear();
 
             // Act.
@@ -120,7 +120,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
         {
             // Arrange.
             Person retrieved = personRepository.Retrieve(fixture.ReferencePerson.Id);
-            output.WriteLine($"Person to delete:\n{retrieved.ToJson()}");
+            output.WriteLine($"Person to delete:\n{retrieved.ToNewtonsoftJson()}");
 
             // Act.
             personRepository.Delete(retrieved);

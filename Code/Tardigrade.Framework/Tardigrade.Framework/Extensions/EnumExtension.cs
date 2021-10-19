@@ -59,19 +59,14 @@ namespace Tardigrade.Framework.Extensions
         /// <param name="value">String value to convert.</param>
         /// <param name="defaultValue">Default enumerated type value to use if string value is not within a valid range.</param>
         /// <returns>Enumerated type value.</returns>
-        public static T ToEnum<T>(this string value, T defaultValue = default) where T : struct, IComparable, IConvertible, IFormattable
+        public static T? ToEnum<T>(this string value, T? defaultValue = default) where T : struct, IComparable, IConvertible, IFormattable
         {
             if (!typeof(T).IsEnum)
             {
                 throw new InvalidOperationException("This operation is only applicable for enumerated types.");
             }
 
-            if (!Enum.TryParse(value, true, out T enumeration))
-            {
-                enumeration = defaultValue;
-            }
-
-            return enumeration;
+            return Enum.TryParse(value, true, out T enumeration) ? enumeration : defaultValue;
         }
 
         /// <summary>

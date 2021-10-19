@@ -72,9 +72,7 @@ namespace Tardigrade.Framework.Extensions
                 return defaultValue;
             }
 
-            var enumValue = (TEnum?)Enum.Parse(typeof(TEnum), stringValue, true);
-
-            if (!Enum.IsDefined(typeof(TEnum), enumValue))
+            if (!Enum.TryParse(stringValue, true, out TEnum enumValue))
             {
                 throw new ArgumentException(
                     $"Value '{stringValue}' is not valid for setting {name} as it is not an underlying value of the {typeof(TEnum).Name} enumeration.");

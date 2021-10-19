@@ -71,19 +71,19 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Create.
             User original = DataFactory.User;
             User created = userRepository.Create(original);
-            output.WriteLine($"Created new user:\n{created.ToJson()}");
+            output.WriteLine($"Created new user:\n{created.ToNewtonsoftJson()}");
             Assert.Equal(original.Id, created.Id);
 
             // Retrieve single.
             User retrieved = userRepository.Retrieve(created.Id);
-            output.WriteLine($"Retrieved newly created user:\n{retrieved.ToJson()}");
+            output.WriteLine($"Retrieved newly created user:\n{retrieved.ToNewtonsoftJson()}");
             Assert.Equal(created.Id, retrieved.Id);
 
             // Update.
             retrieved.ModifiedBy = "muppet";
             userRepository.Update(retrieved);
             User updated = userRepository.Retrieve(retrieved.Id);
-            output.WriteLine($"Updated the ModifiedBy property of the newly created user:\n{updated.ToJson()}");
+            output.WriteLine($"Updated the ModifiedBy property of the newly created user:\n{updated.ToNewtonsoftJson()}");
             Assert.Equal(retrieved.Id, updated.Id);
             Assert.Equal("muppet", updated.ModifiedBy);
 
@@ -111,7 +111,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Arrange.
             User original = DataFactory.User;
             User created = userRepository.Create(original);
-            output.WriteLine($"User to delete:\n{created.ToJson()}");
+            output.WriteLine($"User to delete:\n{created.ToNewtonsoftJson()}");
             Assert.Equal(original.Id, created.Id);
 
             // Act.
@@ -150,7 +150,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
 
             foreach (User item in items)
             {
-                output.WriteLine($">>>> {item.ToJson()}");
+                output.WriteLine($">>>> {item.ToNewtonsoftJson()}");
             }
 
             // Assert.
@@ -171,7 +171,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             // Assert.
             foreach (User item in items)
             {
-                output.WriteLine($">>>> {item.ToJson()}");
+                output.WriteLine($">>>> {item.ToNewtonsoftJson()}");
                 Assert.False(item.UserCredentials.All(uc => uc.Credentials.All(c => c.Name == null)));
             }
         }
@@ -185,7 +185,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             User retrieved = userRepository.Retrieve(
                 fixture.ReferenceUser.Id,
                 u => u.UserCredentials.Select(uc => uc.Credentials.Select(c => c.Issuers)));
-            output.WriteLine($"Eager loaded existing user:\n{retrieved.ToJson()}");
+            output.WriteLine($"Eager loaded existing user:\n{retrieved.ToNewtonsoftJson()}");
 
             // Assert.
             Assert.NotNull(retrieved);
@@ -203,13 +203,13 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests
             User original = DataFactory.User;
             original.CreatedDate = DateTime.Now;
             User created = userRepository.Create(original);
-            output.WriteLine($"Created new user:\n{created.ToJson()}");
+            output.WriteLine($"Created new user:\n{created.ToNewtonsoftJson()}");
 
             // Act.
             User latest = userRepository
                 .Retrieve(sortCondition: p => p.OrderByDescending(o => o.CreatedDate))
                 .FirstOrDefault();
-            output.WriteLine($"Most recently created user:\n{latest.ToJson()}");
+            output.WriteLine($"Most recently created user:\n{latest.ToNewtonsoftJson()}");
 
             // Assert.
             Assert.NotNull(latest);
