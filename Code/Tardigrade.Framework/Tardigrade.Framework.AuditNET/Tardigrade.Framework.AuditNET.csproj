@@ -16,8 +16,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Audit.NET" Version="16.2.0" />
-    <PackageReference Include="Microsoft.Azure.Storage.Queue" Version="11.2.2" />
+    <PackageReference Include="Audit.NET" Version="18.1.6" />
+    <PackageReference Include="Microsoft.Azure.Storage.Queue" Version="11.2.3" />
   </ItemGroup>
 
   <ItemGroup>
