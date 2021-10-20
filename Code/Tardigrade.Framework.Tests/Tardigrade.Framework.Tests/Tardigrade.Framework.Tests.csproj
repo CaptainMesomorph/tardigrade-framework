@@ -1,8 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-
+    <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -19,9 +18,9 @@
   <!-- Ad hoc fix to a known issue with app.config files and unit testing. -->
   <!-- https://github.com/dotnet/runtime/issues/22720 -->
   <!-- https://github.com/dotnet/runtime/issues/931 -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <None Update="app.config">
-      <Link>testhost.dll.config</Link>
+      <Link>Tardigrade.Framework.Tests.dll.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

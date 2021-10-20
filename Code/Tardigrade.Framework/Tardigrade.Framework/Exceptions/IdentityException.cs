@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 using Tardigrade.Framework.Models.Errors;
 
 namespace Tardigrade.Framework.Exceptions
@@ -71,7 +70,6 @@ namespace Tardigrade.Framework.Exceptions
         /// <summary>
         /// <see cref="Exception.GetObjectData(SerializationInfo, StreamingContext)"/>
         /// </summary>
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)

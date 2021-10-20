@@ -1,11 +1,16 @@
 ﻿using Audit.Core;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Queue;
-using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Helpers;
+
+#if NET
+using System.Text.Json;
+#else
+using Newtonsoft.Json;
+#endif
 
 namespace Tardigrade.Framework.AuditNET.DataProviders
 {
@@ -80,8 +85,11 @@ namespace Tardigrade.Framework.AuditNET.DataProviders
             }
 
             // Create a message and add it to the queue.
-            CloudQueueMessage message =
-                new CloudQueueMessage(JsonConvert.SerializeObject(auditEvent, Configuration.JsonSettings));
+#if NET
+            var message = new CloudQueueMessage(JsonSerializer.Serialize(auditEvent, Configuration.JsonSettings));
+#else
+            var message = new CloudQueueMessage(JsonConvert.SerializeObject(auditEvent, Configuration.JsonSettings));
+#endif
             await queue.AddMessageAsync(message);
 
             return message.Id;
