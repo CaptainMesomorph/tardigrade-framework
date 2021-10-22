@@ -5,7 +5,7 @@ namespace Tardigrade.Framework.RestSharp.Tests.Models
     /// <summary>
     /// Users model for the API
     /// </summary>
-    public class UserDto : IHasUniqueIdentifier<string>
+    public class User : IHasUniqueIdentifier<string>
     {
         /// <summary>
         /// The created date of the user
