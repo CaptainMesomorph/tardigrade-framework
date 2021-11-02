@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <UserSecretsId>c48f2cd1-7be5-4eed-bef1-051dc7fef655</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +21,7 @@
   <!-- https://github.com/dotnet/runtime/issues/931 -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <None Update="app.config">
-      <Link>Tardigrade.Framework.Tests.dll.config</Link>
+      <Link>testhost.dll.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -28,7 +29,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>

@@ -8,11 +8,11 @@ namespace Tardigrade.Framework.Tests
 {
     public class JsonSerialisationTest
     {
-        private readonly ITestOutputHelper output;
+        private readonly ITestOutputHelper _output;
 
         public JsonSerialisationTest(ITestOutputHelper output)
         {
-            this.output = output;
+            this._output = output;
         }
 
         [Fact]
@@ -20,7 +20,7 @@ namespace Tardigrade.Framework.Tests
         {
             User user = DataFactory.User;
             string str = user.ToSystemTextJson();
-            output.WriteLine($"JSON is {str}.");
+            _output.WriteLine($"JSON is {str}.");
         }
     }
 }

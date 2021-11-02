@@ -9,6 +9,21 @@ namespace Tardigrade.Framework.Extensions
     public static class CollectionExtension
     {
         /// <summary>
+        /// Check whether the specified source is null, contains no items or contains only "default" items.
+        /// </summary>
+        /// <typeparam name="T">Type associated with the collection.</typeparam>
+        /// <param name="source">The collection to check.</param>
+        /// <returns>True if the collection is null, contains no items or contains only "default" items; false otherwise.</returns>
+        public static bool IsAllEmpty<T>(this IEnumerable<T> source)
+        {
+            if (source == null) return true;
+
+            IEnumerable<T> enumerable = source.ToList();
+
+            return !enumerable.Any() || enumerable.All(e => e.Equals(default(T)));
+        }
+
+        /// <summary>
         /// Check whether the specified source is null or contains no items.
         /// </summary>
         /// <typeparam name="T">Type associated with the collection.</typeparam>

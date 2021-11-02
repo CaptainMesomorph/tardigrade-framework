@@ -16,9 +16,9 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
     /// </summary>
     public class IdentityUserManager : IIdentityUserManager<ApplicationUser>, IDisposable
     {
-        private bool disposedValue = false; // To detect redundant calls
-        private SignInManager<ApplicationUser, string> signInManager;
-        private UserManager<ApplicationUser> userManager;
+        private bool _disposedValue = false; // To detect redundant calls
+        private SignInManager<ApplicationUser, string> _signInManager;
+        private UserManager<ApplicationUser> _userManager;
 
         /// <summary>
         /// Create an instance of this class.
@@ -30,8 +30,8 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
             SignInManager<ApplicationUser, string> signInManager,
             UserManager<ApplicationUser> userManager)
         {
-            this.signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
-            this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
-            IdentityResult result = await userManager.AddPasswordAsync(user.Id, password);
+            IdentityResult result = await _userManager.AddPasswordAsync(user.Id, password);
 
             if (!result.Succeeded)
             {
@@ -64,7 +64,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (roles.Any())
             {
-                IdentityResult result = await userManager.AddToRolesAsync(user.Id, roles);
+                IdentityResult result = await _userManager.AddToRolesAsync(user.Id, roles);
 
                 if (!result.Succeeded)
                 {
@@ -84,7 +84,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
-            return await userManager.CheckPasswordAsync(user, password);
+            return await _userManager.CheckPasswordAsync(user, password);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
 
-            IdentityResult result = await userManager.ConfirmEmailAsync(user.Id, token);
+            IdentityResult result = await _userManager.ConfirmEmailAsync(user.Id, token);
 
             if (!result.Succeeded)
             {
@@ -115,7 +115,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
-            IdentityResult result = await userManager.CreateAsync(user, password);
+            IdentityResult result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
             {
@@ -134,7 +134,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IdentityResult result = await userManager.DeleteAsync(user);
+            IdentityResult result = await _userManager.DeleteAsync(user);
 
             if (!result.Succeeded)
             {
@@ -158,24 +158,24 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         /// <param name="disposing">True to dispose; false otherwise.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    if (userManager != null)
+                    if (_userManager != null)
                     {
-                        userManager.Dispose();
-                        userManager = null;
+                        _userManager.Dispose();
+                        _userManager = null;
                     }
 
-                    if (signInManager != null)
+                    if (_signInManager != null)
                     {
-                        signInManager.Dispose();
-                        signInManager = null;
+                        _signInManager.Dispose();
+                        _signInManager = null;
                     }
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -186,7 +186,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.GenerateEmailConfirmationTokenAsync(user.Id);
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user.Id);
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.GeneratePasswordResetTokenAsync(user.Id);
+            return await _userManager.GeneratePasswordResetTokenAsync(user.Id);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(tokenProvider)) throw new ArgumentNullException(nameof(tokenProvider));
 
-            return await userManager.GenerateTwoFactorTokenAsync(user.Id, tokenProvider);
+            return await _userManager.GenerateTwoFactorTokenAsync(user.Id, tokenProvider);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.GetAccessFailedCountAsync(user.Id);
+            return await _userManager.GetAccessFailedCountAsync(user.Id);
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.GetRolesAsync(user.Id);
+            return await _userManager.GetRolesAsync(user.Id);
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.IsEmailConfirmedAsync(user.Id);
+            return await _userManager.IsEmailConfirmedAsync(user.Id);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(role)) throw new ArgumentNullException(nameof(role));
 
-            return await userManager.IsInRoleAsync(user.Id, role);
+            return await _userManager.IsInRoleAsync(user.Id, role);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.IsPhoneNumberConfirmedAsync(user.Id);
+            return await _userManager.IsPhoneNumberConfirmedAsync(user.Id);
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IdentityResult result = await userManager.RemovePasswordAsync(user.Id);
+            IdentityResult result = await _userManager.RemovePasswordAsync(user.Id);
 
             if (!result.Succeeded)
             {
@@ -291,7 +291,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (roles.Any())
             {
-                IdentityResult result = await userManager.RemoveFromRolesAsync(user.Id, roles);
+                IdentityResult result = await _userManager.RemoveFromRolesAsync(user.Id, roles);
 
                 if (!result.Succeeded)
                 {
@@ -313,7 +313,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(newPassword)) throw new ArgumentNullException(nameof(newPassword));
 
-            IdentityResult result = await userManager.ResetPasswordAsync(user.Id, token, newPassword);
+            IdentityResult result = await _userManager.ResetPasswordAsync(user.Id, token, newPassword);
 
             if (!result.Succeeded)
             {
@@ -330,7 +330,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentNullException(nameof(userId));
 
-            return await userManager.FindByIdAsync(userId);
+            return await _userManager.FindByIdAsync(userId);
         }
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException(nameof(email));
 
-            return await userManager.FindByEmailAsync(email);
+            return await _userManager.FindByEmailAsync(email);
         }
 
         /// <summary>
@@ -350,7 +350,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException(nameof(username));
 
-            return await userManager.FindByNameAsync(username);
+            return await _userManager.FindByNameAsync(username);
         }
 
         /// <summary>
@@ -366,7 +366,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            await signInManager.SignInAsync(user, isPersistent, false);
+            await _signInManager.SignInAsync(user, isPersistent, false);
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
-            SignInStatus result = await signInManager.PasswordSignInAsync(
+            SignInStatus result = await _signInManager.PasswordSignInAsync(
                 user.UserName,
                 password,
                 isPersistent,
@@ -425,7 +425,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IdentityResult result = await userManager.UpdateAsync(user);
+            IdentityResult result = await _userManager.UpdateAsync(user);
 
             if (!result.Succeeded)
             {
@@ -442,7 +442,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IdentityResult result = await userManager.UpdateSecurityStampAsync(user.Id);
+            IdentityResult result = await _userManager.UpdateSecurityStampAsync(user.Id);
 
             if (!result.Succeeded)
             {
@@ -463,7 +463,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
 
-            return await userManager.VerifyTwoFactorTokenAsync(user.Id, tokenProvider, token);
+            return await _userManager.VerifyTwoFactorTokenAsync(user.Id, tokenProvider, token);
         }
 
         /// <summary>
@@ -481,7 +481,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
 
             if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
 
-            return await userManager.VerifyUserTokenAsync(user.Id, purpose, token);
+            return await _userManager.VerifyUserTokenAsync(user.Id, purpose, token);
         }
     }
 }

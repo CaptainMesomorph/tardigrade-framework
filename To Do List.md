@@ -4,8 +4,8 @@ Framework for supporting coding best practices.
 
 ## To do list
 
-- Update .NET Framework 4.7.2 projects to .NET Framework 4.8.
-- Fix broken unit tests.
+- Investigate a better way to manage unit testing access of the DOTNET_ENVIRONMENT enrvironment variable.
+- Update all unit testing class fixtures to extend Tardigrade.Framework.Testing.UnitTestClassFixture.
 - Recreate the Tardigrade.Framework.EntityFramework.Tests project as a .NET Standard project.
 - Update Tardigrade.Framework.EntityFrameworkCore.Repository<TEntity, TKey>.UpdateAsync(TEntity, CancellationToken) to cater for DbUpdateConcurrencyException.
 - Update Tardigrade.Framework.Persistence.IReadOnlyRepository<TEntity, in TKey> to include Exists methods that use a filter condition, i.e. Exists(Expression<Func<TEntity, bool>>) and CountAsync(Expression<Func<TEntity, bool>>, CancellationToken).

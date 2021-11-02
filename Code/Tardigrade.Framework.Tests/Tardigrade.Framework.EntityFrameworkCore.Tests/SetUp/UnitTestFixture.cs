@@ -18,9 +18,9 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
     {
         private static readonly object Lock = new object();
 
-        private readonly IRepository<Blog, Guid> blogRepository;
-        private readonly IRepository<Person, Guid> personRepository;
-        private readonly IRepository<User, Guid> userRepository;
+        private readonly IRepository<Blog, Guid> _blogRepository;
+        private readonly IRepository<Person, Guid> _personRepository;
+        private readonly IRepository<User, Guid> _userRepository;
 
         public IServiceContainer Container { get; }
 
@@ -47,14 +47,15 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
 
             // Get the current project's directory to store the create script.
             DirectoryInfo binDirectory =
-                Directory.GetParent(Directory.GetCurrentDirectory()).Parent ??
+                Directory.GetParent(Directory.GetCurrentDirectory())?.Parent ??
                 Directory.GetParent(Directory.GetCurrentDirectory());
-            DirectoryInfo projectDirectory = binDirectory.Parent ?? binDirectory;
+            DirectoryInfo projectDirectory = binDirectory?.Parent ?? binDirectory;
+            string scriptDirectory = projectDirectory?.FullName ?? "c:\temp";
 
             lock (Lock)
             {
                 // Save the create script.
-                using var outputFile = new StreamWriter(Path.Combine(projectDirectory.FullName, scriptFilename));
+                using var outputFile = new StreamWriter(Path.Combine(scriptDirectory, scriptFilename));
                 outputFile.WriteLine(createScript);
             }
         }
@@ -69,30 +70,30 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
             // Create a reference Blog for testing.
             ReferenceBlog = DataFactory.Blog;
             ReferenceBlog.Posts = DataFactory.Posts;
-            blogRepository = Container.GetService<IRepository<Blog, Guid>>();
-            _ = blogRepository.Create(ReferenceBlog);
+            _blogRepository = Container.GetService<IRepository<Blog, Guid>>();
+            _ = _blogRepository.Create(ReferenceBlog);
 
             // Create a reference Person for testing.
             ReferencePerson = DataFactory.CreatePerson();
-            personRepository = Container.GetService<IRepository<Person, Guid>>();
-            _ = personRepository.Create(ReferencePerson);
+            _personRepository = Container.GetService<IRepository<Person, Guid>>();
+            _ = _personRepository.Create(ReferencePerson);
 
             // Create a reference User for testing.
             ReferenceUser = DataFactory.User;
-            userRepository = Container.GetService<IRepository<User, Guid>>();
-            _ = userRepository.Create(ReferenceUser);
+            _userRepository = Container.GetService<IRepository<User, Guid>>();
+            _ = _userRepository.Create(ReferenceUser);
         }
 
         public void Dispose()
         {
             // Delete the reference Blog.
-            if (blogRepository.Exists(ReferenceBlog.Id)) blogRepository.Delete(ReferenceBlog);
+            if (_blogRepository.Exists(ReferenceBlog.Id)) _blogRepository.Delete(ReferenceBlog);
 
             // Delete the reference Person.
-            if (personRepository.Exists(ReferencePerson.Id)) personRepository.Delete(ReferencePerson);
+            if (_personRepository.Exists(ReferencePerson.Id)) _personRepository.Delete(ReferencePerson);
 
             // Delete the reference User.
-            userRepository.Delete(ReferenceUser);
+            if (_userRepository.Exists(ReferenceUser.Id)) _userRepository.Delete(ReferenceUser);
         }
     }
 }

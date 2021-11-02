@@ -16,10 +16,12 @@ namespace Tardigrade.Framework.Extensions
         /// <returns>Description value if exists; enumeration value as a string otherwise.</returns>
         public static string ToDescription(this Enum enumeration)
         {
-            DisplayAttribute descriptionAttribute = (DisplayAttribute)enumeration
+            if (enumeration == null) throw new ArgumentNullException(nameof(enumeration));
+
+            var descriptionAttribute = (DisplayAttribute)enumeration
                 .GetType()
                 .GetField(enumeration.ToString())
-                .GetCustomAttributes(false)
+                ?.GetCustomAttributes(false)
                 .FirstOrDefault(a => a is DisplayAttribute);
             string description = (descriptionAttribute != null ? descriptionAttribute.Description : enumeration.ToString());
 
@@ -61,6 +63,8 @@ namespace Tardigrade.Framework.Extensions
         /// <returns>Enumerated type value.</returns>
         public static T? ToEnum<T>(this string value, T? defaultValue = default) where T : struct, IComparable, IConvertible, IFormattable
         {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
             if (!typeof(T).IsEnum)
             {
                 throw new InvalidOperationException("This operation is only applicable for enumerated types.");
@@ -76,10 +80,12 @@ namespace Tardigrade.Framework.Extensions
         /// <returns>Name value if exists; enumeration value as a string otherwise.</returns>
         public static string ToName(this Enum enumeration)
         {
-            DisplayAttribute displayAttribute = (DisplayAttribute)enumeration
+            if (enumeration == null) throw new ArgumentNullException(nameof(enumeration));
+
+            var displayAttribute = (DisplayAttribute)enumeration
                 .GetType()
                 .GetField(enumeration.ToString())
-                .GetCustomAttributes(false)
+                ?.GetCustomAttributes(false)
                 .FirstOrDefault(a => a is DisplayAttribute);
             string name = (displayAttribute != null ? displayAttribute.Name : enumeration.ToString());
 
