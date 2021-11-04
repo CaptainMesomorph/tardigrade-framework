@@ -9,30 +9,22 @@ namespace Tardigrade.Framework.Exceptions
     [Serializable]
     public class SecurityException : BaseException
     {
-        /// <summary>
-        /// <see cref="BaseException()"/>
-        /// </summary>
+        /// <inheritdoc />
         protected SecurityException()
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
-        /// </summary>
+        /// <inheritdoc />
         protected SecurityException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string)"/>
-        /// </summary>
+        /// <inheritdoc />
         public SecurityException(string message) : base(message)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string, Exception)"/>
-        /// </summary>
+        /// <inheritdoc />
         public SecurityException(string message, Exception innerException) : base(message, innerException)
         {
         }

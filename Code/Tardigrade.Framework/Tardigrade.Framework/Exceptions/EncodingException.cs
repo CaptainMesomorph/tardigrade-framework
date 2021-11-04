@@ -9,30 +9,22 @@ namespace Tardigrade.Framework.Exceptions
     [Serializable]
     public class EncodingException : BaseException
     {
-        /// <summary>
-        /// <see cref="BaseException()"/>
-        /// </summary>
+        /// <inheritdoc />
         protected EncodingException()
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
-        /// </summary>
+        /// <inheritdoc />
         protected EncodingException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string)"/>
-        /// </summary>
+        /// <inheritdoc />
         public EncodingException(string message) : base(message)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string, Exception)"/>
-        /// </summary>
+        /// <inheritdoc />
         public EncodingException(string message, Exception innerException) : base(message, innerException)
         {
         }

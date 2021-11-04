@@ -16,31 +16,23 @@ namespace Tardigrade.Framework.Exceptions
         /// </summary>
         public IEnumerable<IdentityError> Errors { get; protected set; }
 
-        /// <summary>
-        /// <see cref="BaseException()"/>
-        /// </summary>
+        /// <inheritdoc />
         protected IdentityException()
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
-        /// </summary>
+        /// <inheritdoc />
         protected IdentityException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
             Errors = (IEnumerable<IdentityError>)info.GetValue(nameof(Errors), typeof(IEnumerable<IdentityError>));
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string)"/>
-        /// </summary>
+        /// <inheritdoc />
         protected IdentityException(string message) : base(message)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string, Exception)"/>
-        /// </summary>
+        /// <inheritdoc />
         protected IdentityException(string message, Exception innerException) : base(message, innerException)
         {
         }

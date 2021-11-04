@@ -9,30 +9,22 @@ namespace Tardigrade.Framework.Exceptions
     [Serializable]
     public class QueueException : BaseException
     {
-        /// <summary>
-        /// <see cref="BaseException()"/>
-        /// </summary>
+        /// <inheritdoc />
         protected QueueException()
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
-        /// </summary>
+        /// <inheritdoc />
         protected QueueException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string)"/>
-        /// </summary>
+        /// <inheritdoc />
         public QueueException(string message) : base(message)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string, Exception)"/>
-        /// </summary>
+        /// <inheritdoc />
         public QueueException(string message, Exception innerException) : base(message, innerException)
         {
         }

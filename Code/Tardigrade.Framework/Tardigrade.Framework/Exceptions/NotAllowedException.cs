@@ -10,30 +10,22 @@ namespace Tardigrade.Framework.Exceptions
     [Serializable]
     public class NotAllowedException : BaseException
     {
-        /// <summary>
-        /// <see cref="BaseException()"/>
-        /// </summary>
+        /// <inheritdoc />
         protected NotAllowedException()
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
-        /// </summary>
+        /// <inheritdoc />
         protected NotAllowedException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string)"/>
-        /// </summary>
+        /// <inheritdoc />
         public NotAllowedException(string message) : base(message)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string, Exception)"/>
-        /// </summary>
+        /// <inheritdoc />
         public NotAllowedException(string message, Exception innerException) : base(message, innerException)
         {
         }

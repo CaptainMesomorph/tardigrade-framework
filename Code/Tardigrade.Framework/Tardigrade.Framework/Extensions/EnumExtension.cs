@@ -61,7 +61,8 @@ namespace Tardigrade.Framework.Extensions
         /// <param name="value">String value to convert.</param>
         /// <param name="defaultValue">Default enumerated type value to use if string value is not within a valid range.</param>
         /// <returns>Enumerated type value.</returns>
-        public static T? ToEnum<T>(this string value, T? defaultValue = default) where T : struct, IComparable, IConvertible, IFormattable
+        public static T? ToEnum<T>(this string value, T? defaultValue = default)
+            where T : struct, IComparable, IConvertible, IFormattable
         {
             if (value == null) throw new ArgumentNullException(nameof(value));
 

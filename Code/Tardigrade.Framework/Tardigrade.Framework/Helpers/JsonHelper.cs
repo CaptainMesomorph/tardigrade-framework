@@ -9,10 +9,16 @@ namespace Tardigrade.Framework.Helpers
     public static class JsonHelper
     {
         /// <summary>
-        /// Default serializer options.
+        /// JSON serializer options set to:
+        /// - IgnoreNullValues = true
+        /// - PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        /// - RFC3339 date/time converter
         /// </summary>
         public static readonly JsonSerializerOptions SerializerOptions;
 
+        /// <summary>
+        /// Create an instance of this class.
+        /// </summary>
         static JsonHelper()
         {
             SerializerOptions = new JsonSerializerOptions()
