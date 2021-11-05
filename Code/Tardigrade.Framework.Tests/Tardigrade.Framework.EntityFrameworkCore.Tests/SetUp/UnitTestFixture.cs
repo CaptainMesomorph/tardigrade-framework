@@ -7,6 +7,7 @@ using Tardigrade.Framework.Patterns.DependencyInjection;
 using Tardigrade.Framework.Persistence;
 using Tardigrade.Shared.Tests;
 using Tardigrade.Shared.Tests.Models;
+using Tardigrade.Shared.Tests.Models.Blogs;
 
 namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
 {
@@ -15,9 +16,17 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
     /// </summary>
     public class UnitTestFixture : IDisposable
     {
-        private readonly IRepository<User, Guid> repository;
+        private static readonly object Lock = new object();
+
+        private readonly IRepository<Blog, Guid> _blogRepository;
+        private readonly IRepository<Person, Guid> _personRepository;
+        private readonly IRepository<User, Guid> _userRepository;
 
         public IServiceContainer Container { get; }
+
+        public Blog ReferenceBlog { get; }
+
+        public Person ReferencePerson { get; }
 
         public User ReferenceUser { get; }
 
@@ -38,32 +47,53 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
 
             // Get the current project's directory to store the create script.
             DirectoryInfo binDirectory =
-                Directory.GetParent(Directory.GetCurrentDirectory()).Parent ??
+                Directory.GetParent(Directory.GetCurrentDirectory())?.Parent ??
                 Directory.GetParent(Directory.GetCurrentDirectory());
-            DirectoryInfo projectDirectory = binDirectory.Parent ?? binDirectory;
+            DirectoryInfo projectDirectory = binDirectory?.Parent ?? binDirectory;
+            string scriptDirectory = projectDirectory?.FullName ?? "c:\temp";
 
-            // Save the create script.
-            using var outputFile = new StreamWriter(Path.Combine(projectDirectory.FullName, scriptFilename));
-            outputFile.WriteLine(createScript);
+            lock (Lock)
+            {
+                // Save the create script.
+                using var outputFile = new StreamWriter(Path.Combine(scriptDirectory, scriptFilename));
+                outputFile.WriteLine(createScript);
+            }
         }
 
         public UnitTestFixture()
         {
             Container = new UnitTestServiceContainer();
 
-            // Create a reference user for testing.
-            ReferenceUser = DataFactory.CreateUser();
-            repository = Container.GetService<IRepository<User, Guid>>();
-            _ = repository.Create(ReferenceUser);
-
             // Create and store SQL script for the test database.
             GenerateCreateScript(Container.GetService<DbContext>(), "Scripts/TestDataCreateScript.sql");
+
+            // Create a reference Blog for testing.
+            ReferenceBlog = DataFactory.Blog;
+            ReferenceBlog.Posts = DataFactory.Posts;
+            _blogRepository = Container.GetService<IRepository<Blog, Guid>>();
+            _ = _blogRepository.Create(ReferenceBlog);
+
+            // Create a reference Person for testing.
+            ReferencePerson = DataFactory.CreatePerson();
+            _personRepository = Container.GetService<IRepository<Person, Guid>>();
+            _ = _personRepository.Create(ReferencePerson);
+
+            // Create a reference User for testing.
+            ReferenceUser = DataFactory.User;
+            _userRepository = Container.GetService<IRepository<User, Guid>>();
+            _ = _userRepository.Create(ReferenceUser);
         }
 
         public void Dispose()
         {
-            // Delete the reference user.
-            repository.Delete(ReferenceUser);
+            // Delete the reference Blog.
+            if (_blogRepository.Exists(ReferenceBlog.Id)) _blogRepository.Delete(ReferenceBlog);
+
+            // Delete the reference Person.
+            if (_personRepository.Exists(ReferencePerson.Id)) _personRepository.Delete(ReferencePerson);
+
+            // Delete the reference User.
+            if (_userRepository.Exists(ReferenceUser.Id)) _userRepository.Delete(ReferenceUser);
         }
     }
 }

@@ -9,30 +9,22 @@ namespace Tardigrade.Framework.Exceptions
     [Serializable]
     public class NotFoundException : BaseException
     {
-        /// <summary>
-        /// <see cref="BaseException()"/>
-        /// </summary>
+        /// <inheritdoc />
         protected NotFoundException()
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(SerializationInfo, StreamingContext)"/>
-        /// </summary>
+        /// <inheritdoc />
         protected NotFoundException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string)"/>
-        /// </summary>
+        /// <inheritdoc />
         public NotFoundException(string message) : base(message)
         {
         }
 
-        /// <summary>
-        /// <see cref="BaseException(string, Exception)"/>
-        /// </summary>
+        /// <inheritdoc />
         public NotFoundException(string message, Exception innerException) : base(message, innerException)
         {
         }

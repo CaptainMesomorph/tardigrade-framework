@@ -4,7 +4,7 @@ using Tardigrade.Framework.Models.Settings;
 namespace Tardigrade.Framework.EntityFramework.Data
 {
     /// <summary>
-    /// Entity Framework Core database context for use with application settings stored in a database.
+    /// Entity Framework database context for use with application settings stored in a database.
     /// </summary>
     public class AppSettingsDbContext : DbContext
     {

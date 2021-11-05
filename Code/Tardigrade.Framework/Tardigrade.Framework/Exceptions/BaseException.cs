@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
 
 namespace Tardigrade.Framework.Exceptions
 {
@@ -8,6 +7,7 @@ namespace Tardigrade.Framework.Exceptions
     /// This class represents the base class for customised exceptions.
     /// <a href="https://docs.microsoft.com/en-au/archive/blogs/agileer/the-correct-way-to-code-a-custom-exception-class">The CORRECT Way to Code a Custom Exception Class</a>
     /// <a href="https://stackoverflow.com/questions/94488/what-is-the-correct-way-to-make-a-custom-net-exception-serializable">What is the correct way to make a custom .NET Exception serializable?</a>
+    /// <a href="https://docs.microsoft.com/en-us/dotnet/fundamentals/syslib-diagnostics/syslib0003">SYSLIB0003: Code access security is not supported</a>
     /// </summary>
     [Serializable]
     public abstract class BaseException : Exception
@@ -53,7 +53,7 @@ namespace Tardigrade.Framework.Exceptions
         /// This method will generate a unique reference to be associated with an exception.
         /// </summary>
         /// <returns>A unique reference.</returns>
-        private string GenerateUniqueReference()
+        private static string GenerateUniqueReference()
         {
             return Math.Abs(Guid.NewGuid().GetHashCode()).ToString();
         }
@@ -61,7 +61,6 @@ namespace Tardigrade.Framework.Exceptions
         /// <summary>
         /// <see cref="Exception.GetObjectData(SerializationInfo, StreamingContext)"/>
         /// </summary>
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)

@@ -16,8 +16,8 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
     /// </summary>
     public class IdentityRoleManager : IIdentityRoleManager<ApplicationRole>, IDisposable
     {
-        private bool disposedValue = false; // To detect redundant calls
-        private RoleManager<ApplicationRole> roleManager;
+        private bool _disposedValue = false; // To detect redundant calls
+        private RoleManager<ApplicationRole> _roleManager;
 
         /// <summary>
         /// Create an instance of this class.
@@ -26,7 +26,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         /// <exception cref="ArgumentNullException">roleManager is null.</exception>
         public IdentityRoleManager(RoleManager<ApplicationRole> roleManager)
         {
-            this.roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
+            _roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (role == null) throw new ArgumentNullException(nameof(role));
 
-            IdentityResult result = await roleManager.CreateAsync(role);
+            IdentityResult result = await _roleManager.CreateAsync(role);
 
             if (!result.Succeeded)
             {
@@ -55,7 +55,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (role == null) throw new ArgumentNullException(nameof(role));
 
-            IdentityResult result = await roleManager.DeleteAsync(role);
+            IdentityResult result = await _roleManager.DeleteAsync(role);
 
             if (!result.Succeeded)
             {
@@ -79,18 +79,18 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         /// <param name="disposing">True to dispose; false otherwise.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    if (roleManager != null)
+                    if (_roleManager != null)
                     {
-                        roleManager.Dispose();
-                        roleManager = null;
+                        _roleManager.Dispose();
+                        _roleManager = null;
                     }
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -101,7 +101,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (roleName == null) throw new ArgumentNullException(nameof(roleName));
 
-            bool exists = await roleManager.RoleExistsAsync(roleName);
+            bool exists = await _roleManager.RoleExistsAsync(roleName);
 
             return exists;
         }
@@ -111,7 +111,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         /// </summary>
         public async Task<IList<ApplicationRole>> RetrieveAsync()
         {
-            return await roleManager.Roles.ToListAsync();
+            return await _roleManager.Roles.ToListAsync();
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (string.IsNullOrWhiteSpace(roleId)) throw new ArgumentNullException(nameof(roleId));
 
-            return await roleManager.FindByIdAsync(roleId);
+            return await _roleManager.FindByIdAsync(roleId);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (string.IsNullOrWhiteSpace(roleName)) throw new ArgumentNullException(nameof(roleName));
 
-            return await roleManager.FindByNameAsync(roleName);
+            return await _roleManager.FindByNameAsync(roleName);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Tardigrade.Framework.AspNet.Services.Identity
         {
             if (role == null) throw new ArgumentNullException(nameof(role));
 
-            IdentityResult result = await roleManager.UpdateAsync(role);
+            IdentityResult result = await _roleManager.UpdateAsync(role);
 
             if (!result.Succeeded)
             {

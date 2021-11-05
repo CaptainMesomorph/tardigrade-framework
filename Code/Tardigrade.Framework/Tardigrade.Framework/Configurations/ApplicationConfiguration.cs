@@ -1,7 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Tardigrade.Framework.Configurations
 {
@@ -10,69 +14,92 @@ namespace Tardigrade.Framework.Configurations
     /// </summary>
     public class ApplicationConfiguration : IConfiguration
     {
-        private const string DefaultJsonFile = "appsettings.json";
-
-        private readonly IConfigurationRoot config;
+        private IConfiguration _config;
 
         /// <inheritdoc/>
-        public string this[string key] { get => config[key]; set => config[key] = value; }
+        public string this[string key]
+        {
+            get => _config[key];
+            set => _config[key] = value;
+        }
 
         /// <summary>
-        /// Load application settings into this class from the provided configuration sources in the order specified.
-        /// If a configuration source is loaded and the key already exists from a previous source, the latest value
-        /// overwrites the previous value. If no configuration sources are provided, then the following default sources
-        /// will be used.
+        /// Specify the entry assembly. This is needed to determine the location of User Secrets.
+        /// </summary>
+        protected virtual Assembly EntryAssembly => Assembly.GetEntryAssembly();
+
+        /// <summary>
+        /// Create an instance of this class based upon an existing configuration.
+        /// </summary>
+        /// <param name="configuration">Existing application configuration properties.</param>
+        /// <exception cref="ArgumentNullException">configuration is null.</exception>
+        protected ApplicationConfiguration(IConfiguration configuration)
+        {
+            _config = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        }
+
+        /// <summary>
+        /// Create an instance of this class by loading application settings in the order specified below.
         ///
-        ///   1. app.config file
-        ///   2. appsettings.json file
-        ///   3. appsettings.{env.EnvironmentName}.json file
+        ///   1. appsettings.json file
+        ///   2. appsettings.{environment}.json file
+        ///   3. Custom configuration sources (in the order defined).
         ///   4. The local User Secrets File (only in local development environment)
         ///   5. Environment Variables
-        ///   6. Command Line Arguments
         ///
-        /// <a href="https://devblogs.microsoft.com/premier-developer/order-of-precedence-when-configuring-asp-net-core/">Order of Precedence when Configuring ASP.NET Core</a>
+        /// If a configuration source is loaded and the key already exists from a previous source, the latest value
+        /// overwrites the previous value.
         /// </summary>
-        /// <param name="configurationSources">Collection of configuration key/value sources.</param>
+        /// <param name="configurationSources">Collection of custom configuration key/value sources.</param>
         public ApplicationConfiguration(params IConfigurationSource[] configurationSources)
         {
-            if (configurationSources.Any())
-            {
-                var builder = new ConfigurationBuilder();
+            // Create a host from which to load up configuration and register services.
+            IHost host = CreateHostBuilder(configurationSources).Build();
+            Task.Run(() => host.RunAsync());
+        }
 
-                foreach (IConfigurationSource configurationSource in configurationSources)
+        /// <summary>
+        /// Create a host builder that correctly loads User Secrets for unit testing.
+        /// </summary>
+        /// <returns>Host builder.</returns>
+        private IHostBuilder CreateHostBuilder(params IConfigurationSource[] configurationSources) => Host
+            .CreateDefaultBuilder()
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                if (configurationSources.Any())
                 {
-                    builder.Add(configurationSource);
+                    foreach (IConfigurationSource configurationSource in configurationSources)
+                    {
+                        config.Add(configurationSource);
+                    }
                 }
 
-                builder.AddEnvironmentVariables();
-                config = builder.Build();
-            }
-            else
-            {
-                config = new ConfigurationBuilder()
-                    .Add(new LegacySettingsConfigurationSource())
-                    .AddJsonFile(DefaultJsonFile, true, true)
-                    .AddEnvironmentVariables()
-                    .Build();
-            }
-        }
+                if (hostingContext.HostingEnvironment.IsDevelopment())
+                {
+                    config.AddUserSecrets(EntryAssembly, true, true);
+                }
+
+                config.AddEnvironmentVariables();
+
+                _config = config.Build();
+            });
 
         /// <inheritdoc/>
         public IEnumerable<IConfigurationSection> GetChildren()
         {
-            return config.GetChildren();
+            return _config.GetChildren();
         }
 
         /// <inheritdoc/>
         public IChangeToken GetReloadToken()
         {
-            return config.GetReloadToken();
+            return _config.GetReloadToken();
         }
 
         /// <inheritdoc/>
         public IConfigurationSection GetSection(string key)
         {
-            return config.GetSection(key);
+            return _config.GetSection(key);
         }
     }
 }

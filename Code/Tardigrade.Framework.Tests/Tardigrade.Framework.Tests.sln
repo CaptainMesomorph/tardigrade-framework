@@ -31,6 +31,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Shared.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AspNetCore", "..\Tardigrade.Framework\Tardigrade.Framework.AspNetCore\Tardigrade.Framework.AspNetCore.csproj", "{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AspNet", "..\Tardigrade.Framework\Tardigrade.Framework.AspNet\Tardigrade.Framework.AspNet.csproj", "{D75A0056-A146-4CA3-BEE0-3126DD2EFCFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AuditNET", "..\Tardigrade.Framework\Tardigrade.Framework.AuditNET\Tardigrade.Framework.AuditNET.csproj", "{D346A68B-5665-4232-BBEA-9E0CB3C9AE30}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.SimpleInjector", "..\Tardigrade.Framework\Tardigrade.Framework.SimpleInjector\Tardigrade.Framework.SimpleInjector.csproj", "{B07B27DC-6872-4FCD-B2AE-9D4810F6C6E9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.MailKit", "..\Tardigrade.Framework\Tardigrade.Framework.MailKit\Tardigrade.Framework.MailKit.csproj", "{5721208D-05B0-4831-AB78-9AB62745EE9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.MailKit.Tests", "Tardigrade.Framework.MailKit.Tests\Tardigrade.Framework.MailKit.Tests.csproj", "{D7C57D17-C095-45C8-B523-D51589593327}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +103,26 @@ Global
 		{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75A0056-A146-4CA3-BEE0-3126DD2EFCFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75A0056-A146-4CA3-BEE0-3126DD2EFCFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75A0056-A146-4CA3-BEE0-3126DD2EFCFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75A0056-A146-4CA3-BEE0-3126DD2EFCFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D346A68B-5665-4232-BBEA-9E0CB3C9AE30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D346A68B-5665-4232-BBEA-9E0CB3C9AE30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D346A68B-5665-4232-BBEA-9E0CB3C9AE30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D346A68B-5665-4232-BBEA-9E0CB3C9AE30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B07B27DC-6872-4FCD-B2AE-9D4810F6C6E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B07B27DC-6872-4FCD-B2AE-9D4810F6C6E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B07B27DC-6872-4FCD-B2AE-9D4810F6C6E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B07B27DC-6872-4FCD-B2AE-9D4810F6C6E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5721208D-05B0-4831-AB78-9AB62745EE9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5721208D-05B0-4831-AB78-9AB62745EE9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5721208D-05B0-4831-AB78-9AB62745EE9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5721208D-05B0-4831-AB78-9AB62745EE9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7C57D17-C095-45C8-B523-D51589593327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7C57D17-C095-45C8-B523-D51589593327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7C57D17-C095-45C8-B523-D51589593327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7C57D17-C095-45C8-B523-D51589593327}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

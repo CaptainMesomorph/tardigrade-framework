@@ -20,7 +20,10 @@ namespace Tardigrade.Framework.Configurations
 
             foreach (string key in ConfigurationManager.AppSettings.AllKeys)
             {
-                Data.Add(key, ConfigurationManager.AppSettings[key]);
+                if (key != null)
+                {
+                    Data.Add(key, ConfigurationManager.AppSettings[key]);
+                }
             }
         }
     }

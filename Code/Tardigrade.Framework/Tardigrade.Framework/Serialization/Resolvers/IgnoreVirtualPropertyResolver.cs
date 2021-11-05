@@ -31,9 +31,11 @@ namespace Tardigrade.Framework.Serialization.Resolvers
 
             if (propertyInfo != null)
             {
-                if (propertyInfo.GetMethod.IsVirtual && !propertyInfo.GetMethod.IsFinal)
+                if (propertyInfo.GetMethod != null &&
+                    propertyInfo.GetMethod.IsVirtual &&
+                    !propertyInfo.GetMethod.IsFinal)
                 {
-                    property.ShouldSerialize = obj => false;
+                    property.ShouldSerialize = _ => false;
                 }
             }
 

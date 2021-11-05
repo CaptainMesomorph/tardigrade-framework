@@ -31,7 +31,7 @@ namespace Tardigrade.Framework.Serialization.Resolvers
             if (property.PropertyType != null &&
                 (property.PropertyType.IsClass && property.PropertyType != typeof(string)))
             {
-                property.ShouldSerialize = obj => false;
+                property.ShouldSerialize = _ => false;
             }
 
             return property;

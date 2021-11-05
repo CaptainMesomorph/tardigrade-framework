@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-
+    <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <UserSecretsId>c48f2cd1-7be5-4eed-bef1-051dc7fef655</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +19,7 @@
   <!-- Ad hoc fix to a known issue with app.config files and unit testing. -->
   <!-- https://github.com/dotnet/runtime/issues/22720 -->
   <!-- https://github.com/dotnet/runtime/issues/931 -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <None Update="app.config">
       <Link>testhost.dll.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -29,13 +29,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="1.3.0">
+    <PackageReference Include="coverlet.collector" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

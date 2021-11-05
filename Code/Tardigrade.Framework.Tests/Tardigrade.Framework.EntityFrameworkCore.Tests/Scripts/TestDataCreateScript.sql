@@ -1,3 +1,14 @@
+CREATE TABLE "Persons" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Persons" PRIMARY KEY,
+    "Name" TEXT NULL,
+    "CreatedBy" TEXT NULL,
+    "CreatedDate" TEXT NOT NULL,
+    "IsDeleted" INTEGER NOT NULL,
+    "ModifiedBy" TEXT NULL,
+    "ModifiedDate" TEXT NOT NULL
+);
+
+
 CREATE TABLE "Users" (
     "Id" TEXT NOT NULL CONSTRAINT "PK_Users" PRIMARY KEY,
     "Email" TEXT NULL,
@@ -11,6 +22,21 @@ CREATE TABLE "Users" (
 );
 
 
+CREATE TABLE "Blogs" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Blogs" PRIMARY KEY,
+    "Name" TEXT NULL,
+    "Rating" INTEGER NOT NULL,
+    "Url" TEXT NULL,
+    "OwnerId" TEXT NULL,
+    "CreatedBy" TEXT NULL,
+    "CreatedDate" TEXT NOT NULL,
+    "IsDeleted" INTEGER NOT NULL,
+    "ModifiedBy" TEXT NULL,
+    "ModifiedDate" TEXT NOT NULL,
+    CONSTRAINT "FK_Blogs_Persons_OwnerId" FOREIGN KEY ("OwnerId") REFERENCES "Persons" ("Id") ON DELETE RESTRICT
+);
+
+
 CREATE TABLE "UserCredentials" (
     "Id" TEXT NOT NULL CONSTRAINT "PK_UserCredentials" PRIMARY KEY,
     "Status" TEXT NULL,
@@ -21,6 +47,20 @@ CREATE TABLE "UserCredentials" (
     "ModifiedBy" TEXT NULL,
     "ModifiedDate" TEXT NOT NULL,
     CONSTRAINT "FK_UserCredentials_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
+);
+
+
+CREATE TABLE "Posts" (
+    "Id" TEXT NOT NULL CONSTRAINT "PK_Posts" PRIMARY KEY,
+    "Content" TEXT NULL,
+    "Title" TEXT NULL,
+    "BlogId" TEXT NULL,
+    "CreatedBy" TEXT NULL,
+    "CreatedDate" TEXT NOT NULL,
+    "IsDeleted" INTEGER NOT NULL,
+    "ModifiedBy" TEXT NULL,
+    "ModifiedDate" TEXT NOT NULL,
+    CONSTRAINT "FK_Posts_Blogs_BlogId" FOREIGN KEY ("BlogId") REFERENCES "Blogs" ("Id") ON DELETE RESTRICT
 );
 
 
@@ -50,10 +90,16 @@ CREATE TABLE "CredentialIssuers" (
 );
 
 
+CREATE UNIQUE INDEX "IX_Blogs_OwnerId" ON "Blogs" ("OwnerId");
+
+
 CREATE INDEX "IX_CredentialIssuers_CredentialId" ON "CredentialIssuers" ("CredentialId");
 
 
 CREATE INDEX "IX_Credentials_UserCredentialId" ON "Credentials" ("UserCredentialId");
+
+
+CREATE INDEX "IX_Posts_BlogId" ON "Posts" ("BlogId");
 
 
 CREATE INDEX "IX_UserCredentials_UserId" ON "UserCredentials" ("UserId");

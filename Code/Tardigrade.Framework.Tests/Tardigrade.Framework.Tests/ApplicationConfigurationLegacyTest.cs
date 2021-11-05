@@ -1,6 +1,6 @@
 ﻿using System;
-using Tardigrade.Framework.Configurations;
 using Tardigrade.Framework.Extensions;
+using Tardigrade.Framework.Tests.Configurations;
 using Tardigrade.Shared.Tests;
 using Xunit;
 
@@ -8,8 +8,7 @@ namespace Tardigrade.Framework.Tests
 {
     public class ApplicationConfigurationLegacyTest : ApplicationConfigurationTest
     {
-        public ApplicationConfigurationLegacyTest()
-            : base(new ApplicationConfiguration(new LegacySettingsConfigurationSource()))
+        public ApplicationConfigurationLegacyTest() : base(new LegacyApplicationConfiguration())
         {
         }
 

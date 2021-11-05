@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Models.Rest;
 
 namespace Tardigrade.Framework.Rest
@@ -9,62 +11,157 @@ namespace Tardigrade.Framework.Rest
     public interface IRestClient
     {
         /// <summary>
-        /// Delete an object.
+        /// Delete a resource.
         /// </summary>
-        /// <param name="resource">Resource endpoint.</param>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
         /// <returns>Response result.</returns>
-        /// <exception cref="Exceptions.RestException">Error deleting the object.</exception>
+        /// <exception cref="RestException">Error deleting the resource.</exception>
         Response Delete(string resource);
 
         /// <summary>
-        /// Retrieve an object.
+        /// Delete a resource.
         /// </summary>
-        /// <typeparam name="Result">Object type associated with the REST call result.</typeparam>
-        /// <param name="resource">Resource endpoint.</param>
-        /// <returns>Object with the unique identifier.</returns>
-        /// <exception cref="Exceptions.RestException">Error retrieving the object.</exception>
-        Response<Result> Get<Result>(string resource) where Result : new();
-
-        /// <summary>
-        /// Retrieve all objects.
-        /// </summary>
-        /// <typeparam name="Result">Object type associated with the REST call.</typeparam>
-        /// <returns>All objects.</returns>
-        /// <exception cref="Exceptions.RestException">Error retrieving all objects.</exception>
-        Response<IList<Result>> Get<Result>();
-
-        /// <summary>
-        /// Create an object.
-        /// </summary>
-        /// <typeparam name="Payload">Object type associated with the payload of the REST call.</typeparam>
-        /// <typeparam name="Result">Object type associated with the REST call result.</typeparam>
-        /// <param name="payload">Object to create.</param>
-        /// <param name="resource">Resource endpoint.</param>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
         /// <returns>Response result.</returns>
-        /// <exception cref="System.ArgumentNullException">payload is null.</exception>
-        /// <exception cref="Exceptions.RestException">Error creating the object.</exception>
-        Response<Result> Post<Payload, Result>(Payload payload, string resource = null) where Result : new();
+        /// <exception cref="RestException">Error deleting the resource.</exception>
+        Task<Response> DeleteAsync(string resource);
 
         /// <summary>
-        /// Create an object.
+        /// Retrieve a resource.
         /// </summary>
-        /// <typeparam name="Payload">Object type associated with the payload of the REST call.</typeparam>
-        /// <param name="payload">Object to create.</param>
-        /// <param name="resource">Resource endpoint.</param>
-        /// <returns>Response result.</returns>
-        /// <exception cref="System.ArgumentNullException">payload is null.</exception>
-        /// <exception cref="Exceptions.RestException">Error creating the object.</exception>
-        Response<string> Post<Payload>(Payload payload, string resource = null);
+        /// <typeparam name="TResult">Resource type to be retrieved.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <returns>Resource identified by the endpoint.</returns>
+        /// <exception cref="RestException">Error retrieving the resource.</exception>
+        Response<TResult> Get<TResult>(string resource);
 
         /// <summary>
-        /// Update an object.
+        /// Retrieve all resources.
         /// </summary>
-        /// <typeparam name="Payload">Object type associated with the payload of the REST call.</typeparam>
-        /// <param name="obj">Object to update.</param>
-        /// <param name="resource">Resource endpoint.</param>
+        /// <typeparam name="TResult">Resource type to be retrieved.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <returns>Resources identified by the endpoint.</returns>
+        /// <exception cref="RestException">Error retrieving the resource.</exception>
+        Response<IList<TResult>> GetAll<TResult>(string resource = null);
+
+        /// <summary>
+        /// Retrieve all resources.
+        /// </summary>
+        /// <typeparam name="TResult">Resource type to be retrieved.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <returns>Resources identified by the endpoint.</returns>
+        /// <exception cref="RestException">Error retrieving the resource.</exception>
+        Task<Response<IList<TResult>>> GetAllAsync<TResult>(string resource = null);
+
+        /// <summary>
+        /// Retrieve a resource.
+        /// </summary>
+        /// <typeparam name="TResult">Resource type to be retrieved.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <returns>Resource identified by the endpoint.</returns>
+        /// <exception cref="RestException">Error retrieving the resource.</exception>
+        Task<Response<TResult>> GetAsync<TResult>(string resource);
+
+        /// <summary>
+        /// Check existence of a resource.
+        /// </summary>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
         /// <returns>Response result.</returns>
-        /// <exception cref="System.ArgumentNullException">obj is null.</exception>
-        /// <exception cref="Exceptions.RestException">Error updating the object.</exception>
-        Response Put<Payload>(Payload obj, string resource);
+        /// <exception cref="RestException">Error checking resource existence.</exception>
+        Response Head(string resource);
+
+        /// <summary>
+        /// Check existence of a resource.
+        /// </summary>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <returns>Response result.</returns>
+        /// <exception cref="RestException">Error checking resource existence.</exception>
+        Task<Response> HeadAsync(string resource);
+
+        /// <summary>
+        /// Create a resource.
+        /// </summary>
+        /// <typeparam name="TContent">Type associated with the resource to create.</typeparam>
+        /// <typeparam name="TResult">Type associated with the response result.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <param name="content">Content of the resource to create.</param>
+        /// <param name="contentFormat">Format of the content associated with the create request, i.e. JSON or XML.</param>
+        /// <returns>The created resource.</returns>
+        /// <exception cref="RestException">Error creating the resource.</exception>
+        Response<TResult> Post<TContent, TResult>(
+            string resource = null,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json);
+
+        /// <summary>
+        /// Create a resource.
+        /// </summary>
+        /// <typeparam name="TContent">Type associated with the resource to create.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <param name="content">Content of the resource to create.</param>
+        /// <param name="contentFormat">Format of the content associated with the create request, i.e. JSON or XML.</param>
+        /// <returns>String representation of the created resource.</returns>
+        /// <exception cref="RestException">Error creating the resource.</exception>
+        Response<string> Post<TContent>(
+            string resource = null,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json);
+
+        /// <summary>
+        /// Create a resource.
+        /// </summary>
+        /// <typeparam name="TContent">Type associated with the resource to create.</typeparam>
+        /// <typeparam name="TResult">Type associated with the response result.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <param name="content">Content of the resource to create.</param>
+        /// <param name="contentFormat">Format of the content associated with the create request, i.e. JSON or XML.</param>
+        /// <returns>The created resource.</returns>
+        /// <exception cref="RestException">Error creating the resource.</exception>
+        Task<Response<TResult>> PostAsync<TContent, TResult>(
+            string resource = null,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json);
+
+        /// <summary>
+        /// Create a resource.
+        /// </summary>
+        /// <typeparam name="TContent">Type associated with the resource to create.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <param name="content">Content of the resource to create.</param>
+        /// <param name="contentFormat">Format of the content associated with the create request, i.e. JSON or XML.</param>
+        /// <returns>String representation of the created resource.</returns>
+        /// <exception cref="RestException">Error creating the resource.</exception>
+        Task<Response<string>> PostAsync<TContent>(
+            string resource = null,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json);
+
+        /// <summary>
+        /// Update a resource.
+        /// </summary>
+        /// <typeparam name="TContent">Type associated with the resource to update.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <param name="content">Content of the resource to update.</param>
+        /// <param name="contentFormat">Format of the content associated with the create request, i.e. JSON or XML.</param>
+        /// <returns>Response result.</returns>
+        /// <exception cref="RestException">Error updating the resource.</exception>
+        Response Put<TContent>(
+            string resource,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json);
+
+        /// <summary>
+        /// Update a resource.
+        /// </summary>
+        /// <typeparam name="TContent">Type associated with the resource to update.</typeparam>
+        /// <param name="resource">Resource endpoint. If null or blanks, will default to an empty string.</param>
+        /// <param name="content">Content of the resource to update.</param>
+        /// <param name="contentFormat">Format of the content associated with the create request, i.e. JSON or XML.</param>
+        /// <returns>Response result.</returns>
+        /// <exception cref="RestException">Error updating the resource.</exception>
+        Task<Response> PutAsync<TContent>(
+            string resource,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json);
     }
 }

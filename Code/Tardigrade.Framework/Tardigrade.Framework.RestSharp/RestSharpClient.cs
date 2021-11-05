@@ -1,9 +1,11 @@
 ﻿using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Helpers;
 using Tardigrade.Framework.Models.Rest;
-using Tardigrade.Framework.RestSharp.Serializers;
+using Tardigrade.Framework.Rest;
 
 namespace Tardigrade.Framework.RestSharp
 {
@@ -21,143 +23,255 @@ namespace Tardigrade.Framework.RestSharp
         /// Instantiate an instance of this class.
         /// </summary>
         /// <param name="endpoint">Endpoint URL of the REST service.</param>
+        /// <exception cref="ArgumentNullException">endpoint is null.</exception>
         public RestSharpClient(Uri endpoint)
         {
+            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+
             RestClient = new RestClient(endpoint);
-            RestClient.AddHandler("application/json", () => NewtonsoftJsonDeserializer.Instance);
-            RestClient.AddHandler("text/json", () => NewtonsoftJsonDeserializer.Instance);
-            RestClient.AddHandler("*+json", () => NewtonsoftJsonDeserializer.Instance);
         }
 
-        /// <summary>
-        /// <see cref="Rest.IRestClient.Delete(string)"/>
-        /// </summary>
+        /// <inheritdoc />
         public Response Delete(string resource)
         {
-            resource = (string.IsNullOrWhiteSpace(resource) ? null : resource.Trim());
-            RestRequest request = new RestRequest(resource, Method.DELETE);
-            request.AddHeader("Accept", "application/json");
-            request.JsonSerializer = new NewtonsoftJsonSerializer();
-            IRestResponse response = RestClient.Execute(request);
-
-            if (response.ErrorException != null)
-            {
-                throw new RestException($"Error deleting object at resource {resource}.", response.ErrorException);
-            }
-
-            return new Response(response.StatusCode, response.StatusDescription);
+            return AsyncHelper.RunSync(() => DeleteAsync(resource));
         }
 
-        /// <summary>
-        /// <see cref="Rest.IRestClient.Get{Result}(string)"/>
-        /// </summary>
-        public Response<Result> Get<Result>(string resource) where Result : new()
+        /// <inheritdoc />
+        public async Task<Response> DeleteAsync(string resource)
         {
-            resource = (string.IsNullOrWhiteSpace(resource) ? null : resource.Trim());
-            RestRequest request = new RestRequest(resource, Method.GET);
-            request.AddHeader("Accept", "application/json");
-            request.JsonSerializer = new NewtonsoftJsonSerializer();
-            IRestResponse<Result> response = RestClient.Execute<Result>(request);
+            resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
+            var request = new RestRequest(resource, Method.DELETE);
+            IRestResponse response = await RestClient.ExecuteAsync(request);
 
             if (response.ErrorException != null)
             {
-                throw new RestException($"Error retrieving {typeof(Result).Name} object at resource {resource}.", response.ErrorException);
+                throw new RestException(
+                    $"Error deleting resource {resource}: {response.ErrorMessage}.",
+                    response.ErrorException);
             }
 
-            return new Response<Result>(response.StatusCode, response.StatusDescription, response.Data);
+            return response.IsSuccessful
+                ? new Response(response.StatusCode, response.StatusDescription)
+                : new Response(response.StatusCode, response.Content);
         }
 
-        /// <summary>
-        /// <see cref="Rest.IRestClient.Get()"/>
-        /// </summary>
-        public Response<IList<Result>> Get<Result>()
+        /// <inheritdoc />
+        public Response<TResult> Get<TResult>(string resource)
         {
-            RestRequest request = new RestRequest(Method.GET);
-            request.AddHeader("Accept", "application/json");
-            request.JsonSerializer = new NewtonsoftJsonSerializer();
-            IRestResponse<List<Result>> response = RestClient.Execute<List<Result>>(request);
-
-            if (response.ErrorException != null)
-            {
-                throw new RestException($"Error retrieving {typeof(Result).Name} objects.", response.ErrorException);
-            }
-
-            return new Response<IList<Result>>(response.StatusCode, response.StatusDescription, response.Data);
+            return AsyncHelper.RunSync(() => GetAsync<TResult>(resource));
         }
 
-        /// <summary>
-        /// <see cref="Rest.IRestClient.Post{Payload, Result}(Payload, string)"/>
-        /// </summary>
-        public Response<Result> Post<Payload, Result>(Payload payload, string resource = null) where Result : new()
+        /// <inheritdoc />
+        public Response<IList<TResult>> GetAll<TResult>(string resource = null)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            resource = (string.IsNullOrWhiteSpace(resource) ? null : resource.Trim());
-            RestRequest request = new RestRequest(resource, Method.POST);
-            request.AddHeader("Accept", "application/json");
-            request.JsonSerializer = new NewtonsoftJsonSerializer();
-            request.AddJsonBody(payload);
-            IRestResponse<Result> response = RestClient.Execute<Result>(request);
-
-            if (response.ErrorException != null)
-            {
-                throw new RestException($"Error creating {typeof(Payload).Name} object.", response.ErrorException);
-            }
-
-            return new Response<Result>(response.StatusCode, response.StatusDescription, response.Data);
+            return AsyncHelper.RunSync(() => GetAllAsync<TResult>(resource));
         }
 
-        /// <summary>
-        /// <see cref="Rest.IRestClient.Post{Payload}(Payload, string)"/>
-        /// </summary>
-        public Response<string> Post<Payload>(Payload payload, string resource = null)
+        /// <inheritdoc />
+        public async Task<Response<IList<TResult>>> GetAllAsync<TResult>(string resource = null)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            resource = (string.IsNullOrWhiteSpace(resource) ? null : resource.Trim());
-            RestRequest request = new RestRequest(resource, Method.POST);
-            request.AddHeader("Accept", "application/json");
-            request.JsonSerializer = new NewtonsoftJsonSerializer();
-            request.AddJsonBody(payload);
-            IRestResponse response = RestClient.Execute(request);
-
-            if (response.ErrorException != null)
-            {
-                throw new RestException($"Error creating {typeof(Payload).Name} object.", response.ErrorException);
-            }
-
-            return new Response<string>(response.StatusCode, response.StatusDescription, response.Content);
+            return await GetAsync<IList<TResult>>(resource);
         }
 
-        /// <summary>
-        /// <see cref="Rest.IRestClient.Put{Payload}(Payload, string)"/>
-        /// </summary>
-        public Response Put<Payload>(Payload obj, string resource)
+        /// <inheritdoc />
+        public async Task<Response<TResult>> GetAsync<TResult>(string resource)
         {
-            if (obj == null)
-            {
-                throw new ArgumentNullException(nameof(obj));
-            }
-
-            resource = (string.IsNullOrWhiteSpace(resource) ? null : resource.Trim());
-            RestRequest request = new RestRequest(resource, Method.PUT);
-            request.AddHeader("Accept", "application/json");
-            request.JsonSerializer = new NewtonsoftJsonSerializer();
-            request.AddJsonBody(obj);
-            IRestResponse response = RestClient.Execute(request);
+            resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
+            var request = new RestRequest(resource, Method.GET);
+            IRestResponse<TResult> response = await RestClient.ExecuteGetAsync<TResult>(request);
 
             if (response.ErrorException != null)
             {
-                throw new RestException($"Error updating {typeof(Payload).Name} object at resource {resource}.", response.ErrorException);
+                throw new RestException(
+                    $"Error retrieving resource {resource} of type {typeof(TResult).Name}: {response.ErrorMessage}.",
+                    response.ErrorException);
             }
 
-            return new Response(response.StatusCode, response.StatusDescription);
+            return response.IsSuccessful
+                ? new Response<TResult>(response.StatusCode, response.StatusDescription, response.Data)
+                : new Response<TResult>(response.StatusCode, response.Content, default);
+        }
+
+        /// <inheritdoc />
+        public Response Head(string resource)
+        {
+            return AsyncHelper.RunSync(() => HeadAsync(resource));
+        }
+
+        /// <inheritdoc />
+        public async Task<Response> HeadAsync(string resource)
+        {
+            resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
+            var request = new RestRequest(resource, Method.HEAD);
+            IRestResponse response = await RestClient.ExecuteAsync(request);
+
+            if (response.ErrorException != null)
+            {
+                throw new RestException(
+                    $"Error checking resource {resource} for existence: {response.ErrorMessage}.",
+                    response.ErrorException);
+            }
+
+            return response.IsSuccessful
+                ? new Response(response.StatusCode, response.StatusDescription)
+                : new Response(response.StatusCode, response.Content);
+        }
+
+        /// <inheritdoc />
+        public Response<TResult> Post<TContent, TResult>(
+            string resource = null,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json)
+        {
+            return AsyncHelper.RunSync(() => PostAsync<TContent, TResult>(resource, content, contentFormat));
+        }
+
+        /// <inheritdoc />
+        public async Task<Response<TResult>> PostAsync<TContent, TResult>(
+            string resource = null,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json)
+        {
+            resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
+            var request = new RestRequest(resource, Method.POST);
+
+            if (content != null)
+            {
+                switch (contentFormat)
+                {
+                    case ContentFormat.Json:
+                        request.AddJsonBody(content);
+                        break;
+
+                    case ContentFormat.Xml:
+                        request.AddXmlBody(content);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(
+                            nameof(contentFormat),
+                            contentFormat,
+                            $"Invalid ContentFormat specified - {contentFormat}.");
+                }
+            }
+
+            IRestResponse<TResult> response = await RestClient.ExecutePostAsync<TResult>(request);
+
+            if (response.ErrorException != null)
+            {
+                throw new RestException(
+                    $"Error creating resource {resource} of type {typeof(TContent).Name}: {response.Content}.",
+                    response.ErrorException);
+            }
+
+            return response.IsSuccessful
+                ? new Response<TResult>(response.StatusCode, response.StatusDescription, response.Data)
+                : new Response<TResult>(response.StatusCode, response.Content, default);
+        }
+
+        /// <inheritdoc />
+        public Response<string> Post<TContent>(
+            string resource = null,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json)
+        {
+            return AsyncHelper.RunSync(() => PostAsync(resource, content, contentFormat));
+        }
+
+        /// <inheritdoc />
+        public async Task<Response<string>> PostAsync<TContent>(
+            string resource = null,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json)
+        {
+            resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
+            var request = new RestRequest(resource, Method.POST);
+
+            if (content != null)
+            {
+                switch (contentFormat)
+                {
+                    case ContentFormat.Json:
+                        request.AddJsonBody(content);
+                        break;
+
+                    case ContentFormat.Xml:
+                        request.AddXmlBody(content);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(
+                            nameof(contentFormat),
+                            contentFormat,
+                            $"Invalid ContentFormat specified - {contentFormat}.");
+                }
+            }
+
+            IRestResponse response = await RestClient.ExecutePostAsync<string>(request);
+
+            if (response.ErrorException != null)
+            {
+                throw new RestException(
+                    $"Error creating resource {resource} of type {typeof(TContent).Name}: {response.ErrorMessage}.",
+                    response.ErrorException);
+            }
+
+            return response.IsSuccessful
+                ? new Response<string>(response.StatusCode, response.StatusDescription, response.Content)
+                : new Response<string>(response.StatusCode, response.Content, default);
+        }
+
+        /// <inheritdoc />
+        public Response Put<TContent>(
+            string resource,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json)
+        {
+            return AsyncHelper.RunSync(() => PutAsync(resource, content, contentFormat));
+        }
+
+        /// <inheritdoc />
+        public async Task<Response> PutAsync<TContent>(
+            string resource,
+            TContent content = default,
+            ContentFormat contentFormat = ContentFormat.Json)
+        {
+            resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
+            var request = new RestRequest(resource, Method.PUT);
+
+            if (content != null)
+            {
+                switch (contentFormat)
+                {
+                    case ContentFormat.Json:
+                        request.AddJsonBody(content);
+                        break;
+
+                    case ContentFormat.Xml:
+                        request.AddXmlBody(content);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(
+                            nameof(contentFormat),
+                            contentFormat,
+                            $"Invalid ContentFormat specified - {contentFormat}.");
+                }
+            }
+
+            IRestResponse response = await RestClient.ExecuteAsync(request);
+
+            if (response.ErrorException != null)
+            {
+                throw new RestException(
+                    $"Error updating resource {resource} of type {typeof(TContent).Name}: {response.ErrorMessage}.",
+                    response.ErrorException);
+            }
+
+            return response.IsSuccessful
+                ? new Response(response.StatusCode, response.StatusDescription)
+                : new Response(response.StatusCode, response.Content);
         }
     }
 }
