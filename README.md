@@ -4,6 +4,43 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Nov 5, 2021 - 14.0.0 .NET 5 upgrade; soft deletion and tenanting support**
+
+- Created functionality to support soft deletion of records using Entity Framework Core and added associated unit tests.
+- Created functionality to support tenanting.
+- Enhanced the IRestClient interface and implementations to support async versions of existing methods.
+- Added a MailKit integration project (with associated test project).
+- Re-implemented the ApplicationConfiguration class to better match the default host builder implementation and to properly support User Secrets.
+- Re-designed class fixtures for more flexible use in unit tests.
+- Incorporated the use of User Secrets in the Framework tests project.
+- Updated third-party NuGet packages.
+- Updated the following projects to the .NET 5 target framework:
+  - All test projects
+  - Framework
+  - Framework.AspNetCore
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.EntityFrameworkCore
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+- Dropped the .NET Standard 2.0 target framework from the following projects:
+  - Framework
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+- Dropped the .NET Framework 4.6.2 target framework from the following projects:
+  - Framework
+  - Framework.AspNet
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.EntityFrameork
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+
 **Dec 8, 2020 - 13.1.0 Enhanced ConfigurationExtension to support more type casting options**
 
 - Enhanced ConfigurationExtension to support more type casting options.
