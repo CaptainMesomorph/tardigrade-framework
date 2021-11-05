@@ -12,7 +12,7 @@ namespace Tardigrade.Framework.Tests
 
         public JsonSerialisationTest(ITestOutputHelper output)
         {
-            this._output = output;
+            _output = output;
         }
 
         [Fact]

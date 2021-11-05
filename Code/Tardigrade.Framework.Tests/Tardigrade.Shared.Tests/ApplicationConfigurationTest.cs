@@ -64,6 +64,12 @@ namespace Tardigrade.Shared.Tests
             Assert.Throws<ArgumentException>(() => Config.GetAsEnum<DayOfWeek>(settingName));
         }
 
+        [Fact]
+        public void GetEnumSetting_NotEnumeration_ArgumentException()
+        {
+            Assert.Throws<InvalidOperationException>(() => Config.GetAsEnum<int>("Test.Enum.Friday"));
+        }
+
         [Theory]
         [InlineData("Test.Setting.Does.Not.Exist")]
         public void GetEnumSetting_SettingNameDoesNotExist_Success(string settingName)

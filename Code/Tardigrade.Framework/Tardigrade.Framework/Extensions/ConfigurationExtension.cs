@@ -55,6 +55,7 @@ namespace Tardigrade.Framework.Extensions
         /// <exception cref="ArgumentException">Value associated with the application setting is not an enumeration type.</exception>
         /// <exception cref="ArgumentNullException">configuration is null; name is null or empty.</exception>
         /// <exception cref="NotFoundException">A referenced application setting does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The TEnum generic type is not an enumerated type.</exception>
         public static TEnum? GetAsEnum<TEnum>(
             this IConfiguration configuration,
             string name,
@@ -64,6 +65,11 @@ namespace Tardigrade.Framework.Extensions
             if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
             if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
+
+            if (!typeof(TEnum).IsEnum)
+            {
+                throw new InvalidOperationException("This operation is only applicable for enumerated types.");
+            }
 
             string stringValue = configuration.GetAsString(name);
 
