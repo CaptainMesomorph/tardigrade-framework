@@ -1,11 +1,24 @@
 ﻿using System;
 using Tardigrade.Framework.Extensions;
+using Tardigrade.Framework.Tests.Models;
 using Xunit;
 
 namespace Tardigrade.Framework.Tests
 {
     public class ExtensionTest
     {
+        [Fact]
+        public void ConvertEnum_DisplayAttribute_Success()
+        {
+            string locale = LocaleType.EnGb.ToName();
+            var localeEnum = locale.ToEnum<LocaleType>();
+            Assert.Equal(LocaleType.EnGb, localeEnum);
+
+            locale = "en-US";
+            localeEnum = locale.ToEnum(LocaleType.EnGb);
+            Assert.Equal(LocaleType.EnGb, localeEnum);
+        }
+
         [Theory]
         [InlineData("")]
         [InlineData("9")]

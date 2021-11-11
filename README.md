@@ -4,6 +4,10 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Nov 11, 2021 - 14.1.0 Updated the EnumExtension class**
+
+- Enhanced the ToEnum<T>(string) and ToEnum<T>(string, T) methods of the EnumExtension class to cater for the Display attribute.
+
 **Nov 5, 2021 - 14.0.0 .NET 5 upgrade; soft deletion and tenanting support**
 
 - Created functionality to support soft deletion of records using Entity Framework Core and added associated unit tests.
