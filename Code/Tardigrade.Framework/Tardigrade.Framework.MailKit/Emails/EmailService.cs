@@ -110,11 +110,21 @@ namespace Tardigrade.Framework.MailKit.Emails
 
             try
             {
+#if NET
                 using var client = new SmtpClient();
                 await client.ConnectAsync(_config.SmtpHost, _config.SmtpPort, false);
                 await client.AuthenticateAsync(_config.SmtpUsername, _config.SmtpPassword);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
+#else
+                using (var client = new SmtpClient())
+                {
+                    await client.ConnectAsync(_config.SmtpHost, _config.SmtpPort, false);
+                    await client.AuthenticateAsync(_config.SmtpUsername, _config.SmtpPassword);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                }
+#endif
             }
             catch (Exception e)
             {

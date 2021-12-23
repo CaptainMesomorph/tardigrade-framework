@@ -16,7 +16,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
     /// </summary>
     public class UnitTestFixture : IDisposable
     {
-        private static readonly object Lock = new object();
+        private static readonly object Lock = new();
 
         private readonly IRepository<Blog, Guid> _blogRepository;
         private readonly IRepository<Person, Guid> _personRepository;
@@ -94,6 +94,8 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp
 
             // Delete the reference User.
             if (_userRepository.Exists(ReferenceUser.Id)) _userRepository.Delete(ReferenceUser);
+
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -68,6 +68,7 @@ namespace Tardigrade.Framework.Testing
         {
             Task.Run(() => TestHost.StopAsync());
             Environment.SetEnvironmentVariable(DotNetEnvironment, null);
+            GC.SuppressFinalize(this);
         }
     }
 }

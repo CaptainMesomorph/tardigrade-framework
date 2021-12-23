@@ -25,7 +25,7 @@ namespace Tardigrade.Framework.MailKit.Tests
             const string message = "<p>This is a unit test.</p>";
 
             // The sender email must be from the credenxia.com domain otherwise the SMTP server will reject it.
-            var from = new EmailAddress { Address = "support@credenxia.com", DisplayName = "Support" };
+            var from = new EmailAddress { Address = "support@credenxia.com", Name = "Support" };
             var to = new EmailAddress { Address = recipient };
             await _emailService.SendMessageAsync(from, new[] { to }, subject, message);
             _output.WriteLine("Message successfully sent.");

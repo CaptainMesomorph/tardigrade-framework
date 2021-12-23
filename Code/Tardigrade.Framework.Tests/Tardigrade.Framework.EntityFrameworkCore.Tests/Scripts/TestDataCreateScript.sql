@@ -33,7 +33,7 @@ CREATE TABLE "Blogs" (
     "IsDeleted" INTEGER NOT NULL,
     "ModifiedBy" TEXT NULL,
     "ModifiedDate" TEXT NOT NULL,
-    CONSTRAINT "FK_Blogs_Persons_OwnerId" FOREIGN KEY ("OwnerId") REFERENCES "Persons" ("Id") ON DELETE RESTRICT
+    CONSTRAINT "FK_Blogs_Persons_OwnerId" FOREIGN KEY ("OwnerId") REFERENCES "Persons" ("Id")
 );
 
 
@@ -60,7 +60,7 @@ CREATE TABLE "Posts" (
     "IsDeleted" INTEGER NOT NULL,
     "ModifiedBy" TEXT NULL,
     "ModifiedDate" TEXT NOT NULL,
-    CONSTRAINT "FK_Posts_Blogs_BlogId" FOREIGN KEY ("BlogId") REFERENCES "Blogs" ("Id") ON DELETE RESTRICT
+    CONSTRAINT "FK_Posts_Blogs_BlogId" FOREIGN KEY ("BlogId") REFERENCES "Blogs" ("Id")
 );
 
 

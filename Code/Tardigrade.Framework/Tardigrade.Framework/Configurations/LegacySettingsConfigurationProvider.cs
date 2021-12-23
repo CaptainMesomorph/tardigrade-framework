@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Configuration;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Tardigrade.Framework.Configurations
 {

@@ -9,12 +9,12 @@ namespace Tardigrade.Framework.MailKit.Profiles
     /// </summary>
     public class MailKitProfile : Profile
     {
-        // Create an instance of this profile and define the appropriate mappings.
+        /// <summary>
+        /// Create an instance of this profile and define the appropriate mappings.
+        /// </summary>
         public MailKitProfile()
         {
-            CreateMap<EmailAddress, MailboxAddress>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.DisplayName))
-                .ReverseMap();
+            CreateMap<EmailAddress, MailboxAddress>().ReverseMap();
         }
     }
 }

@@ -4,6 +4,31 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Dec 23, 2021 - 15.0.0 .NET 6 upgrade**
+
+- Renamed the DisplayName property of the EmailAddress class to Name.
+- Updated the following projects to support .NET 6:
+  - Framework
+  - Framework.AspNetCore
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.MailKit
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+- Updated the following projects to .NET 6:
+  - All test projects
+  - Framework.EntityFrameworkCore
+- Replaced .NET Standard 2.1 with .NET Standard 2.0 in the following projects:
+  - Framework
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+- Updated the following projects to support .NET Standard 2.0 and .NET Framework 4.7.2:
+  - Framework.MailKit
+
 **Nov 11, 2021 - 14.1.0 Updated the EnumExtension class**
 
 - Enhanced the ToEnum<T>(string) and ToEnum<T>(string, T) methods of the EnumExtension class to cater for the Display attribute.
