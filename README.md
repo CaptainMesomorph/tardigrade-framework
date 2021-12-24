@@ -6,6 +6,7 @@ Framework for supporting coding best practices.
 
 **Dec 23, 2021 - 15.0.0 .NET 6 upgrade**
 
+- Recreated the Tardigrade.Framework.EntityFramework.Tests project as a .NET Standard SDK-style project.
 - Renamed the DisplayName property of the EmailAddress class to Name.
 - Updated the following projects to support .NET 6:
   - Framework

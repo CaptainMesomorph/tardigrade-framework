@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Configurations
     /// </summary>
     public class AppSettingsConfigurationSource : IConfigurationSource
     {
-        private readonly Action<DbContextOptionsBuilder> optionsAction;
+        private readonly Action<DbContextOptionsBuilder> _optionsAction;
 
         /// <summary>
         /// Create an instance of this class.
@@ -18,13 +18,13 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Configurations
         /// <param name="optionsAction">Options associated with the database context.</param>
         public AppSettingsConfigurationSource(Action<DbContextOptionsBuilder> optionsAction)
         {
-            this.optionsAction = optionsAction;
+            this._optionsAction = optionsAction;
         }
 
         /// <inheritdoc/>
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new AppSettingsConfigurationProvider(optionsAction);
+            return new AppSettingsConfigurationProvider(_optionsAction);
         }
     }
 }

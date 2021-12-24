@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.Tests", "Tardigrade.Framework.Tests\Tardigrade.Framework.Tests.csproj", "{C864E58E-51D0-4A35-BF78-7607C674C876}"
 EndProject
@@ -25,8 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.Entity
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.EntityFramework", "..\Tardigrade.Framework\Tardigrade.Framework.EntityFramework\Tardigrade.Framework.EntityFramework.csproj", "{5C8BCFAA-0E2D-488B-ADD6-0EE88778F8DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.EntityFramework.Tests", "Tardigrade.Framework.EntityFramework.Tests\Tardigrade.Framework.EntityFramework.Tests.csproj", "{0A7CC3CB-AC85-43FA-9CF6-B07C52BB48D6}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Shared.Tests", "Tardigrade.Shared.Tests\Tardigrade.Shared.Tests.csproj", "{2E4561D9-3154-4AE2-8114-239F27BF973D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.AspNetCore", "..\Tardigrade.Framework\Tardigrade.Framework.AspNetCore\Tardigrade.Framework.AspNetCore.csproj", "{99D7F1FF-CBDC-4CD5-90C2-4D53EFAC5D02}"
@@ -39,7 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.Simple
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.MailKit", "..\Tardigrade.Framework\Tardigrade.Framework.MailKit\Tardigrade.Framework.MailKit.csproj", "{5721208D-05B0-4831-AB78-9AB62745EE9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.MailKit.Tests", "Tardigrade.Framework.MailKit.Tests\Tardigrade.Framework.MailKit.Tests.csproj", "{D7C57D17-C095-45C8-B523-D51589593327}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.MailKit.Tests", "Tardigrade.Framework.MailKit.Tests\Tardigrade.Framework.MailKit.Tests.csproj", "{D7C57D17-C095-45C8-B523-D51589593327}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.EntityFramework.Tests", "Tardigrade.Framework.EntityFramework.Tests\Tardigrade.Framework.EntityFramework.Tests.csproj", "{64B8F9B6-FA73-4566-8CF6-006303761626}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,10 +91,6 @@ Global
 		{5C8BCFAA-0E2D-488B-ADD6-0EE88778F8DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C8BCFAA-0E2D-488B-ADD6-0EE88778F8DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C8BCFAA-0E2D-488B-ADD6-0EE88778F8DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A7CC3CB-AC85-43FA-9CF6-B07C52BB48D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A7CC3CB-AC85-43FA-9CF6-B07C52BB48D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A7CC3CB-AC85-43FA-9CF6-B07C52BB48D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A7CC3CB-AC85-43FA-9CF6-B07C52BB48D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2E4561D9-3154-4AE2-8114-239F27BF973D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E4561D9-3154-4AE2-8114-239F27BF973D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E4561D9-3154-4AE2-8114-239F27BF973D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -123,6 +119,10 @@ Global
 		{D7C57D17-C095-45C8-B523-D51589593327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7C57D17-C095-45C8-B523-D51589593327}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7C57D17-C095-45C8-B523-D51589593327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64B8F9B6-FA73-4566-8CF6-006303761626}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64B8F9B6-FA73-4566-8CF6-006303761626}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64B8F9B6-FA73-4566-8CF6-006303761626}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64B8F9B6-FA73-4566-8CF6-006303761626}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
