@@ -30,7 +30,11 @@ namespace Tardigrade.Shared.Tests
         private static readonly Faker<CredentialIssuer> CredentialIssuerFaker;
         private static readonly Faker<Person> PersonFaker;
         private static readonly Faker<Post> PostFaker;
+#if NET
+        private static readonly Randomizer Random = new();
+#else
         private static readonly Randomizer Random = new Randomizer();
+#endif
         private static readonly Faker<User> UserFaker;
         private static readonly Faker<UserCredential> UserCredentialFaker;
 
@@ -73,16 +77,16 @@ namespace Tardigrade.Shared.Tests
                 .RuleFor(b => b.Rating, f => f.Random.Int(1, 10))
                 .RuleFor(b => b.Url, f => f.Internet.Url());
 
-            CredentialFaker = new Faker<Credential>()
-                .UseSeed(CredentialSeed)
-                .RuleForBaseModel()
-                .RuleFor(c => c.Name, f => f.Commerce.ProductName())
-                .RuleFor(c => c.Issuers, f => CredentialIssuerFaker.Generate(Random.Int(1, CredentialIssuerMaxCount)));
-
             CredentialIssuerFaker = new Faker<CredentialIssuer>()
                 .UseSeed(CredentialIssuerSeed)
                 .RuleForBaseModel()
                 .RuleFor(c => c.Name, f => f.Company.CompanyName());
+
+            CredentialFaker = new Faker<Credential>()
+                .UseSeed(CredentialSeed)
+                .RuleForBaseModel()
+                .RuleFor(c => c.Name, f => f.Commerce.ProductName())
+                .RuleFor(c => c.Issuers, _ => CredentialIssuerFaker.Generate(Random.Int(1, CredentialIssuerMaxCount)));
 
             PersonFaker = new Faker<Person>()
                 .UseSeed(PersonSeed)
@@ -95,6 +99,12 @@ namespace Tardigrade.Shared.Tests
                 .RuleFor(p => p.Content, f => f.Lorem.Paragraph())
                 .RuleFor(p => p.Title, f => f.Lorem.Sentence());
 
+            UserCredentialFaker = new Faker<UserCredential>()
+                .UseSeed(UserCredentialSeed)
+                .RuleForBaseModel()
+                .RuleFor(u => u.Status, f => f.Internet.Color())
+                .RuleFor(u => u.Credentials, _ => CredentialFaker.Generate(Random.Int(1, CredentialMaxCount)));
+
             UserFaker = new Faker<User>()
                 .UseSeed(UserSeed)
                 .RuleForBaseModel()
@@ -103,13 +113,7 @@ namespace Tardigrade.Shared.Tests
                 .RuleFor(u => u.Email, (f, u) => f.Internet.Email(u.FirstName, u.LastName))
                 .RuleFor(
                     u => u.UserCredentials,
-                    f => UserCredentialFaker.Generate(Random.Int(1, UserCredentialMaxCount)));
-
-            UserCredentialFaker = new Faker<UserCredential>()
-                .UseSeed(UserCredentialSeed)
-                .RuleForBaseModel()
-                .RuleFor(u => u.Status, f => f.Internet.Color())
-                .RuleFor(u => u.Credentials, f => CredentialFaker.Generate(Random.Int(1, CredentialMaxCount)));
+                    _ => UserCredentialFaker.Generate(Random.Int(1, UserCredentialMaxCount)));
         }
 
         public static Person CreatePerson()

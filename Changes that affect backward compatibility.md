@@ -2,7 +2,41 @@
 Framework for supporting coding best practices.
 
 
+## Multiple target framework support
+
+The following article outlines some of the reasoning for the support of .NET Framework 4.7.2, .NET Standard 2.0, .NET 5 and .NET 6. Verions before .NET Framework 4.7.2 are no longer explicitly supported.
+
+> [The future of .NET Standard](https://devblogs.microsoft.com/dotnet/the-future-of-net-standard/)
+
 ## Breaking changes
+
+**14.1.0 -> 15.0.0**
+
+- Tardigrade.Framework
+  - The DisplayName property of the EmailAddress class has been renamed to Name.
+- Tardigrade.Framework.EntityFrameworkCore
+  - Deleted the IdentityUserDbContext.cs class. As a result, the Tardigrade.Framework.EntityFrameworkCore project now references the Tardigrade.Framework project instead of the Tardigrade.Framework.AspNetCore project.
+- Updated the following projects to support .NET 6:
+  - Framework
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.MailKit
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+- Updated the following projects to .NET 6:
+  - All test projects
+  - Framework.AspNetCore
+  - Framework.EntityFrameworkCore
+- Replaced .NET Standard 2.1 with .NET Standard 2.0 in the following projects:
+  - Framework
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+- Updated the following projects to support .NET Standard 2.0 and .NET Framework 4.7.2:
+  - Framework.MailKit
 
 **13.1.0 -> 14.0.0**
 

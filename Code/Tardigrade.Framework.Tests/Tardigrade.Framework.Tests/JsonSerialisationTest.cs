@@ -1,5 +1,5 @@
-﻿using Tardigrade.Shared.Tests;
-using Tardigrade.Shared.Tests.Extensions;
+﻿using Tardigrade.Framework.Extensions;
+using Tardigrade.Shared.Tests;
 using Tardigrade.Shared.Tests.Models;
 using Xunit;
 using Xunit.Abstractions;
@@ -19,7 +19,7 @@ namespace Tardigrade.Framework.Tests
         public void Convert_New_Success()
         {
             User user = DataFactory.User;
-            string str = user.ToSystemTextJson();
+            string str = user.ToJson();
             _output.WriteLine($"JSON is {str}.");
         }
     }

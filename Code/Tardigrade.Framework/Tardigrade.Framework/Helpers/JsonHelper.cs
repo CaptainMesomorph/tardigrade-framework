@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using Tardigrade.Framework.Converters;
 
 namespace Tardigrade.Framework.Helpers
@@ -10,7 +11,7 @@ namespace Tardigrade.Framework.Helpers
     {
         /// <summary>
         /// JSON serializer options set to:
-        /// - IgnoreNullValues = true
+        /// - DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         /// - PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         /// - RFC3339 date/time converter
         /// </summary>
@@ -23,7 +24,7 @@ namespace Tardigrade.Framework.Helpers
         {
             SerializerOptions = new JsonSerializerOptions()
             {
-                IgnoreNullValues = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
 

@@ -16,6 +16,6 @@ namespace Tardigrade.Framework.Emails
         /// <summary>
         /// Display name associated with the email address.
         /// </summary>
-        public string DisplayName { get; set; }
+        public string Name { get; set; }
     }
 }
