@@ -4,7 +4,7 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
-**Dec 23, 2021 - 15.0.0 .NET 6 upgrade**
+**Dec 24, 2021 - 15.0.0 .NET 6 upgrade**
 
 - Deleted the IdentityUserDbContext.cs class from the Tardigrade.Framework.EntityFrameworkCore project. As a result, this project now references the Tardigrade.Framework project instead of the Tardigrade.Framework.AspNetCore project.
 - Recreated the Tardigrade.Framework.EntityFramework.Tests project as a .NET Standard SDK-style project.
