@@ -15,11 +15,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
     /// </summary>
     public class IdentityUserManager : IIdentityUserManager<ApplicationUser>, IDisposable
     {
-        private readonly IMapper mapper;
-        private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IMapper _mapper;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        private bool disposedValue = false; // To detect redundant calls
-        private UserManager<ApplicationUser> userManager;
+        private bool _disposedValue;
+        private UserManager<ApplicationUser> _userManager;
 
         /// <summary>
         /// Create an instance of this class.
@@ -32,9 +32,9 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager)
         {
-            this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            this.signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
-            this.userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         }
 
         /// <summary>
@@ -46,11 +46,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
-            IdentityResult result = await userManager.AddPasswordAsync(user, password);
+            IdentityResult result = await _userManager.AddPasswordAsync(user, password);
 
             if (!result.Succeeded)
             {
-                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Add password failed; unable to add password for {user.UserName}.", errors);
             }
@@ -67,11 +67,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (roles.Any())
             {
-                IdentityResult result = await userManager.AddToRolesAsync(user, roles);
+                IdentityResult result = await _userManager.AddToRolesAsync(user, roles);
 
                 if (!result.Succeeded)
                 {
-                    var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                    var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                     throw new IdentityException($"Add roles failed; unable to add roles for {user.UserName}.", errors);
                 }
@@ -87,7 +87,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
-            return await userManager.CheckPasswordAsync(user, password);
+            return await _userManager.CheckPasswordAsync(user, password);
         }
 
         /// <summary>
@@ -99,11 +99,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
 
-            IdentityResult result = await userManager.ConfirmEmailAsync(user, token);
+            IdentityResult result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (!result.Succeeded)
             {
-                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Confirm email failed; unable to confirm email for {user.UserName}.", errors);
             }
@@ -118,11 +118,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
-            IdentityResult result = await userManager.CreateAsync(user, password);
+            IdentityResult result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)
             {
-                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Create user failed; unable to create user with email {user.Email}.", errors);
             }
@@ -137,11 +137,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IdentityResult result = await userManager.DeleteAsync(user);
+            IdentityResult result = await _userManager.DeleteAsync(user);
 
             if (!result.Succeeded)
             {
-                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Delete user failed; unable to delete user {user.UserName}.", errors);
             }
@@ -153,6 +153,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -161,18 +162,18 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         /// <param name="disposing">True to dispose; false otherwise.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    if (userManager != null)
+                    if (_userManager != null)
                     {
-                        userManager.Dispose();
-                        userManager = null;
+                        _userManager.Dispose();
+                        _userManager = null;
                     }
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -183,7 +184,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.GenerateEmailConfirmationTokenAsync(user);
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
         /// <summary>
@@ -193,7 +194,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.GeneratePasswordResetTokenAsync(user);
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
         /// <summary>
@@ -205,7 +206,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(tokenProvider)) throw new ArgumentNullException(nameof(tokenProvider));
 
-            return await userManager.GenerateTwoFactorTokenAsync(user, tokenProvider);
+            return await _userManager.GenerateTwoFactorTokenAsync(user, tokenProvider);
         }
 
         /// <summary>
@@ -215,7 +216,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.GetAccessFailedCountAsync(user);
+            return await _userManager.GetAccessFailedCountAsync(user);
         }
 
         /// <summary>
@@ -225,7 +226,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.GetRolesAsync(user);
+            return await _userManager.GetRolesAsync(user);
         }
 
         /// <summary>
@@ -235,7 +236,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.IsEmailConfirmedAsync(user);
+            return await _userManager.IsEmailConfirmedAsync(user);
         }
 
         /// <summary>
@@ -247,7 +248,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(role)) throw new ArgumentNullException(nameof(role));
 
-            return await userManager.IsInRoleAsync(user, role);
+            return await _userManager.IsInRoleAsync(user, role);
         }
 
         /// <summary>
@@ -257,7 +258,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return await userManager.IsPhoneNumberConfirmedAsync(user);
+            return await _userManager.IsPhoneNumberConfirmedAsync(user);
         }
 
         /// <summary>
@@ -267,11 +268,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IdentityResult result = await userManager.RemovePasswordAsync(user);
+            IdentityResult result = await _userManager.RemovePasswordAsync(user);
 
             if (!result.Succeeded)
             {
-                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Remove password failed; unable to remove password for {user.UserName}.", errors);
             }
@@ -288,11 +289,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (roles.Any())
             {
-                IdentityResult result = await userManager.RemoveFromRolesAsync(user, roles);
+                IdentityResult result = await _userManager.RemoveFromRolesAsync(user, roles);
 
                 if (!result.Succeeded)
                 {
-                    var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                    var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                     throw new IdentityException($"Remove roles failed; unable to remove roles for {user.UserName}.", errors);
                 }
@@ -310,11 +311,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(newPassword)) throw new ArgumentNullException(nameof(newPassword));
 
-            IdentityResult result = await userManager.ResetPasswordAsync(user, token, newPassword);
+            IdentityResult result = await _userManager.ResetPasswordAsync(user, token, newPassword);
 
             if (!result.Succeeded)
             {
-                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Reset password failed; unable to reset password for {user.UserName}.", errors);
             }
@@ -327,7 +328,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentNullException(nameof(userId));
 
-            return await userManager.FindByIdAsync(userId);
+            return await _userManager.FindByIdAsync(userId);
         }
 
         /// <summary>
@@ -337,7 +338,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException(nameof(email));
 
-            return await userManager.FindByEmailAsync(email);
+            return await _userManager.FindByEmailAsync(email);
         }
 
         /// <summary>
@@ -347,7 +348,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (string.IsNullOrWhiteSpace(username)) throw new ArgumentNullException(nameof(username));
 
-            return await userManager.FindByNameAsync(username);
+            return await _userManager.FindByNameAsync(username);
         }
 
         /// <summary>
@@ -360,7 +361,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            await signInManager.SignInAsync(user, isPersistent, authenticationMethod);
+            await _signInManager.SignInAsync(user, isPersistent, authenticationMethod);
         }
 
         /// <summary>
@@ -376,7 +377,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentNullException(nameof(password));
 
-            SignInResult result = await signInManager.PasswordSignInAsync(
+            SignInResult result = await _signInManager.PasswordSignInAsync(
                 user,
                 password,
                 isPersistent,
@@ -388,18 +389,18 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
                 {
                     throw new LockedOutException($"Sign-in failed; user {user.UserName} has been locked out.");
                 }
-                else if (result.IsNotAllowed)
+
+                if (result.IsNotAllowed)
                 {
                     throw new NotAllowedException($"Sign-in failed; sign-in for user {user.UserName} is not allowed as email has yet to be confirmed.");
                 }
-                else if (result.RequiresTwoFactor)
+
+                if (result.RequiresTwoFactor)
                 {
                     throw new TwoFactorRequiredException($"Sign-in failed; Two-Factor Authentication required for user {user.UserName}.");
                 }
-                else
-                {
-                    throw new IdentityException($"Sign-in failed; for reasons unknown, not able to sign-in user {user.UserName}.");
-                }
+
+                throw new IdentityException($"Sign-in failed; for reasons unknown, not able to sign-in user {user.UserName}.");
             }
         }
 
@@ -408,7 +409,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         /// </summary>
         public async Task SignOutAsync()
         {
-            await signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync();
         }
 
         /// <summary>
@@ -418,11 +419,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IdentityResult result = await userManager.UpdateAsync(user);
+            IdentityResult result = await _userManager.UpdateAsync(user);
 
             if (!result.Succeeded)
             {
-                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Update user failed; unable to update user {user.UserName}.", errors);
             }
@@ -435,11 +436,11 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            IdentityResult result = await userManager.UpdateSecurityStampAsync(user);
+            IdentityResult result = await _userManager.UpdateSecurityStampAsync(user);
 
             if (!result.Succeeded)
             {
-                var errors = mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
+                var errors = _mapper.Map<IEnumerable<Framework.Models.Errors.IdentityError>>(result.Errors);
 
                 throw new IdentityException($"Update security stamp failed; unable to update security stamp for {user.UserName}.", errors);
             }
@@ -456,7 +457,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
 
-            return await userManager.VerifyTwoFactorTokenAsync(user, tokenProvider, token);
+            return await _userManager.VerifyTwoFactorTokenAsync(user, tokenProvider, token);
         }
 
         /// <summary>
@@ -472,7 +473,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
 
             if (string.IsNullOrWhiteSpace(token)) throw new ArgumentNullException(nameof(token));
 
-            return await userManager.VerifyUserTokenAsync(user, tokenProvider, purpose, token);
+            return await _userManager.VerifyUserTokenAsync(user, tokenProvider, purpose, token);
         }
     }
 }

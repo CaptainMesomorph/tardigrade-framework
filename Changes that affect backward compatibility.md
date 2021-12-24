@@ -14,9 +14,10 @@ The following article outlines some of the reasoning for the support of .NET Fra
 
 - Tardigrade.Framework
   - The DisplayName property of the EmailAddress class has been renamed to Name.
+- Tardigrade.Framework.EntityFrameworkCore
+  - Deleted the IdentityUserDbContext.cs class. As a result, the Tardigrade.Framework.EntityFrameworkCore project now references the Tardigrade.Framework project instead of the Tardigrade.Framework.AspNetCore project.
 - Updated the following projects to support .NET 6:
   - Framework
-  - Framework.AspNetCore
   - Framework.AuditNET
   - Framework.AzureStorage
   - Framework.MailKit
@@ -25,6 +26,7 @@ The following article outlines some of the reasoning for the support of .NET Fra
   - Framework.ZXingNet
 - Updated the following projects to .NET 6:
   - All test projects
+  - Framework.AspNetCore
   - Framework.EntityFrameworkCore
 - Replaced .NET Standard 2.1 with .NET Standard 2.0 in the following projects:
   - Framework

@@ -18,7 +18,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Configurations
         /// <param name="optionsAction">Options associated with the database context.</param>
         public AppSettingsConfigurationSource(Action<DbContextOptionsBuilder> optionsAction)
         {
-            this._optionsAction = optionsAction;
+            _optionsAction = optionsAction;
         }
 
         /// <inheritdoc/>

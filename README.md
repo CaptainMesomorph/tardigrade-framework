@@ -6,11 +6,12 @@ Framework for supporting coding best practices.
 
 **Dec 23, 2021 - 15.0.0 .NET 6 upgrade**
 
+- Deleted the IdentityUserDbContext.cs class from the Tardigrade.Framework.EntityFrameworkCore project. As a result, this project now references the Tardigrade.Framework project instead of the Tardigrade.Framework.AspNetCore project.
 - Recreated the Tardigrade.Framework.EntityFramework.Tests project as a .NET Standard SDK-style project.
 - Renamed the DisplayName property of the EmailAddress class to Name.
+- General code clean-up based on ReSharper recommendations.
 - Updated the following projects to support .NET 6:
   - Framework
-  - Framework.AspNetCore
   - Framework.AuditNET
   - Framework.AzureStorage
   - Framework.MailKit
@@ -19,6 +20,7 @@ Framework for supporting coding best practices.
   - Framework.ZXingNet
 - Updated the following projects to .NET 6:
   - All test projects
+  - Framework.AspNetCore
   - Framework.EntityFrameworkCore
 - Replaced .NET Standard 2.1 with .NET Standard 2.0 in the following projects:
   - Framework

@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tardigrade.Framework.AspNetCore\Tardigrade.Framework.AspNetCore.csproj" />
+    <ProjectReference Include="..\Tardigrade.Framework\Tardigrade.Framework.csproj" />
   </ItemGroup>
 
 </Project>
