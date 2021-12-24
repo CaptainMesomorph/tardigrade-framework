@@ -14,4 +14,3 @@ Framework for supporting coding best practices.
   - https://www.nuget.org/packages/Azure.Storage.Queues/
   - https://www.nuget.org/packages/Azure.Storage.Files.Shares/
 - Create a new Tardigrade.Framework.IdentityAspNet project. Move any identity-related classes to this project from the AspNet project.
-- Create a new Tardigrade.Framework.IdentityAspNetCore project. Move any identity-related classes to this project from the AspNetCore project and the EntityFrameworkCore project (including the IdentityUserDbContext class).
