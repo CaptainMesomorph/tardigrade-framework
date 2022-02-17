@@ -1,6 +1,5 @@
 ﻿using RestSharp;
 using RestSharp.Authenticators;
-using RestSharp.Serializers.SystemTextJson;
 using System;
 
 namespace Tardigrade.Framework.RestSharp.Tests.Clients
@@ -13,7 +12,6 @@ namespace Tardigrade.Framework.RestSharp.Tests.Clients
             RestClient.Authenticator = authenticator;
             RestClient.AddDefaultHeader("Authorization-Token", "8CE494A8-0DFF-4DEC-B1F7-972BDA43F0C1");
             RestClient.AddDefaultHeader("Ocp-Apim-Subscription-Key", "b423ac3302e844db922c637450a1cc34");
-            RestClient.UseSystemTextJson();
         }
     }
 }

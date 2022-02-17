@@ -1,6 +1,7 @@
 ﻿using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Helpers;
@@ -12,7 +13,7 @@ namespace Tardigrade.Framework.RestSharp
     /// <summary>
     /// Implementation of a REST client using RestSharp.
     /// </summary>
-    public class RestSharpClient : Rest.IRestClient
+    public class RestSharpClient : IRestClient
     {
         /// <summary>
         /// Underlying REST client.
@@ -41,10 +42,11 @@ namespace Tardigrade.Framework.RestSharp
         public async Task<Response> DeleteAsync(string resource)
         {
             resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
-            var request = new RestRequest(resource, Method.DELETE);
-            IRestResponse response = await RestClient.ExecuteAsync(request);
+            var request = new RestRequest(resource, Method.Delete);
+            RestResponse response = await RestClient.ExecuteAsync(request);
 
-            if (response.ErrorException != null)
+            // https://restsharp.dev/error-handling.html
+            if (response.ErrorException != null && response.StatusCode != HttpStatusCode.NotFound)
             {
                 throw new RestException(
                     $"Error deleting resource {resource}: {response.ErrorMessage}.",
@@ -78,10 +80,11 @@ namespace Tardigrade.Framework.RestSharp
         public async Task<Response<TResult>> GetAsync<TResult>(string resource)
         {
             resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
-            var request = new RestRequest(resource, Method.GET);
-            IRestResponse<TResult> response = await RestClient.ExecuteGetAsync<TResult>(request);
+            var request = new RestRequest(resource);
+            RestResponse<TResult> response = await RestClient.ExecuteGetAsync<TResult>(request);
 
-            if (response.ErrorException != null)
+            // https://restsharp.dev/error-handling.html
+            if (response.ErrorException != null && response.StatusCode != HttpStatusCode.NotFound)
             {
                 throw new RestException(
                     $"Error retrieving resource {resource} of type {typeof(TResult).Name}: {response.ErrorMessage}.",
@@ -103,10 +106,11 @@ namespace Tardigrade.Framework.RestSharp
         public async Task<Response> HeadAsync(string resource)
         {
             resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
-            var request = new RestRequest(resource, Method.HEAD);
-            IRestResponse response = await RestClient.ExecuteAsync(request);
+            var request = new RestRequest(resource, Method.Head);
+            RestResponse response = await RestClient.ExecuteAsync(request);
 
-            if (response.ErrorException != null)
+            // https://restsharp.dev/error-handling.html
+            if (response.ErrorException != null && response.StatusCode != HttpStatusCode.NotFound)
             {
                 throw new RestException(
                     $"Error checking resource {resource} for existence: {response.ErrorMessage}.",
@@ -122,7 +126,7 @@ namespace Tardigrade.Framework.RestSharp
         public Response<TResult> Post<TContent, TResult>(
             string resource = null,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json)
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class
         {
             return AsyncHelper.RunSync(() => PostAsync<TContent, TResult>(resource, content, contentFormat));
         }
@@ -131,10 +135,10 @@ namespace Tardigrade.Framework.RestSharp
         public async Task<Response<TResult>> PostAsync<TContent, TResult>(
             string resource = null,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json)
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class
         {
             resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
-            var request = new RestRequest(resource, Method.POST);
+            var request = new RestRequest(resource, Method.Post);
 
             if (content != null)
             {
@@ -156,9 +160,10 @@ namespace Tardigrade.Framework.RestSharp
                 }
             }
 
-            IRestResponse<TResult> response = await RestClient.ExecutePostAsync<TResult>(request);
+            RestResponse<TResult> response = await RestClient.ExecutePostAsync<TResult>(request);
 
-            if (response.ErrorException != null)
+            // https://restsharp.dev/error-handling.html
+            if (response.ErrorException != null && response.StatusCode != HttpStatusCode.NotFound)
             {
                 throw new RestException(
                     $"Error creating resource {resource} of type {typeof(TContent).Name}: {response.Content}.",
@@ -174,7 +179,7 @@ namespace Tardigrade.Framework.RestSharp
         public Response<string> Post<TContent>(
             string resource = null,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json)
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class
         {
             return AsyncHelper.RunSync(() => PostAsync(resource, content, contentFormat));
         }
@@ -183,10 +188,10 @@ namespace Tardigrade.Framework.RestSharp
         public async Task<Response<string>> PostAsync<TContent>(
             string resource = null,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json)
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class
         {
             resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
-            var request = new RestRequest(resource, Method.POST);
+            var request = new RestRequest(resource, Method.Post);
 
             if (content != null)
             {
@@ -208,9 +213,10 @@ namespace Tardigrade.Framework.RestSharp
                 }
             }
 
-            IRestResponse response = await RestClient.ExecutePostAsync<string>(request);
+            RestResponse response = await RestClient.ExecutePostAsync<string>(request);
 
-            if (response.ErrorException != null)
+            // https://restsharp.dev/error-handling.html
+            if (response.ErrorException != null && response.StatusCode != HttpStatusCode.NotFound)
             {
                 throw new RestException(
                     $"Error creating resource {resource} of type {typeof(TContent).Name}: {response.ErrorMessage}.",
@@ -226,7 +232,7 @@ namespace Tardigrade.Framework.RestSharp
         public Response Put<TContent>(
             string resource,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json)
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class
         {
             return AsyncHelper.RunSync(() => PutAsync(resource, content, contentFormat));
         }
@@ -235,10 +241,10 @@ namespace Tardigrade.Framework.RestSharp
         public async Task<Response> PutAsync<TContent>(
             string resource,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json)
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class
         {
             resource = (string.IsNullOrWhiteSpace(resource) ? string.Empty : resource.Trim());
-            var request = new RestRequest(resource, Method.PUT);
+            var request = new RestRequest(resource, Method.Put);
 
             if (content != null)
             {
@@ -260,9 +266,10 @@ namespace Tardigrade.Framework.RestSharp
                 }
             }
 
-            IRestResponse response = await RestClient.ExecuteAsync(request);
+            RestResponse response = await RestClient.ExecuteAsync(request);
 
-            if (response.ErrorException != null)
+            // https://restsharp.dev/error-handling.html
+            if (response.ErrorException != null && response.StatusCode != HttpStatusCode.NotFound)
             {
                 throw new RestException(
                     $"Error updating resource {resource} of type {typeof(TContent).Name}: {response.ErrorMessage}.",

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
-using RestSharp.Deserializers;
+using RestSharp.Serializers;
 using System;
 
 namespace Tardigrade.Framework.RestSharp.Serializers
@@ -10,7 +10,11 @@ namespace Tardigrade.Framework.RestSharp.Serializers
     /// </summary>
     public class NewtonsoftJsonDeserializer : IDeserializer
     {
+#if NET
+        private static readonly Lazy<NewtonsoftJsonDeserializer> LazyInstance = new();
+#else
         private static readonly Lazy<NewtonsoftJsonDeserializer> LazyInstance = new Lazy<NewtonsoftJsonDeserializer>();
+#endif
 
         /// <summary>
         /// Create lazy loaded singleton instance.
@@ -23,11 +27,11 @@ namespace Tardigrade.Framework.RestSharp.Serializers
         public string DateFormat { get; set; }
 
         /// <summary>
-        /// <see cref="IDeserializer.Deserialize{T}(IRestResponse)"/>
+        /// <see cref="IDeserializer.Deserialize{T}(RestResponse)"/>
         /// </summary>
-        public T Deserialize<T>(IRestResponse response)
+        public T Deserialize<T>(RestResponse response)
         {
-            return JsonConvert.DeserializeObject<T>(response.Content);
+            return response?.Content == null ? default : JsonConvert.DeserializeObject<T>(response.Content);
         }
 
         /// <summary>
