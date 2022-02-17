@@ -4,6 +4,22 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Feb 17, 2022 - 16.0.0 Audit decorator enhancements**
+
+- Made every method in the ObjectServiceAuditDecorator class virtual so that the class can be inherited and the methods overwritten. Enahnced the constructor to accept an ILogger instance and implemented appropriate logging.
+- Added the "class" contraint to the TContent generic parameter for Post and Put methods of the IRestClient interface.
+- Added an extension class for the ILogger interface.
+- Updated the RestSharpClient and NewtonsoftJsonDeserializer classes due to backward incompatibility issues with the upgrade of the RestSharp NuGet package.
+- Updated third-party NuGet packages.
+- Dropped .NET 5 and .NET Framework 4.7.2 as targeted frameworks for the following projects:
+  - Framework
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.MailKit
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+
 **Dec 24, 2021 - 15.0.0 .NET 6 upgrade**
 
 - Deleted the IdentityUserDbContext.cs class from the Tardigrade.Framework.EntityFrameworkCore project. As a result, this project now references the Tardigrade.Framework project instead of the Tardigrade.Framework.AspNetCore project.

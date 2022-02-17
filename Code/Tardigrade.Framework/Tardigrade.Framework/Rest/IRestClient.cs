@@ -91,7 +91,7 @@ namespace Tardigrade.Framework.Rest
         Response<TResult> Post<TContent, TResult>(
             string resource = null,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json);
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class;
 
         /// <summary>
         /// Create a resource.
@@ -105,7 +105,7 @@ namespace Tardigrade.Framework.Rest
         Response<string> Post<TContent>(
             string resource = null,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json);
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class;
 
         /// <summary>
         /// Create a resource.
@@ -120,7 +120,7 @@ namespace Tardigrade.Framework.Rest
         Task<Response<TResult>> PostAsync<TContent, TResult>(
             string resource = null,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json);
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class;
 
         /// <summary>
         /// Create a resource.
@@ -134,7 +134,7 @@ namespace Tardigrade.Framework.Rest
         Task<Response<string>> PostAsync<TContent>(
             string resource = null,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json);
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class;
 
         /// <summary>
         /// Update a resource.
@@ -148,7 +148,7 @@ namespace Tardigrade.Framework.Rest
         Response Put<TContent>(
             string resource,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json);
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class;
 
         /// <summary>
         /// Update a resource.
@@ -162,6 +162,6 @@ namespace Tardigrade.Framework.Rest
         Task<Response> PutAsync<TContent>(
             string resource,
             TContent content = default,
-            ContentFormat contentFormat = ContentFormat.Json);
+            ContentFormat contentFormat = ContentFormat.Json) where TContent : class;
     }
 }

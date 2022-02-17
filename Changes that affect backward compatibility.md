@@ -10,6 +10,19 @@ The following article outlines some of the reasoning for the support of .NET Fra
 
 ## Breaking changes
 
+**15.0.0 -> 16.0.0**
+
+- Tardigrade.Framework
+  - Added the "class" contraint to the TContent generic parameter for Post and Put methods of the IRestClient interface.
+- Dropped .NET 5 and .NET Framework 4.7.2 as targeted frameworks for the following projects:
+  - Framework
+  - Framework.AuditNET
+  - Framework.AzureStorage
+  - Framework.MailKit
+  - Framework.RestSharp
+  - Framework.SimpleInjector
+  - Framework.ZXingNet
+
 **14.1.0 -> 15.0.0**
 
 - Tardigrade.Framework

@@ -1,10 +1,12 @@
 ﻿using Audit.Core;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Tardigrade.Framework.Extensions;
 using Tardigrade.Framework.Models.Domain;
 using Tardigrade.Framework.Models.Persistence;
 using Tardigrade.Framework.Persistence;
@@ -23,9 +25,29 @@ namespace Tardigrade.Framework.AuditNET.Decorators
     public class ObjectServiceAuditDecorator<TEntity, TKey>
         : IObjectService<TEntity, TKey> where TEntity : IHasUniqueIdentifier<TKey>
     {
-        private readonly IObjectService<TEntity, TKey> decoratedService;
-        private readonly IReadOnlyRepository<TEntity, TKey> readOnlyRepository;
-        private readonly IUserContext userContext;
+        private static readonly string EntityFullName = typeof(TEntity).FullName;
+        private static readonly string EntityName = typeof(TEntity).Name;
+
+        /// <summary>
+        /// Object service that is being decorated.
+        /// </summary>
+        protected readonly IObjectService<TEntity, TKey> DecoratedService;
+
+        /// <summary>
+        /// Logging service.
+        /// </summary>
+        protected readonly ILogger<ObjectServiceAuditDecorator<TEntity, TKey>> Logger;
+
+        /// <summary>
+        /// Read-only repository for data retrieval. Used by the Update operations to retrieve the entity prior to any
+        /// changes for the purposes of auditing.
+        /// </summary>
+        protected readonly IReadOnlyRepository<TEntity, TKey> ReadOnlyRepository;
+
+        /// <summary>
+        /// Contextual information on the current user.
+        /// </summary>
+        protected readonly IUserContext UserContext;
 
         /// <summary>
         /// Create an instance of this Decorator.
@@ -33,217 +55,207 @@ namespace Tardigrade.Framework.AuditNET.Decorators
         /// <param name="decoratedService">Object service that is being decorated.</param>
         /// <param name="readOnlyRepository">Read-only repository for data retrieval.</param>
         /// <param name="userContext">Contextual information on the current user.</param>
-        /// <exception cref="ArgumentNullException">A parameter is null.</exception>
+        /// <param name="logger">Logging service (optional).</param>
+        /// <exception cref="ArgumentNullException">A mandatory parameter is null.</exception>
         public ObjectServiceAuditDecorator(
             IObjectService<TEntity, TKey> decoratedService,
             IReadOnlyRepository<TEntity, TKey> readOnlyRepository,
-            IUserContext userContext)
+            IUserContext userContext,
+            ILogger<ObjectServiceAuditDecorator<TEntity, TKey>> logger = null)
         {
-            this.decoratedService = decoratedService ?? throw new ArgumentNullException(nameof(decoratedService));
-            this.readOnlyRepository =
-                readOnlyRepository ?? throw new ArgumentNullException(nameof(readOnlyRepository));
-            this.userContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
+            DecoratedService = decoratedService ?? throw new ArgumentNullException(nameof(decoratedService));
+            ReadOnlyRepository = readOnlyRepository ?? throw new ArgumentNullException(nameof(readOnlyRepository));
+            UserContext = userContext ?? throw new ArgumentNullException(nameof(userContext));
+            Logger = logger;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Count(Expression{Func{T, bool}})"/>
+        /// <see cref="IObjectService{TEntity, TKey}.Count(Expression{Func{TEntity, bool}})"/>
         /// </summary>
-        public int Count(Expression<Func<TEntity, bool>> filter = null)
+        public virtual int Count(Expression<Func<TEntity, bool>> filter = null)
         {
-            int count = decoratedService.Count(filter);
+            int count = DecoratedService.Count(filter);
 
             try
             {
                 var options = new AuditScopeOptions
                 {
-                    EventType = $"{typeof(TEntity).Name}:Count",
+                    EventType = $"{EntityName}:Count",
                     ExtraFields = new { Count = count },
                     AuditEvent = new AuditEvent { Target = new AuditTarget() }
                 };
 
                 using (var auditScope = AuditScope.Create(options))
                 {
-                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                    auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{EntityFullName}";
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for Count of type {Entity}.", EntityName);
             }
 
             return count;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.CountAsync(Expression{Func{T, bool}}, CancellationToken)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.CountAsync(Expression{Func{TEntity, bool}}, CancellationToken)"/>
         /// </summary>
-        public async Task<int> CountAsync(
+        public virtual async Task<int> CountAsync(
             Expression<Func<TEntity, bool>> filter = null,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
-            int count = await decoratedService.CountAsync(filter, cancellationToken);
+            int count = await DecoratedService.CountAsync(filter, cancellationToken);
             AuditScope auditScope = null;
 
             try
             {
                 var options = new AuditScopeOptions
                 {
-                    EventType = $"{typeof(TEntity).Name}:Count",
+                    EventType = $"{EntityName}:Count",
                     ExtraFields = new { Count = count },
                     AuditEvent = new AuditEvent { Target = new AuditTarget() }
                 };
 
                 auditScope = await AuditScope.CreateAsync(options);
-                auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                auditScope.Event.Target.Type = $"{EntityFullName}";
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for CountAsync of type {Entity}.", EntityName);
             }
             finally
             {
-                if (auditScope != null)
-                {
-                    await auditScope.DisposeAsync();
-                }
+                if (auditScope != null) await auditScope.DisposeAsync();
             }
 
             return count;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Create(IEnumerable{T})"/>
+        /// <see cref="IObjectService{TEntity, TKey}.Create(IEnumerable{TEntity})"/>
         /// </summary>
-        public IEnumerable<TEntity> Create(IEnumerable<TEntity> items)
+        public virtual IEnumerable<TEntity> Create(IEnumerable<TEntity> items)
         {
             IEnumerable<TEntity> created = default;
             var isServiceException = false;
 
             try
             {
-                using (var auditScope = AuditScope.Create($"{typeof(TEntity).Name}:Create+", () => created))
+                using (var auditScope = AuditScope.Create($"{EntityName}:Create+", () => created))
                 {
-                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                    auditScope.Event.Environment.UserName = UserContext.CurrentUser;
                     auditScope.Event.Target.Type = $"{items.GetType()}";
 
                     try
                     {
-                        created = decoratedService.Create(items);
+                        created = DecoratedService.Create(items);
                     }
                     catch
                     {
                         isServiceException = true;
+                        auditScope.Discard();
                         throw;
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
-                if (isServiceException)
-                {
-                    throw;
-                }
+                if (isServiceException) throw;
 
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for Create+ of type {Entity}.", EntityName);
             }
 
             return created;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Create(T)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.Create(TEntity)"/>
         /// </summary>
-        public TEntity Create(TEntity item)
+        public virtual TEntity Create(TEntity item)
         {
             TEntity created = default;
             var isServiceException = false;
 
             try
             {
-                using (var auditScope = AuditScope.Create($"{typeof(TEntity).Name}:Create", () => created))
+                using (var auditScope = AuditScope.Create($"{EntityName}:Create", () => created))
                 {
-                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                    auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{EntityFullName}";
 
                     try
                     {
-                        created = decoratedService.Create(item);
+                        created = DecoratedService.Create(item);
                     }
                     catch
                     {
                         isServiceException = true;
+                        auditScope.Discard();
                         throw;
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
-                if (isServiceException)
-                {
-                    throw;
-                }
+                if (isServiceException) throw;
 
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for Create of type {Entity}.", EntityName);
             }
 
             return created;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.CreateAsync(IEnumerable{T}, CancellationToken)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.CreateAsync(IEnumerable{TEntity}, CancellationToken)"/>
         /// </summary>
-        public async Task<IEnumerable<TEntity>> CreateAsync(
+        public virtual async Task<IEnumerable<TEntity>> CreateAsync(
             IEnumerable<TEntity> items,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
-            IEnumerable<TEntity> created = default;
             AuditScope auditScope = null;
+            IEnumerable<TEntity> created = default;
             var isServiceException = false;
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(TEntity).Name}:Create+", () => created);
-                auditScope.Event.Environment.UserName = userContext.CurrentUser;
+                auditScope = await AuditScope.CreateAsync($"{EntityName}:Create+", () => created);
+                auditScope.Event.Environment.UserName = UserContext.CurrentUser;
                 auditScope.Event.Target.Type = $"{items.GetType()}";
 
                 try
                 {
-                    created = await decoratedService.CreateAsync(items, cancellationToken);
+                    created = await DecoratedService.CreateAsync(items, cancellationToken);
                 }
                 catch
                 {
                     isServiceException = true;
+                    auditScope.Discard();
                     throw;
                 }
             }
-            catch
+            catch (Exception e)
             {
-                if (isServiceException)
-                {
-                    throw;
-                }
+                if (isServiceException) throw;
 
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for CreateAsync+ of type {Entity}.", EntityName);
             }
             finally
             {
-                if (auditScope != null)
-                {
-                    await auditScope.DisposeAsync();
-                }
+                if (auditScope != null) await auditScope.DisposeAsync();
             }
 
             return created;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.CreateAsync(T, CancellationToken)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.CreateAsync(TEntity, CancellationToken)"/>
         /// </summary>
-        public async Task<TEntity> CreateAsync(
+        public virtual async Task<TEntity> CreateAsync(
             TEntity item,
-            CancellationToken cancellationToken = new CancellationToken())
+            CancellationToken cancellationToken = default)
         {
             TEntity created = default;
             AuditScope auditScope = null;
@@ -251,249 +263,238 @@ namespace Tardigrade.Framework.AuditNET.Decorators
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(TEntity).Name}:Create", () => created);
-                auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                auditScope = await AuditScope.CreateAsync($"{EntityName}:Create", () => created);
+                auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                auditScope.Event.Target.Type = $"{EntityFullName}";
 
                 try
                 {
-                    created = await decoratedService.CreateAsync(item, cancellationToken);
+                    created = await DecoratedService.CreateAsync(item, cancellationToken);
                 }
                 catch
                 {
                     isServiceException = true;
+                    auditScope.Discard();
                     throw;
                 }
             }
-            catch
+            catch (Exception e)
             {
-                if (isServiceException)
-                {
-                    throw;
-                }
+                if (isServiceException) throw;
 
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for CreateAsync of type {Entity}.", EntityName);
             }
             finally
             {
-                if (auditScope != null)
-                {
-                    await auditScope.DisposeAsync();
-                }
+                if (auditScope != null) await auditScope.DisposeAsync();
             }
 
             return created;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Delete(T)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.Delete(TEntity)"/>
         /// </summary>
-        public void Delete(TEntity item)
+        public virtual void Delete(TEntity item)
         {
-            decoratedService.Delete(item);
+            TKey id = item.Id;
+            DecoratedService.Delete(item);
 
             try
             {
-                using (var auditScope = AuditScope.Create($"{typeof(TEntity).Name}:Delete", () => item))
+                using (var auditScope = AuditScope.Create($"{EntityName}:Delete", () => item))
                 {
-                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                    auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{EntityFullName}";
 
                     // Set the deleted item to null. This prevents Audit.NET from replicating the audit details of the
                     // "Old" object into "New".
                     item = default;
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for Delete of type {Entity} with ID {Id}.", EntityName, id);
             }
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.DeleteAsync(T, CancellationToken)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.DeleteAsync(TEntity, CancellationToken)"/>
         /// </summary>
-        public async Task DeleteAsync(TEntity item, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task DeleteAsync(TEntity item, CancellationToken cancellationToken = default)
         {
-            await decoratedService.DeleteAsync(item, cancellationToken);
             AuditScope auditScope = null;
+            TKey id = item.Id;
+            await DecoratedService.DeleteAsync(item, cancellationToken);
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(TEntity).Name}:Delete", () => item);
-                auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                auditScope = await AuditScope.CreateAsync($"{EntityName}:Delete", () => item);
+                auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                auditScope.Event.Target.Type = $"{EntityFullName}";
 
                 // Set the deleted item to null. This prevents Audit.NET from replicating the audit details of the
                 // "Old" object into "New".
                 // ReSharper disable once RedundantAssignment
                 item = default;
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for DeleteAsync of type {Entity} with ID {Id}.", EntityName, id);
             }
             finally
             {
-                if (auditScope != null)
-                {
-                    await auditScope.DisposeAsync();
-                }
+                if (auditScope != null) await auditScope.DisposeAsync();
             }
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Exists(PK)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.Exists(TKey)"/>
         /// </summary>
-        public bool Exists(TKey id)
+        public virtual bool Exists(TKey id)
         {
-            bool exists = decoratedService.Exists(id);
+            bool exists = DecoratedService.Exists(id);
 
             try
             {
                 var options = new AuditScopeOptions
                 {
-                    EventType = $"{typeof(TEntity).Name}:Exists",
+                    EventType = $"{EntityName}:Exists",
                     ExtraFields = new { Id = id, Exists = exists },
                     AuditEvent = new AuditEvent { Target = new AuditTarget() }
                 };
 
                 using (var auditScope = AuditScope.Create(options))
                 {
-                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                    auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{EntityFullName}";
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for Exists of type {Entity} with ID {Id}.", EntityName, id);
             }
 
             return exists;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.ExistsAsync(PK, CancellationToken)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.ExistsAsync(TKey, CancellationToken)"/>
         /// </summary>
-        public async Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = default)
         {
-            bool exists = await decoratedService.ExistsAsync(id, cancellationToken);
+            bool exists = await DecoratedService.ExistsAsync(id, cancellationToken);
             AuditScope auditScope = null;
 
             try
             {
                 var options = new AuditScopeOptions
                 {
-                    EventType = $"{typeof(TEntity).Name}:Exists",
+                    EventType = $"{EntityName}:Exists",
                     ExtraFields = new { Id = id, Exists = exists },
                     AuditEvent = new AuditEvent { Target = new AuditTarget() }
                 };
 
                 auditScope = await AuditScope.CreateAsync(options);
-                auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                auditScope.Event.Target.Type = $"{EntityFullName}";
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for ExistsAsync of type {Entity} with ID {Id}.", EntityName, id);
             }
             finally
             {
-                if (auditScope != null)
-                {
-                    await auditScope.DisposeAsync();
-                }
+                if (auditScope != null) await auditScope.DisposeAsync();
             }
 
             return exists;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Retrieve(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, Expression{Func{T, object}}[])"/>
+        /// <see cref="IObjectService{TEntity, TKey}.Retrieve(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
-        public IEnumerable<TEntity> Retrieve(
+        public virtual IEnumerable<TEntity> Retrieve(
             Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
             params Expression<Func<TEntity, object>>[] includes)
         {
             IEnumerable<TEntity> retrieved =
-                decoratedService.Retrieve(filter, pagingContext, sortCondition, includes).ToList();
+                DecoratedService.Retrieve(filter, pagingContext, sortCondition, includes).ToList();
 
             try
             {
                 // Due to size constraints, only audit the number of objects retrieved rather than the objects themselves.
                 var options = new AuditScopeOptions
                 {
-                    EventType = $"{typeof(TEntity).Name}:Retrieve+",
+                    EventType = $"{EntityName}:Retrieve+",
                     ExtraFields = new { Count = retrieved.Count() },
                     AuditEvent = new AuditEvent { Target = new AuditTarget() }
                 };
 
                 using (var auditScope = AuditScope.Create(options))
                 {
-                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                    auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{EntityFullName}";
                 }
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for Retrieve+ of type {Entity}.", EntityName);
             }
 
             return retrieved;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Retrieve(PK, Expression{Func{T, object}}[])"/>
+        /// <see cref="IObjectService{TEntity, TKey}.Retrieve(TKey, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
-        public TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes)
+        public virtual TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes)
         {
             TEntity retrieved = default;
             var isServiceException = false;
 
             try
             {
-                using (var auditScope = AuditScope.Create($"{typeof(TEntity).Name}:Retrieve", () => retrieved))
+                using (var auditScope = AuditScope.Create($"{EntityName}:Retrieve", () => retrieved))
                 {
-                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                    auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{EntityFullName}";
 
                     try
                     {
-                        retrieved = decoratedService.Retrieve(id, includes);
+                        retrieved = DecoratedService.Retrieve(id, includes);
                     }
                     catch
                     {
                         isServiceException = true;
+                        auditScope.Discard();
                         throw;
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
-                if (isServiceException)
-                {
-                    throw;
-                }
+                if (isServiceException) throw;
 
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for Retrieve of type {Entity} with ID {Id}.", EntityName, id);
             }
 
             return retrieved;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.RetrieveAsync(Expression{Func{T, bool}}, PagingContext, Func{IQueryable{T}, IOrderedQueryable{T}}, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IObjectService{TEntity, TKey}.RetrieveAsync(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, CancellationToken, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
-        public async Task<IEnumerable<TEntity>> RetrieveAsync(
+        public virtual async Task<IEnumerable<TEntity>> RetrieveAsync(
             Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> sortCondition = null,
-            CancellationToken cancellationToken = new CancellationToken(),
+            CancellationToken cancellationToken = default,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            IEnumerable<TEntity> entities = await decoratedService.RetrieveAsync(
+            IEnumerable<TEntity> entities = await DecoratedService.RetrieveAsync(
                 filter,
                 pagingContext,
                 sortCondition,
@@ -508,36 +509,33 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 // themselves.
                 var options = new AuditScopeOptions
                 {
-                    EventType = $"{typeof(TEntity).Name}:Retrieve+",
+                    EventType = $"{EntityName}:Retrieve+",
                     ExtraFields = new { Count = retrieved.Count() },
                     AuditEvent = new AuditEvent { Target = new AuditTarget() }
                 };
 
                 auditScope = await AuditScope.CreateAsync(options);
-                auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                auditScope.Event.Target.Type = $"{EntityFullName}";
             }
-            catch
+            catch (Exception e)
             {
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for RetrieveAsync+ of type {Entity}.", EntityName);
             }
             finally
             {
-                if (auditScope != null)
-                {
-                    await auditScope.DisposeAsync();
-                }
+                if (auditScope != null) await auditScope.DisposeAsync();
             }
 
             return retrieved;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.RetrieveAsync(PK, CancellationToken, Expression{Func{T, object}}[])"/>
+        /// <see cref="IObjectService{TEntity, TKey}.RetrieveAsync(TKey, CancellationToken, Expression{Func{TEntity, object}}[])"/>
         /// </summary>
-        public async Task<TEntity> RetrieveAsync(
+        public virtual async Task<TEntity> RetrieveAsync(
             TKey id,
-            CancellationToken cancellationToken = new CancellationToken(),
+            CancellationToken cancellationToken = default,
             params Expression<Func<TEntity, object>>[] includes)
         {
             TEntity retrieved = default;
@@ -546,62 +544,59 @@ namespace Tardigrade.Framework.AuditNET.Decorators
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(TEntity).Name}:Retrieve", () => retrieved);
-                auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                auditScope = await AuditScope.CreateAsync($"{EntityName}:Retrieve", () => retrieved);
+                auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                auditScope.Event.Target.Type = $"{EntityFullName}";
 
                 try
                 {
-                    retrieved = await decoratedService.RetrieveAsync(id, cancellationToken, includes);
+                    retrieved = await DecoratedService.RetrieveAsync(id, cancellationToken, includes);
                 }
                 catch
                 {
                     isServiceException = true;
+                    auditScope.Discard();
                     throw;
                 }
             }
-            catch
+            catch (Exception e)
             {
-                if (isServiceException)
-                {
-                    throw;
-                }
+                if (isServiceException) throw;
 
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for RetrieveAsync of type {Entity} with ID {Id}.", EntityName, id);
             }
             finally
             {
-                if (auditScope != null)
-                {
-                    await auditScope.DisposeAsync();
-                }
+                if (auditScope != null) await auditScope.DisposeAsync();
             }
 
             return retrieved;
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.Update(T)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.Update(TEntity)"/>
         /// </summary>
-        public void Update(TEntity item)
+        public virtual void Update(TEntity item)
         {
-            TEntity original = readOnlyRepository.Retrieve(item.Id);
             var isServiceException = false;
+            TKey id = item.Id;
+            TEntity original = ReadOnlyRepository.Retrieve(item.Id);
 
             try
             {
-                using (var auditScope = AuditScope.Create($"{typeof(TEntity).Name}:Update", () => original))
+                using (var auditScope = AuditScope.Create($"{EntityName}:Update", () => original))
                 {
-                    auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                    auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                    auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                    auditScope.Event.Target.Type = $"{EntityFullName}";
 
                     try
                     {
-                        decoratedService.Update(item);
+                        DecoratedService.Update(item);
                     }
                     catch
                     {
                         isServiceException = true;
+                        auditScope.Discard();
                         throw;
                     }
 
@@ -610,39 +605,38 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                     original = item;
                 }
             }
-            catch
+            catch (Exception e)
             {
-                if (isServiceException)
-                {
-                    throw;
-                }
+                if (isServiceException) throw;
 
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for Update of type {Entity} with ID {Id}.", EntityName, id);
             }
         }
 
         /// <summary>
-        /// <see cref="IObjectService{T, PK}.UpdateAsync(T, CancellationToken)"/>
+        /// <see cref="IObjectService{TEntity, TKey}.UpdateAsync(TEntity, CancellationToken)"/>
         /// </summary>
-        public async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = new CancellationToken())
+        public virtual async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default)
         {
             AuditScope auditScope = null;
-            TEntity original = await readOnlyRepository.RetrieveAsync(item.Id, cancellationToken);
             var isServiceException = false;
+            TKey id = item.Id;
+            TEntity original = await ReadOnlyRepository.RetrieveAsync(id, cancellationToken);
 
             try
             {
-                auditScope = await AuditScope.CreateAsync($"{typeof(TEntity).Name}:Update", () => original);
-                auditScope.Event.Environment.UserName = userContext.CurrentUser;
-                auditScope.Event.Target.Type = $"{typeof(TEntity).FullName}";
+                auditScope = await AuditScope.CreateAsync($"{EntityName}:Update", () => original);
+                auditScope.Event.Environment.UserName = UserContext.CurrentUser;
+                auditScope.Event.Target.Type = $"{EntityFullName}";
 
                 try
                 {
-                    await decoratedService.UpdateAsync(item, cancellationToken);
+                    await DecoratedService.UpdateAsync(item, cancellationToken);
                 }
                 catch
                 {
                     isServiceException = true;
+                    auditScope.Discard();
                     throw;
                 }
 
@@ -650,21 +644,15 @@ namespace Tardigrade.Framework.AuditNET.Decorators
                 // ReSharper disable once RedundantAssignment
                 original = item;
             }
-            catch
+            catch (Exception e)
             {
-                if (isServiceException)
-                {
-                    throw;
-                }
+                if (isServiceException) throw;
 
-                // TODO: Ignore and log the exception raised by the auditing framework.
+                Logger.Warning(e, "Auditing failed for UpdateAsync of type {Entity} with ID {Id}.", EntityName, id);
             }
             finally
             {
-                if (auditScope != null)
-                {
-                    await auditScope.DisposeAsync();
-                }
+                if (auditScope != null) await auditScope.DisposeAsync();
             }
         }
     }
