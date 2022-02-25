@@ -25,8 +25,15 @@ namespace Tardigrade.Framework.AuditNET.Decorators
     public class ObjectServiceAuditDecorator<TEntity, TKey>
         : IObjectService<TEntity, TKey> where TEntity : IHasUniqueIdentifier<TKey>
     {
-        private static readonly string EntityFullName = typeof(TEntity).FullName;
-        private static readonly string EntityName = typeof(TEntity).Name;
+        /// <summary>
+        /// Fully qualified name (including namespace) of the entity associated with this decorator.
+        /// </summary>
+        protected static readonly string EntityFullName = typeof(TEntity).FullName;
+
+        /// <summary>
+        /// Name of the entity associated with this decorator.
+        /// </summary>
+        protected static readonly string EntityName = typeof(TEntity).Name;
 
         /// <summary>
         /// Object service that is being decorated.
@@ -69,9 +76,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             Logger = logger;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.Count(Expression{Func{TEntity, bool}})"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual int Count(Expression<Func<TEntity, bool>> filter = null)
         {
             int count = DecoratedService.Count(filter);
@@ -99,9 +104,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return count;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.CountAsync(Expression{Func{TEntity, bool}}, CancellationToken)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<int> CountAsync(
             Expression<Func<TEntity, bool>> filter = null,
             CancellationToken cancellationToken = default)
@@ -134,9 +137,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return count;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.Create(IEnumerable{TEntity})"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual IEnumerable<TEntity> Create(IEnumerable<TEntity> items)
         {
             IEnumerable<TEntity> created = default;
@@ -171,9 +172,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return created;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.Create(TEntity)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual TEntity Create(TEntity item)
         {
             TEntity created = default;
@@ -208,9 +207,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return created;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.CreateAsync(IEnumerable{TEntity}, CancellationToken)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> CreateAsync(
             IEnumerable<TEntity> items,
             CancellationToken cancellationToken = default)
@@ -250,9 +247,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return created;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.CreateAsync(TEntity, CancellationToken)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<TEntity> CreateAsync(
             TEntity item,
             CancellationToken cancellationToken = default)
@@ -292,9 +287,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return created;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.Delete(TEntity)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual void Delete(TEntity item)
         {
             TKey id = item.Id;
@@ -318,9 +311,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.DeleteAsync(TEntity, CancellationToken)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task DeleteAsync(TEntity item, CancellationToken cancellationToken = default)
         {
             AuditScope auditScope = null;
@@ -348,9 +339,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.Exists(TKey)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual bool Exists(TKey id)
         {
             bool exists = DecoratedService.Exists(id);
@@ -378,9 +367,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return exists;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.ExistsAsync(TKey, CancellationToken)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<bool> ExistsAsync(TKey id, CancellationToken cancellationToken = default)
         {
             bool exists = await DecoratedService.ExistsAsync(id, cancellationToken);
@@ -411,9 +398,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return exists;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.Retrieve(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, Expression{Func{TEntity, object}}[])"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual IEnumerable<TEntity> Retrieve(
             Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
@@ -447,9 +432,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return retrieved;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.Retrieve(TKey, Expression{Func{TEntity, object}}[])"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual TEntity Retrieve(TKey id, params Expression<Func<TEntity, object>>[] includes)
         {
             TEntity retrieved = default;
@@ -484,9 +467,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return retrieved;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.RetrieveAsync(Expression{Func{TEntity, bool}}, PagingContext, Func{IQueryable{TEntity}, IOrderedQueryable{TEntity}}, CancellationToken, Expression{Func{TEntity, object}}[])"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<IEnumerable<TEntity>> RetrieveAsync(
             Expression<Func<TEntity, bool>> filter = null,
             PagingContext pagingContext = null,
@@ -530,9 +511,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return retrieved;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.RetrieveAsync(TKey, CancellationToken, Expression{Func{TEntity, object}}[])"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task<TEntity> RetrieveAsync(
             TKey id,
             CancellationToken cancellationToken = default,
@@ -573,9 +552,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             return retrieved;
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.Update(TEntity)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual void Update(TEntity item)
         {
             var isServiceException = false;
@@ -613,9 +590,7 @@ namespace Tardigrade.Framework.AuditNET.Decorators
             }
         }
 
-        /// <summary>
-        /// <see cref="IObjectService{TEntity, TKey}.UpdateAsync(TEntity, CancellationToken)"/>
-        /// </summary>
+        /// <inheritdoc />
         public virtual async Task UpdateAsync(TEntity item, CancellationToken cancellationToken = default)
         {
             AuditScope auditScope = null;

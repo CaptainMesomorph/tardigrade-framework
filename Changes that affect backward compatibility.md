@@ -10,6 +10,11 @@ The following article outlines some of the reasoning for the support of .NET Fra
 
 ## Breaking changes
 
+**16.0.0 -> 17.0.0**
+
+- Tardigrade.Framework
+  - Updated ApplicationConfiguraton.cs to make support of User Secrets more intuitive. This included replacing the EntryAssembly virtual property with the UserSecretsAssembly protected variable.
+
 **15.0.0 -> 16.0.0**
 
 - Tardigrade.Framework

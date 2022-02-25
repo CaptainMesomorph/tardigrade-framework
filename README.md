@@ -4,6 +4,13 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**??? ??, 2022 - 17.0.0 Configuration and unit testing enhancements**
+
+- Updated ObjectServiceAuditDecorator.cs to better support inheritance.
+- Updated ApplicationConfiguraton.cs to make support of User Secrets more intuitive.
+- Added a new test project for Tardigrade.Framework.AuditNET.
+- Set the <Nulable> property for all .NET 6 SDK-style test projects to "enable" and refactored code where appropriate.
+
 **Feb 17, 2022 - 16.0.0 Audit decorator enhancements**
 
 - Made every method in the ObjectServiceAuditDecorator class virtual so that the class can be inherited and the methods overwritten. Enahnced the constructor to accept an ILogger instance and implemented appropriate logging.

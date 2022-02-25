@@ -10,6 +10,6 @@ namespace Tardigrade.Framework.Services.Users
         /// <summary>
         /// <see cref="IUserContext.CurrentUser"/>
         /// </summary>
-        public string CurrentUser => Thread.CurrentPrincipal.Identity.Name;
+        public string CurrentUser => Thread.CurrentPrincipal?.Identity?.Name;
     }
 }

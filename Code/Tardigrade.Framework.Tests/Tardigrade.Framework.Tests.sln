@@ -39,7 +39,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.MailKi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.MailKit.Tests", "Tardigrade.Framework.MailKit.Tests\Tardigrade.Framework.MailKit.Tests.csproj", "{D7C57D17-C095-45C8-B523-D51589593327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.EntityFramework.Tests", "Tardigrade.Framework.EntityFramework.Tests\Tardigrade.Framework.EntityFramework.Tests.csproj", "{64B8F9B6-FA73-4566-8CF6-006303761626}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tardigrade.Framework.EntityFramework.Tests", "Tardigrade.Framework.EntityFramework.Tests\Tardigrade.Framework.EntityFramework.Tests.csproj", "{64B8F9B6-FA73-4566-8CF6-006303761626}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tardigrade.Framework.AuditNET.Tests", "Tardigrade.Framework.AuditNET.Tests\Tardigrade.Framework.AuditNET.Tests.csproj", "{5B0B14DF-B012-4CBB-AC7F-8226A25AC459}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,6 +125,10 @@ Global
 		{64B8F9B6-FA73-4566-8CF6-006303761626}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64B8F9B6-FA73-4566-8CF6-006303761626}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64B8F9B6-FA73-4566-8CF6-006303761626}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B0B14DF-B012-4CBB-AC7F-8226A25AC459}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B0B14DF-B012-4CBB-AC7F-8226A25AC459}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B0B14DF-B012-4CBB-AC7F-8226A25AC459}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B0B14DF-B012-4CBB-AC7F-8226A25AC459}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

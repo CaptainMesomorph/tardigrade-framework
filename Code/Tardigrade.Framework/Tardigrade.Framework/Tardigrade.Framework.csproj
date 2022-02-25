@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
-    <Version>14.0.0</Version>
+    <Version>15.0.0</Version>
     <Authors>Rafidzal Rafiq</Authors>
     <Product>Tardigrade Framework Library</Product>
     <Description>Software framework for supporting coding best practices.</Description>

@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 namespace Tardigrade.Framework.Testing
 {
     /// <summary>
+    /// An xUnit Class Fixture that supports User Secrets when running in a development environment.
+    /// 
     /// <a href="https://stackoverflow.com/questions/50921675/dependency-injection-in-xunit-project">Dependency injection in Xunit project</a>
     /// <a href="https://stackoverflow.com/questions/62537388/where-to-create-hostbuilder-and-avoid-the-following-constructor-parameters-did">Where to create HostBuilder and avoid 'The following constructor parameters did not have matching fixture data'</a>
     /// </summary>
