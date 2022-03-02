@@ -58,10 +58,10 @@ public class StorageTableRepositoryTest : IClassFixture<ServiceProviderFixture>
         // Arrange.
 
         // Act.
-        Action actual = () => _ = new Repository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName);
+        void Actual() => _ = new Repository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName);
 
         // Assert.
-        Assert.Throws<FormatException>(actual);
+        Assert.Throws<FormatException>(Actual);
     }
 
     [Theory]
@@ -75,10 +75,10 @@ public class StorageTableRepositoryTest : IClassFixture<ServiceProviderFixture>
         // Arrange.
 
         // Act.
-        Action actual = () => _ = new Repository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName);
+        void Actual() => _ = new Repository<FakeTableEntity, FakeTableKey>(storageConnectionString, tableName);
 
         // Assert.
-        Assert.Throws<ArgumentNullException>(actual);
+        Assert.Throws<ArgumentNullException>(Actual);
     }
 
     [Fact]
@@ -90,9 +90,9 @@ public class StorageTableRepositoryTest : IClassFixture<ServiceProviderFixture>
         repository.Create(entity);
 
         // Act.
-        Action actual = () => repository.Create(entity);
+        void Actual() => repository.Create(entity);
 
         // Assert.
-        Assert.Throws<AlreadyExistsException>(actual);
+        Assert.Throws<AlreadyExistsException>(Actual);
     }
 }
