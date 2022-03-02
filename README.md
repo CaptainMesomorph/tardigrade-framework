@@ -8,8 +8,10 @@ Framework for supporting coding best practices.
 
 - Updated ObjectServiceAuditDecorator.cs to better support inheritance.
 - Updated ApplicationConfiguraton.cs to make support of User Secrets more intuitive.
-- Added a new test project for Tardigrade.Framework.AuditNET.
+- Added an Azure Storage specific version of the ApplicationConfiguraton.cs class.
+- Added a new test project for Tardigrade.Framework.AuditNET and added unit tests for the audit decorator.
 - Set the <Nulable> property for all .NET 6 SDK-style test projects to "enable" and refactored code where appropriate.
+- Updated third-party NuGet packages.
 
 **Feb 17, 2022 - 16.0.0 Audit decorator enhancements**
 

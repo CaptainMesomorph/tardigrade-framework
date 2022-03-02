@@ -1,22 +1,22 @@
 ﻿using System;
 using Tardigrade.Framework.Patterns.DependencyInjection;
 
-namespace Tardigrade.Framework.AzureStorage.Tests
+namespace Tardigrade.Framework.AzureStorage.Tests;
+
+/// <summary>
+/// <a href="https://stackoverflow.com/questions/50921675/dependency-injection-in-xunit-project">Dependency injection in Xunit project</a>
+/// </summary>
+public class ServiceProviderFixture : IDisposable
 {
-    /// <summary>
-    /// <a href="https://stackoverflow.com/questions/50921675/dependency-injection-in-xunit-project">Dependency injection in Xunit project</a>
-    /// </summary>
-    public class ServiceProviderFixture : IDisposable
+    public IServiceContainer Container { get; }
+
+    public ServiceProviderFixture()
     {
-        public IServiceContainer Container { get; }
+        Container = new UnitTestServiceContainer();
+    }
 
-        public ServiceProviderFixture()
-        {
-            Container = new UnitTestServiceContainer();
-        }
-
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
     }
 }

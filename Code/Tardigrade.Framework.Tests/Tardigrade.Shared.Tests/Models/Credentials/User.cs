@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tardigrade.Shared.Tests.Models
+namespace Tardigrade.Shared.Tests.Models.Credentials
 {
     public class User : BaseModel
     {

@@ -6,8 +6,8 @@ using System.IO;
 using Tardigrade.Framework.Patterns.DependencyInjection;
 using Tardigrade.Framework.Persistence;
 using Tardigrade.Shared.Tests;
-using Tardigrade.Shared.Tests.Models;
 using Tardigrade.Shared.Tests.Models.Blogs;
+using Tardigrade.Shared.Tests.Models.Credentials;
 
 namespace Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp;
 

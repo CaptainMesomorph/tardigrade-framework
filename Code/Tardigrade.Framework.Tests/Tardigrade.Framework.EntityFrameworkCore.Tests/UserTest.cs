@@ -5,7 +5,7 @@ using Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp;
 using Tardigrade.Framework.Persistence;
 using Tardigrade.Shared.Tests;
 using Tardigrade.Shared.Tests.Extensions;
-using Tardigrade.Shared.Tests.Models;
+using Tardigrade.Shared.Tests.Models.Credentials;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Tardigrade.Framework.EntityFrameworkCore.Extensions;
-using Tardigrade.Shared.Tests.Models;
 using Tardigrade.Shared.Tests.Models.Blogs;
+using Tardigrade.Shared.Tests.Models.Credentials;
 
 namespace Tardigrade.Framework.EntityFrameworkCore.Tests.Data;
 

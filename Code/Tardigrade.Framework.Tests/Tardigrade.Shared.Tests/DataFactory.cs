@@ -1,8 +1,9 @@
 ﻿using Bogus;
 using System.Collections.Generic;
 using Tardigrade.Shared.Tests.Extensions;
-using Tardigrade.Shared.Tests.Models;
 using Tardigrade.Shared.Tests.Models.Blogs;
+using Tardigrade.Shared.Tests.Models.Credentials;
+using Tardigrade.Shared.Tests.Models.Passwords;
 using Person = Tardigrade.Shared.Tests.Models.Blogs.Person;
 
 namespace Tardigrade.Shared.Tests
@@ -12,6 +13,7 @@ namespace Tardigrade.Shared.Tests
         private const int BlogMaxCount = 4;
         private const int CredentialMaxCount = 4;
         private const int CredentialIssuerMaxCount = 4;
+        private const int PasswordMaxCount = 4;
         private const int PersonMaxCount = 4;
         private const int PostMaxCount = 4;
         private const int UserMaxCount = 4;
@@ -20,6 +22,7 @@ namespace Tardigrade.Shared.Tests
         private const int BlogSeed = 01234;
         private const int CredentialSeed = 12345;
         private const int CredentialIssuerSeed = 23456;
+        private const int PasswordSeed = 78901;
         private const int PersonSeed = 34567;
         private const int PostSeed = 45678;
         private const int UserSeed = 56789;
@@ -28,6 +31,7 @@ namespace Tardigrade.Shared.Tests
         private static readonly Faker<Blog> BlogFaker;
         private static readonly Faker<Credential> CredentialFaker;
         private static readonly Faker<CredentialIssuer> CredentialIssuerFaker;
+        private static readonly Faker<Password> PasswordFaker;
         private static readonly Faker<Person> PersonFaker;
         private static readonly Faker<Post> PostFaker;
 #if NET
@@ -50,6 +54,10 @@ namespace Tardigrade.Shared.Tests
 
         public static IList<CredentialIssuer> CredentialIssuers =>
             CredentialIssuerFaker.Generate(Random.Int(1, CredentialIssuerMaxCount));
+
+        public static Password Password => PasswordFaker.Generate();
+
+        public static IList<Password> Passwords => PasswordFaker.Generate(Random.Int(1, PasswordMaxCount));
 
         public static Person Person => PersonFaker.Generate();
 
@@ -87,6 +95,11 @@ namespace Tardigrade.Shared.Tests
                 .RuleForBaseModel()
                 .RuleFor(c => c.Name, f => f.Commerce.ProductName())
                 .RuleFor(c => c.Issuers, _ => CredentialIssuerFaker.Generate(Random.Int(1, CredentialIssuerMaxCount)));
+
+            PasswordFaker = new Faker<Password>()
+                .UseSeed(PasswordSeed)
+                .RuleFor(u => u.Id, f => f.Random.Guid())
+                .RuleFor(p => p.Word, f => f.Internet.Password());
 
             PersonFaker = new Faker<Person>()
                 .UseSeed(PersonSeed)
