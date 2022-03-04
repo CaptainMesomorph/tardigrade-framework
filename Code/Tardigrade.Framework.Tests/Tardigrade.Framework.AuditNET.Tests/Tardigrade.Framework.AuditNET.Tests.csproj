@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Tardigrade.Framework\Tardigrade.Framework.AuditNET\Tardigrade.Framework.AuditNET.csproj" />
+    <ProjectReference Include="..\..\Tardigrade.Framework\Tardigrade.Framework.AuditNET.AzureStorageQueue\Tardigrade.Framework.AuditNET.AzureStorageQueue.csproj" />
     <ProjectReference Include="..\..\Tardigrade.Framework\Tardigrade.Framework.AzureStorage\Tardigrade.Framework.AzureStorage.csproj" />
     <ProjectReference Include="..\Tardigrade.Shared.Tests\Tardigrade.Shared.Tests.csproj" />
   </ItemGroup>

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Tardigrade.Framework.AuditNET.DataProviders;
+using Tardigrade.Framework.AuditNET.AzureStorageQueue.DataProviders;
 using Tardigrade.Framework.AuditNET.Tests.SetUp;
 using Tardigrade.Framework.AzureStorage.Configurations;
 using Tardigrade.Framework.Services;

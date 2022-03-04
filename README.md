@@ -6,6 +6,8 @@ Framework for supporting coding best practices.
 
 **??? ??, 2022 - 17.0.0 Configuration and unit testing enhancements**
 
+- Moved the AzureQueueDataProvider.cs class from TikForce.Framework.AuditNET project to the newly added TikForce.Framework.AuditNET.AzureStorageQueue project. Refactored references accordingly.
+- Upgraded the AzureQueueDataProvider.cs class to use the Azure.Storage.Queues package instead of the deprecated Microsoft.Azure.Storage.Queue package. Updated the code accordingly.
 - Updated ObjectServiceAuditDecorator.cs to better support inheritance.
 - Updated ApplicationConfiguraton.cs to make support of User Secrets more intuitive.
 - Added an Azure Storage specific version of the ApplicationConfiguraton.cs class.
