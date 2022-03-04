@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using Tardigrade.Framework.Emails;
 using Tardigrade.Framework.MailKit.Tests.SetUp;
@@ -14,7 +13,7 @@ public class EmailServiceTest : IClassFixture<MailKitClassFixture>
 
     public EmailServiceTest(MailKitClassFixture fixture, ITestOutputHelper output)
     {
-        _emailService = fixture.Services.GetService<IEmailService>() ?? throw new InvalidOperationException();
+        _emailService = fixture.GetService<IEmailService>() ?? throw new InvalidOperationException();
         _output = output;
     }
 

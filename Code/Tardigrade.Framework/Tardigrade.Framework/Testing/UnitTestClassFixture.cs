@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Tardigrade.Framework.Patterns.DependencyInjection;
 
 namespace Tardigrade.Framework.Testing
 {
@@ -13,7 +14,7 @@ namespace Tardigrade.Framework.Testing
     /// <a href="https://stackoverflow.com/questions/50921675/dependency-injection-in-xunit-project">Dependency injection in Xunit project</a>
     /// <a href="https://stackoverflow.com/questions/62537388/where-to-create-hostbuilder-and-avoid-the-following-constructor-parameters-did">Where to create HostBuilder and avoid 'The following constructor parameters did not have matching fixture data'</a>
     /// </summary>
-    public abstract class UnitTestClassFixture : IDisposable
+    public abstract class UnitTestClassFixture : IDisposable, IServiceContainer
     {
         private const string DotNetEnvironment = "DOTNET_ENVIRONMENT";
 
@@ -25,7 +26,7 @@ namespace Tardigrade.Framework.Testing
         /// <summary>
         /// Configured services for the unit tests.
         /// </summary>
-        public IServiceProvider Services => TestHost.Services;
+        protected IServiceProvider Services => TestHost.Services;
 
         /// <summary>
         /// Unit test host.
@@ -72,6 +73,12 @@ namespace Tardigrade.Framework.Testing
             Task.Run(() => TestHost.StopAsync());
             Environment.SetEnvironmentVariable(DotNetEnvironment, null);
             GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc />
+        public T GetService<T>() where T : class
+        {
+            return Services.GetService<T>();
         }
     }
 }

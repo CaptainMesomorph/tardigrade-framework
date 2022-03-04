@@ -12,6 +12,9 @@ Framework for supporting coding best practices.
 - Updated ApplicationConfiguraton.cs to make support of User Secrets more intuitive.
 - Added an Azure Storage specific version of the ApplicationConfiguraton.cs class.
 - Added a new test project for Tardigrade.Framework.AuditNET and added unit tests for the audit decorator.
+- Updated the UnitTestClassFixture.cs class to implement IServiceContainer and made the Services property protected.
+- Refactored the test code in the Tardigrade.Framework.AuditNET.Tests project to utilise UnitTestClassFixture and removed deprecate classes.
+- Updated the Tardigrade.Framework.AuditNET.Tests project to support User Secrets.
 - Set the <Nulable> property for all .NET 6 SDK-style test projects to "enable" and refactored code where appropriate.
 - Updated third-party NuGet packages.
 

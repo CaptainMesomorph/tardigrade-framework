@@ -1,5 +1,4 @@
 using Audit.Core;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -27,13 +26,12 @@ public class AuditDecoratorTest : IClassFixture<AuditClassFixture>
         _output = output;
         _password = fixture.ReferencePassword;
         _passwordService =
-            fixture.Services.GetService<IObjectService<Password, Guid>>() ?? throw new InvalidOperationException();
+            fixture.GetService<IObjectService<Password, Guid>>() ?? throw new InvalidOperationException();
         _user = fixture.ReferenceUser;
-        _userService =
-            fixture.Services.GetService<IObjectService<User, Guid>>() ?? throw new InvalidOperationException();
+        _userService = fixture.GetService<IObjectService<User, Guid>>() ?? throw new InvalidOperationException();
 
         IAzureStorageConfiguration config =
-            fixture.Services.GetService<IAzureStorageConfiguration>() ?? throw new InvalidOperationException();
+            fixture.GetService<IAzureStorageConfiguration>() ?? throw new InvalidOperationException();
         Configuration.DataProvider = new AzureQueueDataProvider(config.AzureStorageConnectionString, "audit-tests");
 
         Configuration.JsonSettings = new JsonSerializerOptions
