@@ -72,6 +72,7 @@ namespace Tardigrade.Framework.Configurations
                 // If a User Secret assembly is specified, assume a development environment. There is a known issue
                 // whereby the Test Runner does not reference "launchSettings.json" to check for the current
                 // environment (https://github.com/aspnet/Tooling/issues/1089).
+                // TODO Alternatively set by command shell instead, i.e. setx DOTNET_ENVIRONMENT "Development".
                 Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
                 UserSecretsAssembly = userSecretsAssembly;
             }

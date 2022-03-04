@@ -9,7 +9,7 @@ namespace Tardigrade.Framework.Testing
 {
     /// <summary>
     /// An xUnit Class Fixture that supports User Secrets when running in a development environment.
-    /// 
+    ///
     /// <a href="https://stackoverflow.com/questions/50921675/dependency-injection-in-xunit-project">Dependency injection in Xunit project</a>
     /// <a href="https://stackoverflow.com/questions/62537388/where-to-create-hostbuilder-and-avoid-the-following-constructor-parameters-did">Where to create HostBuilder and avoid 'The following constructor parameters did not have matching fixture data'</a>
     /// </summary>
@@ -38,6 +38,7 @@ namespace Tardigrade.Framework.Testing
         protected UnitTestClassFixture()
         {
             // To enable the use of User Secrets, set the environment to development.
+            // TODO Alternatively set by command shell instead, i.e. setx DOTNET_ENVIRONMENT "Development".
             Environment.SetEnvironmentVariable(DotNetEnvironment, "Development");
 
             // Create a host from which to load up configuration and register services.
