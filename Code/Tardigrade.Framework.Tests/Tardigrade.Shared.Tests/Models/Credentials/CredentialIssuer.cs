@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tardigrade.Shared.Tests.Models
+namespace Tardigrade.Shared.Tests.Models.Credentials
 {
     public class CredentialIssuer : BaseModel
     {

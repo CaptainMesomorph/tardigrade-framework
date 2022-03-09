@@ -12,7 +12,11 @@ namespace Tardigrade.Framework.Extensions
     {
         private const string Pattern = @"\$\{([\w\.\-_]+)\}";
 
+#if NET
+        private static readonly Regex Regex = new(Pattern, RegexOptions.IgnoreCase);
+#else
         private static readonly Regex Regex = new Regex(Pattern, RegexOptions.IgnoreCase);
+#endif
 
         /// <summary>
         /// Get the Boolean value for an application setting. If it does not exist, then the default value is returned.

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Reflection;
+using Tardigrade.Framework.Configurations;
 using Tardigrade.Framework.Extensions;
-using Tardigrade.Framework.Tests.Configurations;
+using Tardigrade.Framework.Testing;
 using Tardigrade.Shared.Tests;
 using Xunit;
 
@@ -8,7 +10,10 @@ namespace Tardigrade.Framework.Tests
 {
     public class ApplicationConfigurationLegacyTest : ApplicationConfigurationTest
     {
-        public ApplicationConfigurationLegacyTest() : base(new LegacyApplicationConfiguration())
+        public ApplicationConfigurationLegacyTest()
+            : base(new UnitTestApplicationConfiguration(
+                Assembly.GetExecutingAssembly(),
+                new LegacySettingsConfigurationSource()))
         {
         }
 
@@ -44,7 +49,7 @@ namespace Tardigrade.Framework.Tests
         [InlineData("Test.NullValue")]
         public void GetStringSetting_NullValue_Success(string settingName)
         {
-            Assert.True(string.Empty.Equals(Config.GetAsString(settingName)));
+            Assert.Equal(string.Empty, Config.GetAsString(settingName));
         }
     }
 }

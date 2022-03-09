@@ -12,7 +12,7 @@ namespace Tardigrade.Framework.SimpleInjector
     /// </summary>
     public abstract class SimpleInjectorServiceContainer : IServiceContainer
     {
-        // TODO: Replace with ILogger.
+        // TODO Replace with ILogger.
         //private static readonly slf4net.ILogger log = slf4net.LoggerFactory.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
@@ -82,11 +82,11 @@ namespace Tardigrade.Framework.SimpleInjector
 
             if (exception is ReflectionTypeLoadException typeLoadException)
             {
-                StringBuilder stringBuilder = new StringBuilder();
+                var stringBuilder = new StringBuilder();
 
                 foreach (Exception loaderException in typeLoadException.LoaderExceptions)
                 {
-                    stringBuilder.AppendLine(loaderException.Message);
+                    stringBuilder.AppendLine(loaderException?.Message);
 
                     if (loaderException is FileNotFoundException fileNotFoundException)
                     {
@@ -113,7 +113,7 @@ namespace Tardigrade.Framework.SimpleInjector
         /// Verifies the services in this service container.
         /// </summary>
         /// <exception cref="InvalidOperationException">Registration of instances was invalid.</exception>
-        public void Verify()
+        public static void Verify()
         {
             Container.Verify();
         }

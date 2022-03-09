@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tardigrade.Shared.Tests.Models
+namespace Tardigrade.Shared.Tests.Models.Credentials
 {
     public class UserCredential : BaseModel
     {

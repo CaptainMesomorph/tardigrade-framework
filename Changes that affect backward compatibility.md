@@ -10,6 +10,17 @@ The following article outlines some of the reasoning for the support of .NET Fra
 
 ## Breaking changes
 
+**16.0.0 -> 17.0.0**
+
+- Tardigrade.Framework
+  - Updated ApplicationConfiguraton.cs to make support of User Secrets more intuitive. This included replacing the EntryAssembly virtual property with the UserSecretsAssembly protected variable.
+  - Updated the UnitTestClassFixture.cs class to implement IServiceContainer and made the Services property protected.
+- Tardigrade.Framework.AuditNET
+  - Moved the AzureQueueDataProvider.cs class from TikForce.Framework.AuditNET project to the newly added TikForce.Framework.AuditNET.AzureStorageQueue project. Refactored references accordingly.
+  - Upgraded the AzureQueueDataProvider.cs class to use the Azure.Storage.Queues package instead of the deprecated Microsoft.Azure.Storage.Queue package. Updated the code accordingly.
+- Tardigrade.Framework.EntityFramework.Core
+  - Made the DbHelper.GenerateCreateScript() method into an extension method of the DbContextExtension.cs class.
+
 **15.0.0 -> 16.0.0**
 
 - Tardigrade.Framework
