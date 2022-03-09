@@ -1,30 +1,44 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Tardigrade.Framework.EntityFrameworkCore.Extensions;
 using Tardigrade.Framework.EntityFrameworkCore.Tests.SetUp;
+using Tardigrade.Framework.Extensions;
 using Tardigrade.Framework.Persistence;
 using Tardigrade.Shared.Tests;
-using Tardigrade.Shared.Tests.Extensions;
 using Tardigrade.Shared.Tests.Models.Credentials;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Tardigrade.Framework.EntityFrameworkCore.Tests;
 
-public class UserTest : IClassFixture<UnitTestFixture>
+public class UserTest : IClassFixture<EntityFrameworkCoreClassFixture>
 {
-    private readonly UnitTestFixture _fixture;
+    private readonly EntityFrameworkCoreClassFixture _fixture;
     private readonly ITestOutputHelper _output;
     private readonly IRepository<UserCredential, Guid> _userCredentialRepository;
     private readonly IRepository<User, Guid> _userRepository;
 
-    public UserTest(UnitTestFixture fixture, ITestOutputHelper output)
+    public UserTest(EntityFrameworkCoreClassFixture fixture, ITestOutputHelper output)
     {
         _fixture = fixture;
         _output = output;
 
-        _userCredentialRepository = _fixture.Container.GetService<IRepository<UserCredential, Guid>>();
-        _userRepository = _fixture.Container.GetService<IRepository<User, Guid>>();
+        _userCredentialRepository = _fixture.GetService<IRepository<UserCredential, Guid>>();
+        _userRepository = _fixture.GetService<IRepository<User, Guid>>();
+
+        // Get the current project's directory to store the create script.
+        DirectoryInfo? binDirectory =
+            Directory.GetParent(Directory.GetCurrentDirectory())?.Parent ??
+            Directory.GetParent(Directory.GetCurrentDirectory());
+        DirectoryInfo? projectDirectory = binDirectory?.Parent ?? binDirectory;
+        string scriptDirectory = projectDirectory?.FullName ?? "c:\\temp";
+
+        // Create and store SQL script for the test database.
+        _fixture.GetService<DbContext>().GenerateCreateScript($"{scriptDirectory}\\Scripts\\TestDataCreateScript.sql");
+        _fixture.PopulateDataStore();
     }
 
     [Fact]
@@ -111,7 +125,7 @@ public class UserTest : IClassFixture<UnitTestFixture>
         // Arrange.
         User original = DataFactory.User;
         User created = _userRepository.Create(original);
-        _output.WriteLine($"User to delete:\n{created.ToNewtonsoftJson()}");
+        _output.WriteLine($"User to delete:\n{created.ToJson()}");
         Assert.Equal(original.Id, created.Id);
 
         // Act.
@@ -150,7 +164,7 @@ public class UserTest : IClassFixture<UnitTestFixture>
 
         foreach (User item in items)
         {
-            _output.WriteLine($">>>> {item.ToNewtonsoftJson()}");
+            _output.WriteLine($">>>> {item.ToJson()}");
         }
 
         // Assert.
@@ -171,7 +185,7 @@ public class UserTest : IClassFixture<UnitTestFixture>
         // Assert.
         foreach (User item in items)
         {
-            _output.WriteLine($">>>> {item.ToNewtonsoftJson()}");
+            _output.WriteLine($">>>> {item.ToJson()}");
             Assert.False(item.UserCredentials.All(uc => uc.Credentials.All(c => c.Name == null)));
         }
     }
@@ -185,15 +199,19 @@ public class UserTest : IClassFixture<UnitTestFixture>
         User retrieved = _userRepository.Retrieve(
             _fixture.ReferenceUser.Id,
             u => u.UserCredentials.Select(uc => uc.Credentials.Select(c => c.Issuers)));
-        _output.WriteLine($"Eager loaded existing user:\n{retrieved.ToNewtonsoftJson()}");
+        _output.WriteLine($"Eager loaded existing user:\n{retrieved.ToJson()}");
 
         // Assert.
         Assert.NotNull(retrieved);
-        Assert.Equal(
-            _fixture.ReferenceUser.UserCredentials.FirstOrDefault()?.Credentials.FirstOrDefault()?
-                .Issuers.FirstOrDefault()?.Name,
-            retrieved.UserCredentials.FirstOrDefault()?.Credentials.FirstOrDefault()?
-                .Issuers.FirstOrDefault()?.Name);
+        string? originalCredentialIssuerName = _fixture.ReferenceUser
+            .UserCredentials.OrderByDescending(uc => uc.CreatedDate).FirstOrDefault()?
+            .Credentials.OrderByDescending(c => c.CreatedDate).FirstOrDefault()?
+            .Issuers.OrderByDescending(ci => ci.CreatedDate).FirstOrDefault()?.Name;
+        string? retrievedCredentialIssuerName = retrieved
+            .UserCredentials.OrderByDescending(uc => uc.CreatedDate).FirstOrDefault()?
+            .Credentials.OrderByDescending(c => c.CreatedDate).FirstOrDefault()?
+            .Issuers.OrderByDescending(ci => ci.CreatedDate).FirstOrDefault()?.Name;
+        Assert.Equal(originalCredentialIssuerName, retrievedCredentialIssuerName);
     }
 
     [Fact]
@@ -203,13 +221,13 @@ public class UserTest : IClassFixture<UnitTestFixture>
         User original = DataFactory.User;
         original.CreatedDate = DateTime.Now;
         User created = _userRepository.Create(original);
-        _output.WriteLine($"Created new user:\n{created.ToNewtonsoftJson()}");
+        _output.WriteLine($"Created new user:\n{created.ToJson()}");
 
         // Act.
         User? latest = _userRepository
             .Retrieve(sortCondition: p => p.OrderByDescending(o => o.CreatedDate))
             .FirstOrDefault();
-        _output.WriteLine($"Most recently created user:\n{latest.ToNewtonsoftJson()}");
+        _output.WriteLine($"Most recently created user:\n{latest.ToJson()}");
 
         // Assert.
         Assert.NotNull(latest);

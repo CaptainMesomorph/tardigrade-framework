@@ -64,7 +64,7 @@ namespace Tardigrade.Framework.RestSharp.Serializers
         /// <returns>JSON as String</returns>
         public string Serialize(object obj)
         {
-            using (StringWriter stringWriter = new StringWriter())
+            using (var stringWriter = new StringWriter())
             {
                 using (var jsonTextWriter = new JsonTextWriter(stringWriter))
                 {

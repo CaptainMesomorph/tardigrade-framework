@@ -13,6 +13,8 @@ namespace Tardigrade.Framework.Helpers
         /// JSON serializer options set to:
         /// - DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         /// - PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        /// - ReferenceHandler = ReferenceHandler.IgnoreCycles
+        /// - WriteIndented = true
         /// - RFC3339 date/time converter
         /// </summary>
         public static readonly JsonSerializerOptions SerializerOptions;
@@ -25,7 +27,9 @@ namespace Tardigrade.Framework.Helpers
             SerializerOptions = new JsonSerializerOptions()
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                ReferenceHandler = ReferenceHandler.IgnoreCycles,
+                WriteIndented = true
             };
 
             SerializerOptions.Converters.Add(new DateTimeRfc3339JsonConverter());

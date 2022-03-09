@@ -16,6 +16,10 @@ Framework for supporting coding best practices.
 - Refactored the test code in the Tardigrade.Framework.AuditNET.Tests project to utilise UnitTestClassFixture and removed deprecate classes.
 - Updated the Tardigrade.Framework.AuditNET.Tests project to support User Secrets.
 - Set the <Nulable> property for all .NET 6 SDK-style test projects to "enable" and refactored code where appropriate.
+- Made the DbHelper.GenerateCreateScript() method into an extension method of the DbContextExtension.cs class.
+- Properly implemented the IDisposable pattern in the UnitTestClassFixture.cs class.
+- Created the EntityFrameworkCoreClassFixture.cs class that the extends UnitTestClassFixture.cs class from the Tardigrade.Framework project. Refactored the BlogTest.cs and UserTest.cs classes to use this new class fixture.
+- Deleted the deprecated DateTimeJsonConverter.cs and NewtonsoftJsonExtension.cs classes from the Tardigrade.Shared.Tests project.
 - Updated third-party NuGet packages.
 
 **Feb 17, 2022 - 16.0.0 Audit decorator enhancements**

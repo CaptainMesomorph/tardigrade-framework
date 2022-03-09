@@ -1,10 +1,9 @@
 using Audit.Core;
 using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Tardigrade.Framework.AuditNET.AzureStorageQueue.DataProviders;
 using Tardigrade.Framework.AuditNET.Tests.SetUp;
 using Tardigrade.Framework.AzureStorage.Configurations;
+using Tardigrade.Framework.Helpers;
 using Tardigrade.Framework.Services;
 using Tardigrade.Shared.Tests.Models.Credentials;
 using Tardigrade.Shared.Tests.Models.Passwords;
@@ -33,14 +32,7 @@ public class AuditDecoratorTest : IClassFixture<AuditClassFixture>
         IAzureStorageConfiguration config =
             fixture.GetService<IAzureStorageConfiguration>() ?? throw new InvalidOperationException();
         Configuration.DataProvider = new AzureQueueDataProvider(config.AzureStorageConnectionString, "audit-tests");
-
-        Configuration.JsonSettings = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            WriteIndented = true
-        };
+        Configuration.JsonSettings = JsonHelper.SerializerOptions;
     }
 
     [Fact]

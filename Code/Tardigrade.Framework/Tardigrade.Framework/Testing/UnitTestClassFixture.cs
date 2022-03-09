@@ -18,8 +18,13 @@ namespace Tardigrade.Framework.Testing
     {
         private const string DotNetEnvironment = "DOTNET_ENVIRONMENT";
 
+        // Flag indicating if the current instance is already disposed.
+        private bool _disposed;
+
         /// <summary>
-        /// Specify the entry assembly for unit testing. This is used to determine the location of User Secrets.
+        /// Specify the entry assembly for unit testing. This is used to determine the location of User Secrets. This
+        /// property should be overwritten by a class fixture that exists in the assembly associated with the User
+        /// Secrets. For testing, this property is generally set to Assembly.GetExecutingAssembly().
         /// </summary>
         protected virtual Assembly EntryAssembly => Assembly.GetEntryAssembly();
 
@@ -32,6 +37,9 @@ namespace Tardigrade.Framework.Testing
         /// Unit test host.
         /// </summary>
         protected IHost TestHost { get; }
+
+        /// <inheritdoc />
+        ~UnitTestClassFixture() => Dispose(false);
 
         /// <summary>
         /// Create an instance of this class.
@@ -59,9 +67,9 @@ namespace Tardigrade.Framework.Testing
         /// </summary>
         /// <returns>Host builder.</returns>
         private IHostBuilder CreateHostBuilder() => Host.CreateDefaultBuilder()
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            .ConfigureAppConfiguration((context, config) =>
             {
-                if (hostingContext.HostingEnvironment.IsDevelopment())
+                if (context.HostingEnvironment.IsDevelopment())
                 {
                     config.AddUserSecrets(EntryAssembly, true, true);
                 }
@@ -70,9 +78,33 @@ namespace Tardigrade.Framework.Testing
         /// <inheritdoc />
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Release all managed and unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">Should be false when called from a finalizer, and true when called from the IDisposable.Dispose method.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                // Dispose managed state (managed objects).
+            }
+
+            // Free unmanaged resources (unmanaged objects) and override finalizer.
+            // Set large fields to null.
+
             Task.Run(() => TestHost.StopAsync());
             Environment.SetEnvironmentVariable(DotNetEnvironment, null);
-            GC.SuppressFinalize(this);
+
+            _disposed = true;
         }
 
         /// <inheritdoc />
