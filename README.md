@@ -4,20 +4,19 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
-**??? ??, 2022 - 17.0.0 Configuration and unit testing enhancements**
+**Mar 9, 2022 - 17.0.0 Auditing, application configuration and unit testing enhancements**
 
 - Moved the AzureQueueDataProvider.cs class from TikForce.Framework.AuditNET project to the newly added TikForce.Framework.AuditNET.AzureStorageQueue project. Refactored references accordingly.
 - Upgraded the AzureQueueDataProvider.cs class to use the Azure.Storage.Queues package instead of the deprecated Microsoft.Azure.Storage.Queue package. Updated the code accordingly.
 - Updated ObjectServiceAuditDecorator.cs to better support inheritance.
 - Updated ApplicationConfiguraton.cs to make support of User Secrets more intuitive.
 - Added an Azure Storage specific version of the ApplicationConfiguraton.cs class.
-- Added a new test project for Tardigrade.Framework.AuditNET and added unit tests for the audit decorator.
 - Updated the UnitTestClassFixture.cs class to implement IServiceContainer and made the Services property protected.
-- Refactored the test code in the Tardigrade.Framework.AuditNET.Tests project to utilise UnitTestClassFixture and removed deprecate classes.
-- Updated the Tardigrade.Framework.AuditNET.Tests project to support User Secrets.
-- Set the <Nulable> property for all .NET 6 SDK-style test projects to "enable" and refactored code where appropriate.
 - Made the DbHelper.GenerateCreateScript() method into an extension method of the DbContextExtension.cs class.
 - Properly implemented the IDisposable pattern in the UnitTestClassFixture.cs class.
+- Added a new test project for Tardigrade.Framework.AuditNET and added unit tests for the audit decorator.
+- Updated the Tardigrade.Framework.AzureStorage.Tests project to support User Secrets.
+- Set the <Nulable> property for all .NET 6 SDK-style test projects to "enable" and refactored code where appropriate.
 - Created the EntityFrameworkCoreClassFixture.cs class that the extends UnitTestClassFixture.cs class from the Tardigrade.Framework project. Refactored the BlogTest.cs and UserTest.cs classes to use this new class fixture.
 - Deleted the deprecated DateTimeJsonConverter.cs and NewtonsoftJsonExtension.cs classes from the Tardigrade.Shared.Tests project.
 - Updated third-party NuGet packages.
