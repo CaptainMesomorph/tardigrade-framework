@@ -31,6 +31,7 @@ public class EntityFrameworkCoreClassFixture : UnitTestClassFixture
 
     public User ReferenceUser { get; private set; } = new();
 
+    /// <inheritdoc />
     protected override void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
         // For self-hosted unit testing, services.AddDbContext() did not provide an accessible DbContext.

@@ -21,10 +21,16 @@ public class UserTest : IClassFixture<EntityFrameworkCoreClassFixture>
     private readonly IRepository<UserCredential, Guid> _userCredentialRepository;
     private readonly IRepository<User, Guid> _userRepository;
 
+    /// <summary>
+    /// Create an instance of this test.
+    /// </summary>
+    /// <param name="fixture">Class fixture.</param>
+    /// <param name="output">Logger.</param>
+    /// <exception cref="ArgumentNullException">Parameters are null.</exception>
     public UserTest(EntityFrameworkCoreClassFixture fixture, ITestOutputHelper output)
     {
-        _fixture = fixture;
-        _output = output;
+        _fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
+        _output = output ?? throw new ArgumentNullException(nameof(output));
 
         _userCredentialRepository = _fixture.GetService<IRepository<UserCredential, Guid>>();
         _userRepository = _fixture.GetService<IRepository<User, Guid>>();
