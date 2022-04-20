@@ -6,7 +6,7 @@ namespace Tardigrade.Framework.EntityFrameworkCore.Configurations
 {
     /// <summary>
     /// ConfigurationSource for a provider that reads application settings from a database.
-    /// <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-5.0#custom-configuration-provider">Custom configuration provider</a>
+    /// <a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#custom-configuration-provider">Custom configuration provider</a>
     /// </summary>
     public class AppSettingsConfigurationSource : IConfigurationSource
     {

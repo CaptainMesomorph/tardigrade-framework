@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Queues;
 using Tardigrade.Framework.Exceptions;
+using Tardigrade.Framework.Extensions;
 
 #if NET
 using System.Text.Json;
@@ -60,7 +61,7 @@ namespace Tardigrade.Framework.AuditNET.AzureStorageQueue.DataProviders
 #else
             string message = JsonConvert.SerializeObject(auditEvent, Configuration.JsonSettings);
 #endif
-            SendReceipt receipt = _queueClient.SendMessage(message);
+            SendReceipt receipt = _queueClient.SendMessage(message.ToBase64());
 
             return receipt;
         }
@@ -79,7 +80,7 @@ namespace Tardigrade.Framework.AuditNET.AzureStorageQueue.DataProviders
 #else
             string message = JsonConvert.SerializeObject(auditEvent, Configuration.JsonSettings);
 #endif
-            SendReceipt receipt = await _queueClient.SendMessageAsync(message);
+            SendReceipt receipt = await _queueClient.SendMessageAsync(message.ToBase64());
 
             return receipt;
         }
