@@ -4,6 +4,12 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Apr 21, 2022 - 18.0.0 Updated target framework of Tardigrade.Framework.EntityFramework**
+
+- Added .NET Standard 2.1 as a target framework to the Tardigrade.Framework.EntityFramework project.
+- Created string extension methods to convert to and from Base64. Updated the AzureQueueDataProvider to ensure messages written to the a queue are Base64.
+- Updated third-party NuGet packages.
+
 **Mar 9, 2022 - 17.0.0 Auditing, application configuration and unit testing enhancements**
 
 - Moved the AzureQueueDataProvider.cs class from TikForce.Framework.AuditNET project to the newly added TikForce.Framework.AuditNET.AzureStorageQueue project. Refactored references accordingly.
