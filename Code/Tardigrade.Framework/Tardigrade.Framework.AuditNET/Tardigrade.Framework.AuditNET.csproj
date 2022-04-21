@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Audit.NET" Version="19.0.6" />
+    <PackageReference Include="Audit.NET" Version="19.1.0" />
   </ItemGroup>
 
   <ItemGroup>
