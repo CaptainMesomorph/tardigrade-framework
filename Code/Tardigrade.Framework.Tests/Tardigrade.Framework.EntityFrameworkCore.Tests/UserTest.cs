@@ -14,9 +14,9 @@ using Xunit.Abstractions;
 
 namespace Tardigrade.Framework.EntityFrameworkCore.Tests;
 
-public class UserTest : IClassFixture<EntityFrameworkCoreClassFixture>
+public class UserTest : IClassFixture<UserClassFixture>
 {
-    private readonly EntityFrameworkCoreClassFixture _fixture;
+    private readonly UserClassFixture _fixture;
     private readonly ITestOutputHelper _output;
     private readonly IRepository<UserCredential, Guid> _userCredentialRepository;
     private readonly IRepository<User, Guid> _userRepository;
@@ -27,7 +27,7 @@ public class UserTest : IClassFixture<EntityFrameworkCoreClassFixture>
     /// <param name="fixture">Class fixture.</param>
     /// <param name="output">Logger.</param>
     /// <exception cref="ArgumentNullException">Parameters are null.</exception>
-    public UserTest(EntityFrameworkCoreClassFixture fixture, ITestOutputHelper output)
+    public UserTest(UserClassFixture fixture, ITestOutputHelper output)
     {
         _fixture = fixture ?? throw new ArgumentNullException(nameof(fixture));
         _output = output ?? throw new ArgumentNullException(nameof(output));
@@ -44,7 +44,6 @@ public class UserTest : IClassFixture<EntityFrameworkCoreClassFixture>
 
         // Create and store SQL script for the test database.
         _fixture.GetService<DbContext>().GenerateCreateScript($"{scriptDirectory}\\Scripts\\TestDataCreateScript.sql");
-        _fixture.PopulateDataStore();
     }
 
     [Fact]
@@ -56,30 +55,39 @@ public class UserTest : IClassFixture<EntityFrameworkCoreClassFixture>
         IEnumerable<User> multipleOriginals = DataFactory.Users;
         int newObjectsCount = multipleOriginals.Count();
 
-        // Act.
-        IEnumerable<User> multipleCreated =
-            ((IBulkRepository<User>)_userRepository).CreateBulk(multipleOriginals).ToList();
-        var userCredentials = new List<UserCredential>();
+        IEnumerable<User> multipleCreated = new List<User>();
 
-        foreach (User user in multipleCreated)
+        try
         {
-            foreach (UserCredential userCredential in user.UserCredentials)
+            // Act.
+            multipleCreated = ((IBulkRepository<User>)_userRepository).CreateBulk(multipleOriginals).ToList();
+            var userCredentials = new List<UserCredential>();
+
+            foreach (User user in multipleCreated)
             {
-                userCredential.UserId = user.Id;
+                foreach (UserCredential userCredential in user.UserCredentials)
+                {
+                    userCredential.UserId = user.Id;
+                }
+
+                userCredentials.AddRange(user.UserCredentials);
             }
 
-            userCredentials.AddRange(user.UserCredentials);
+            _ = ((IBulkRepository<UserCredential>)_userCredentialRepository).CreateBulk(userCredentials).ToList();
+            _output.WriteLine($"Created {multipleCreated.Count()} new users.");
+
+            // Assert.
+            int updatedCount = _userRepository.Count();
+            _output.WriteLine($"Total number of users has been increased to {updatedCount}.");
+            Assert.Equal(count + newObjectsCount, updatedCount);
         }
-
-        _ = ((IBulkRepository<UserCredential>)_userCredentialRepository).CreateBulk(userCredentials).ToList();
-        _output.WriteLine($"Created {multipleCreated.Count()} new users.");
-
-        // Assert.
-        int updatedCount = _userRepository.Count();
-        _output.WriteLine($"Total number of users has been increased to {updatedCount}.");
-        Assert.Equal(count + newObjectsCount, updatedCount);
-
-        ((IBulkRepository<User>)_userRepository).DeleteBulk(multipleCreated);
+        finally
+        {
+            if (multipleCreated.Any())
+            {
+                ((IBulkRepository<User>)_userRepository).DeleteBulk(multipleCreated);
+            }
+        }
     }
 
     [Fact]
@@ -88,41 +96,54 @@ public class UserTest : IClassFixture<EntityFrameworkCoreClassFixture>
         int originalCount = _userRepository.Count();
         _output.WriteLine($"Total number of users before executing CRUD operation is {originalCount}.");
 
-        // Create.
-        User original = DataFactory.User;
-        User created = _userRepository.Create(original);
-        _output.WriteLine($"Created new user: {created.Email}");
-        Assert.Equal(original.Id, created.Id);
+        User? created = null;
 
-        // Retrieve single.
-        User retrieved = _userRepository.Retrieve(created.Id);
-        _output.WriteLine($"Retrieved newly created user: {retrieved.Email}");
-        Assert.Equal(created.Id, retrieved.Id);
+        try
+        {
+            // Create.
+            User original = DataFactory.User;
+            created = _userRepository.Create(original);
+            _output.WriteLine($"Created new user: {created.Email}");
+            Assert.Equal(original.Id, created.Id);
 
-        // Update.
-        retrieved.ModifiedBy = "muppet";
-        _userRepository.Update(retrieved);
-        User updated = _userRepository.Retrieve(retrieved.Id);
-        _output.WriteLine($"Updated the ModifiedBy property of the newly created user to: {updated.ModifiedBy}");
-        Assert.Equal(retrieved.Id, updated.Id);
-        Assert.Equal("muppet", updated.ModifiedBy);
+            // Retrieve single.
+            User retrieved = _userRepository.Retrieve(created.Id);
+            _output.WriteLine($"Retrieved newly created user: {retrieved.Email}");
+            Assert.Equal(created.Id, retrieved.Id);
 
-        // Delete.
-        _userRepository.Delete(created);
-        bool userExists = _userRepository.Exists(created.Id);
-        _output.WriteLine($"Successfully deleted user {created.Email}.");
-        Assert.False(userExists);
-        int currentCount = _userRepository.Count();
-        _output.WriteLine($"Total number of users after executing CRUD operation is {currentCount}.");
-        Assert.Equal(originalCount, currentCount);
+            // Update.
+            retrieved.ModifiedBy = "muppet";
+            _userRepository.Update(retrieved);
+            User updated = _userRepository.Retrieve(retrieved.Id);
+            _output.WriteLine($"Updated the ModifiedBy property of the newly created user to: {updated.ModifiedBy}");
+            Assert.Equal(retrieved.Id, updated.Id);
+            Assert.Equal("muppet", updated.ModifiedBy);
 
-        // TODO: 24.02.2021 This issue needs further investigation.
-        // For reasons unknown, the query filter to ignore soft deleted records does not seem to be applied with
-        // the retrieve operation. May be an issue with the current transaction not detaching the deleted record
-        // from the entity state.
-        //User deleted = userRepository.Retrieve(created.Id);
-        //output.WriteLine($"Successfully deleted user {created.Id} - {deleted == null}.");
-        //Assert.Null(deleted);
+            // Delete.
+            _userRepository.Delete(created);
+            bool userExists = _userRepository.Exists(created.Id);
+            _output.WriteLine($"Successfully deleted user {created.Email}.");
+            Assert.False(userExists);
+
+            int currentCount = _userRepository.Count();
+            _output.WriteLine($"Total number of users after executing CRUD operation is {currentCount}.");
+            Assert.Equal(originalCount, currentCount);
+
+            // TODO: 24.02.2021 This issue needs further investigation.
+            // For reasons unknown, the query filter to ignore soft deleted records does not seem to be applied with
+            // the retrieve operation. May be an issue with the current transaction not detaching the deleted record
+            // from the entity state.
+            //User deleted = _userRepository.Retrieve(created.Id);
+            //_output.WriteLine($"Successfully deleted user {created.Id} - {deleted == null}.");
+            //Assert.Null(deleted);
+        }
+        finally
+        {
+            if (created != null && _userRepository.Exists(created.Id))
+            {
+                _userRepository.Delete(created);
+            }
+        }
     }
 
     [Fact]

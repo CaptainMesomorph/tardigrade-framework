@@ -6,6 +6,7 @@ using Azure;
 using Azure.Storage.Queues;
 using Tardigrade.Framework.Exceptions;
 using Tardigrade.Framework.Extensions;
+using System.Threading;
 
 #if NET
 using System.Text.Json;
@@ -67,10 +68,12 @@ namespace Tardigrade.Framework.AuditNET.AzureStorageQueue.DataProviders
         }
 
         /// <summary>
-        /// <see cref="AuditDataProvider.InsertEventAsync(AuditEvent)"/>
+        /// <see cref="AuditDataProvider.InsertEventAsync(AuditEvent, CancellationToken)"/>
         /// </summary>
         /// <exception cref="ArgumentNullException">Parameter is null or empty.</exception>
-        public override async Task<object> InsertEventAsync(AuditEvent auditEvent)
+        public override async Task<object> InsertEventAsync(
+            AuditEvent auditEvent,
+            CancellationToken cancellationToken = default)
         {
             if (auditEvent == null) throw new ArgumentNullException(nameof(auditEvent));
 
@@ -80,7 +83,7 @@ namespace Tardigrade.Framework.AuditNET.AzureStorageQueue.DataProviders
 #else
             string message = JsonConvert.SerializeObject(auditEvent, Configuration.JsonSettings);
 #endif
-            SendReceipt receipt = await _queueClient.SendMessageAsync(message.ToBase64());
+            SendReceipt receipt = await _queueClient.SendMessageAsync(message.ToBase64(), cancellationToken);
 
             return receipt;
         }

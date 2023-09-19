@@ -13,7 +13,7 @@ namespace Tardigrade.Framework.RestSharp
     /// <summary>
     /// Implementation of a REST client using RestSharp.
     /// </summary>
-    public class RestSharpClient : IRestClient
+    public class RestSharpClient : Rest.IRestClient
     {
         /// <summary>
         /// Underlying REST client.
@@ -23,11 +23,24 @@ namespace Tardigrade.Framework.RestSharp
         /// <summary>
         /// Instantiate an instance of this class.
         /// </summary>
+        /// <param name="restClient">RestSharp REST client.</param>
+        /// <exception cref="ArgumentNullException">endpoint is null.</exception>
+        public RestSharpClient(RestClient restClient)
+        {
+            RestClient = restClient ?? throw new ArgumentNullException(nameof(restClient));
+        }
+
+        /// <summary>
+        /// Instantiate an instance of this class.
+        /// </summary>
         /// <param name="endpoint">Endpoint URL of the REST service.</param>
         /// <exception cref="ArgumentNullException">endpoint is null.</exception>
         public RestSharpClient(Uri endpoint)
         {
-            if (endpoint == null) throw new ArgumentNullException(nameof(endpoint));
+            if (endpoint == null)
+            {
+                throw new ArgumentNullException(nameof(endpoint));
+            }
 
             RestClient = new RestClient(endpoint);
         }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using MimeKit;
 using System;
 using System.Threading.Tasks;
@@ -112,14 +113,14 @@ namespace Tardigrade.Framework.MailKit.Emails
             {
 #if NET
                 using var client = new SmtpClient();
-                await client.ConnectAsync(_config.SmtpHost, _config.SmtpPort, false);
+                await client.ConnectAsync(_config.SmtpHost, _config.SmtpPort, SecureSocketOptions.Auto);
                 await client.AuthenticateAsync(_config.SmtpUsername, _config.SmtpPassword);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
 #else
                 using (var client = new SmtpClient())
                 {
-                    await client.ConnectAsync(_config.SmtpHost, _config.SmtpPort, false);
+                    await client.ConnectAsync(_config.SmtpHost, _config.SmtpPort, SecureSocketOptions.Auto);
                     await client.AuthenticateAsync(_config.SmtpUsername, _config.SmtpPassword);
                     await client.SendAsync(message);
                     await client.DisconnectAsync(true);

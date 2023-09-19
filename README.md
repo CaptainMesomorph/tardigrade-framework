@@ -4,6 +4,11 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Sept 23, 2023 - 19.0.0 Updated NuGet packages for all projects**
+
+- Updated NuGet packages for all projects.
+- In Tardigrade.Framework.AspNetCore, resolved issues with the deprecated Microsoft.AspNetCore.Identity and Microsoft.AspNetCore.Mvc.Core packages - https://github.com/dotnet/aspnetcore/issues/49101.
+
 **Apr 21, 2022 - 18.0.0 Updated target framework of Tardigrade.Framework.EntityFramework**
 
 - Added .NET Standard 2.1 as a target framework to the Tardigrade.Framework.EntityFramework project.
