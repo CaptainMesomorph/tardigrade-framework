@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class ValidationException : BaseException
     {
         /// <inheritdoc />
-        protected ValidationException()
+        protected ValidationException() : base()
         {
         }
 

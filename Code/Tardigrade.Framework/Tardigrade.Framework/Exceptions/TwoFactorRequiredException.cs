@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class TwoFactorRequiredException : BaseException
     {
         /// <inheritdoc />
-        protected TwoFactorRequiredException()
+        protected TwoFactorRequiredException() : base()
         {
         }
 

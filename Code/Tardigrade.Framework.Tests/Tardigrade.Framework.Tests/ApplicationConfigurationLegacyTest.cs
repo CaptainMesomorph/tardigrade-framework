@@ -28,7 +28,7 @@ namespace Tardigrade.Framework.Tests
         [InlineData("Test.NullValue")]
         public void GetEnumSetting_NullValue_ArgumentException(string settingName)
         {
-            Assert.Throws<ArgumentException>(() => Config.GetAsEnum<DayOfWeek>(settingName));
+            Assert.Throws<FormatException>(() => Config.GetAsEnum<DayOfWeek>(settingName));
         }
 
         [Theory]
@@ -50,6 +50,13 @@ namespace Tardigrade.Framework.Tests
         public void GetStringSetting_NullValue_Success(string settingName)
         {
             Assert.Equal(string.Empty, Config.GetAsString(settingName));
+        }
+
+        [Theory]
+        [InlineData("Test.NullValue")]
+        public void GetUriSetting_NullValue_FormatException(string settingName)
+        {
+            Assert.Throws<UriFormatException>(() => Config.GetAsUri(settingName));
         }
     }
 }

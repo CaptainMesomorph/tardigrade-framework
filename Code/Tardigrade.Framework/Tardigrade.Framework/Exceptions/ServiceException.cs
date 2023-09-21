@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class ServiceException : BaseException
     {
         /// <inheritdoc />
-        protected ServiceException()
+        protected ServiceException() : base()
         {
         }
 

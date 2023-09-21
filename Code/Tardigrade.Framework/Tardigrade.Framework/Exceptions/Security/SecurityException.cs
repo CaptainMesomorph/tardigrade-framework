@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Tardigrade.Framework.Exceptions
+namespace Tardigrade.Framework.Exceptions.Security
 {
     /// <summary>
     /// This exception is associated with application security errors.
     /// </summary>
-    [Obsolete("Use Tardigrade.Framework.Exceptions.Security.SecurityException instead.")]
     [Serializable]
     public class SecurityException : BaseException
     {

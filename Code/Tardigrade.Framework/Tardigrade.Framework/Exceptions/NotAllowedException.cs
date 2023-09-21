@@ -11,7 +11,7 @@ namespace Tardigrade.Framework.Exceptions
     public class NotAllowedException : BaseException
     {
         /// <inheritdoc />
-        protected NotAllowedException()
+        protected NotAllowedException() : base()
         {
         }
 

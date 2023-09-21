@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class RestException : BaseException
     {
         /// <inheritdoc />
-        protected RestException()
+        protected RestException() : base()
         {
         }
 

@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class EncodingException : BaseException
     {
         /// <inheritdoc />
-        protected EncodingException()
+        protected EncodingException() : base()
         {
         }
 

@@ -19,6 +19,16 @@ namespace Tardigrade.Framework.Tests
             Assert.Equal(LocaleType.EnGb, localeEnum);
         }
 
+        [Fact]
+        public void GetDescription_Attribute_Success()
+        {
+            string stateDescription = AustralianStateType.WA.ToDescription();
+            Assert.Equal("Western Australia", stateDescription);
+
+            string localeDescription = LocaleType.EnAu.ToDescription();
+            Assert.Equal("Australia", localeDescription);
+        }
+
         [Theory]
         [InlineData("")]
         [InlineData("9")]

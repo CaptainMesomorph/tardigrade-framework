@@ -17,7 +17,7 @@ namespace Tardigrade.Framework.Exceptions
         public IEnumerable<IdentityError> Errors { get; protected set; }
 
         /// <inheritdoc />
-        protected IdentityException()
+        protected IdentityException() : base()
         {
         }
 

@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class BadRequestException : BaseException
     {
         /// <inheritdoc />
-        protected BadRequestException()
+        protected BadRequestException() : base()
         {
         }
 

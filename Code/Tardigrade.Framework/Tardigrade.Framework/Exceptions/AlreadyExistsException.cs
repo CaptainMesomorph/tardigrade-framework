@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class AlreadyExistsException : BaseException
     {
         /// <inheritdoc />
-        protected AlreadyExistsException()
+        protected AlreadyExistsException() : base()
         {
         }
 

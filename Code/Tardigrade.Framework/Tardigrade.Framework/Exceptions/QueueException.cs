@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class QueueException : BaseException
     {
         /// <inheritdoc />
-        protected QueueException()
+        protected QueueException() : base()
         {
         }
 

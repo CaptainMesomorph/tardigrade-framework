@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class EmailFailedException : BaseException
     {
         /// <inheritdoc />
-        protected EmailFailedException()
+        protected EmailFailedException() : base()
         {
         }
 
