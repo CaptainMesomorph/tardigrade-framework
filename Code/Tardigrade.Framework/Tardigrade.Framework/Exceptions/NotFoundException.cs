@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class NotFoundException : BaseException
     {
         /// <inheritdoc />
-        protected NotFoundException()
+        protected NotFoundException() : base()
         {
         }
 

@@ -25,7 +25,7 @@ public class ApplicationConfigurationJsonTest : ApplicationConfigurationTest
     [InlineData("Test.NullValue")]
     public void GetEnumSetting_NullValue_ArgumentException(string settingName)
     {
-        Assert.Throws<ArgumentException>(() => Config.GetAsEnum<DayOfWeek>(settingName));
+        Assert.Throws<FormatException>(() => Config.GetAsEnum<DayOfWeek>(settingName));
     }
 
     [Theory]
@@ -48,5 +48,12 @@ public class ApplicationConfigurationJsonTest : ApplicationConfigurationTest
     public void GetStringSetting_NullValue_Success(string settingName)
     {
         Assert.Equal(string.Empty, Config.GetAsString(settingName));
+    }
+
+    [Theory]
+    [InlineData("Test.NullValue")]
+    public void GetUriSetting_NullValue_FormatException(string settingName)
+    {
+        Assert.Throws<UriFormatException>(() => Config.GetAsUri(settingName));
     }
 }

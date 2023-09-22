@@ -13,15 +13,15 @@ using Xunit.Abstractions;
 
 namespace Tardigrade.Framework.EntityFrameworkCore.Tests;
 
-public class BlogTest : IClassFixture<EntityFrameworkCoreClassFixture>
+public class BlogTest : IClassFixture<BlogClassFixture>
 {
     private readonly IRepository<Blog, Guid> _blogRepository;
-    private readonly EntityFrameworkCoreClassFixture _fixture;
+    private readonly BlogClassFixture _fixture;
     private readonly ITestOutputHelper _output;
     private readonly IRepository<Person, Guid> _personRepository;
     private readonly IRepository<Post, Guid> _postRepository;
 
-    public BlogTest(EntityFrameworkCoreClassFixture fixture, ITestOutputHelper output)
+    public BlogTest(BlogClassFixture fixture, ITestOutputHelper output)
     {
         _fixture = fixture;
         _output = output;
@@ -39,7 +39,6 @@ public class BlogTest : IClassFixture<EntityFrameworkCoreClassFixture>
 
         // Create and store SQL script for the test database.
         _fixture.GetService<DbContext>().GenerateCreateScript($"{scriptDirectory}\\Scripts\\TestDataCreateScript.sql");
-        _fixture.PopulateDataStore();
     }
 
     [Fact]

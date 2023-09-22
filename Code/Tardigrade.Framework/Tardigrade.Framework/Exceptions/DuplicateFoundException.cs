@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class DuplicateFoundException : BaseException
     {
         /// <inheritdoc />
-        protected DuplicateFoundException()
+        protected DuplicateFoundException() : base()
         {
         }
 

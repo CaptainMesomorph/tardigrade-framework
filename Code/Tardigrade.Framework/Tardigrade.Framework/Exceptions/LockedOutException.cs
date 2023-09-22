@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class LockedOutException : BaseException
     {
         /// <inheritdoc />
-        protected LockedOutException()
+        protected LockedOutException() : base()
         {
         }
 

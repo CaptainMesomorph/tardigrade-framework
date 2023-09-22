@@ -4,6 +4,21 @@ Framework for supporting coding best practices.
 
 ## Version control history
 
+**Sept 22, 2023 - 19.0.0 Updated NuGet packages for all projects**
+
+- Updated third-party NuGet packages for all projects.
+- Resolved backward compatibility issues encountered with the packages update.
+- Made enhancements to the ConfigurationExtension and EnumExtension classes.
+- Implemented additional extension classes.
+- Added unit tests to support extension class additions and enhancements.
+- Enhanced the UnitTestClassFixture class to resolve issues with the seeding of test data.
+- Added a Boolean to Integer converter XML text writer.
+- Updated the Tardigrade.Framework project to support the latest language version.
+- Updated the Tardigrade.Framework.EntityFrameworkCore project to also support .NET 7.0.
+- In Tardigrade.Framework, changed the exception thrown from the ConfigurationExtension.GetAsEnum<TEnum>() method from ArgumentException to FormatException.
+- In Tardigrade.Framework, enhanced the UnitTestClassFixture class to enable the use of services straight after their configuration.
+- In Tardigrade.Framework.AspNetCore, resolved issues with the deprecated Microsoft.AspNetCore.Identity and Microsoft.AspNetCore.Mvc.Core packages - https://github.com/dotnet/aspnetcore/issues/49101.
+
 **Apr 21, 2022 - 18.0.0 Updated target framework of Tardigrade.Framework.EntityFramework**
 
 - Added .NET Standard 2.1 as a target framework to the Tardigrade.Framework.EntityFramework project.

@@ -18,14 +18,14 @@ public class EmailServiceTest : IClassFixture<MailKitClassFixture>
     }
 
     [Theory]
-    [InlineData("raf@mailinator.com")]
-    public async void Test1(string recipient)
+    [InlineData("tardigrade@mailinator.com")]
+    public async void SendEmail_Valid_Success(string recipient)
     {
         const string subject = "Unit test";
         const string message = "<p>This is a unit test.</p>";
 
-        // The sender email must be from the credenxia.com domain otherwise the SMTP server will reject it.
-        var from = new EmailAddress { Address = "support@credenxia.com", Name = "Support" };
+        // The sender email must be from the same domain as the SMTP user otherwise the SMTP server will reject it.
+        var from = new EmailAddress { Address = "support@mailinator.com", Name = "Support" };
         var to = new EmailAddress { Address = recipient };
         await _emailService.SendMessageAsync(from, new[] { to }, subject, message);
         _output.WriteLine("Message successfully sent.");

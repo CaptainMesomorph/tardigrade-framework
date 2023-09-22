@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class UnauthorizedException : BaseException
     {
         /// <inheritdoc />
-        protected UnauthorizedException()
+        protected UnauthorizedException() : base()
         {
         }
 

@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class InternalServerErrorException : BaseException
     {
         /// <inheritdoc />
-        protected InternalServerErrorException()
+        protected InternalServerErrorException() : base()
         {
         }
 

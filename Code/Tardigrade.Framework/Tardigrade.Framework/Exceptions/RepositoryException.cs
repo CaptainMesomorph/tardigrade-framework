@@ -10,7 +10,7 @@ namespace Tardigrade.Framework.Exceptions
     public class RepositoryException : BaseException
     {
         /// <inheritdoc />
-        protected RepositoryException()
+        protected RepositoryException() : base()
         {
         }
 

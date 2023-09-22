@@ -53,6 +53,7 @@ namespace Tardigrade.Framework.Testing
             // Create a host from which to load up configuration and register services.
             TestHost = CreateHostBuilder().Build();
             Task.Run(() => TestHost.RunAsync());
+            UseServices(Services);
         }
 
         /// <summary>
@@ -110,7 +111,15 @@ namespace Tardigrade.Framework.Testing
         /// <inheritdoc />
         public T GetService<T>() where T : class
         {
-            return Services.GetService<T>();
+            return Services.GetRequiredService<T>();
+        }
+
+        /// <summary>
+        /// This method enables the injected services to be used to provision a test environment for the class fixture.
+        /// </summary>
+        /// <param name="serviceProvider">Service provider for accessing the services collection.</param>
+        protected virtual void UseServices(IServiceProvider serviceProvider)
+        {
         }
     }
 }

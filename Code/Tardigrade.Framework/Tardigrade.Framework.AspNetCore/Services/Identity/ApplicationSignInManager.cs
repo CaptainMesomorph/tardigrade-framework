@@ -13,7 +13,7 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
     public class ApplicationSignInManager : SignInManager<ApplicationUser>
     {
         /// <summary>
-        /// <see cref="SignInManager{TUser}.SignInManager(UserManager{TUser}, IHttpContextAccessor, IUserClaimsPrincipalFactory{TUser}, IOptions{IdentityOptions}, ILogger{SignInManager{TUser}}, IAuthenticationSchemeProvider)"/>
+        /// <see cref="SignInManager{TUser}.SignInManager(UserManager{TUser}, IHttpContextAccessor, IUserClaimsPrincipalFactory{TUser}, IOptions{IdentityOptions}, ILogger{SignInManager{TUser}}, IAuthenticationSchemeProvider, IUserConfirmation{TUser})"/>
         /// </summary>
         public ApplicationSignInManager(
             UserManager<ApplicationUser> userManager,
@@ -21,8 +21,9 @@ namespace Tardigrade.Framework.AspNetCore.Services.Identity
             IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor,
             ILogger<SignInManager<ApplicationUser>> logger,
-            IAuthenticationSchemeProvider schemes)
-            : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes)
+            IAuthenticationSchemeProvider schemes,
+            IUserConfirmation<ApplicationUser> confirmation)
+            : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
         {
         }
     }

@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net472</TargetFrameworks>
-    <Version>13.0.0</Version>
+    <Version>13.0.1</Version>
     <Authors>Rafidzal Rafiq</Authors>
     <Product>Tardigrade Framework Library (Entity Framework Integration)</Product>
     <Description>Software framework for supporting coding best practices.</Description>
-    <Copyright>Copyright © 2022</Copyright>
+    <Copyright>Copyright © 2023</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/CaptainMesomorph/tardigrade-framework</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CaptainMesomorph/tardigrade-framework</RepositoryUrl>

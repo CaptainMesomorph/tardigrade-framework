@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RestSharp;
 using RestSharp.Serializers;
 using System.IO;
 
@@ -10,22 +11,15 @@ namespace Tardigrade.Framework.RestSharp.Serializers
     /// </summary>
     public class NewtonsoftJsonSerializer : ISerializer
     {
-        private readonly JsonSerializer serializer;
+        private readonly JsonSerializer _serializer;
 
         /// <summary>
         /// Default serializer
         /// </summary>
         public NewtonsoftJsonSerializer()
         {
-            ContentType = "application/json";
-
-            //serializer = new JsonSerializer
-            //{
-            //    MissingMemberHandling = MissingMemberHandling.Ignore,
-            //    NullValueHandling = NullValueHandling.Include,
-            //    DefaultValueHandling = DefaultValueHandling.Include
-            //};
-            serializer = new JsonSerializer();
+            ContentType = ContentType.Json;
+            _serializer = new JsonSerializer();
         }
 
         /// <summary>
@@ -33,14 +27,14 @@ namespace Tardigrade.Framework.RestSharp.Serializers
         /// </summary>
         public NewtonsoftJsonSerializer(JsonSerializer serializer)
         {
-            ContentType = "application/json";
-            this.serializer = serializer;
+            ContentType = ContentType.Json;
+            _serializer = serializer;
         }
 
         /// <summary>
         /// Content type for serialized content
         /// </summary>
-        public string ContentType { get; set; }
+        public ContentType ContentType { get; set; }
 
         /// <summary>
         /// Unused for JSON Serialization
@@ -70,7 +64,7 @@ namespace Tardigrade.Framework.RestSharp.Serializers
                 {
                     jsonTextWriter.Formatting = Formatting.Indented;
                     jsonTextWriter.QuoteChar = '"';
-                    serializer.Serialize(jsonTextWriter, obj);
+                    _serializer.Serialize(jsonTextWriter, obj);
                     var result = stringWriter.ToString();
 
                     return result;
