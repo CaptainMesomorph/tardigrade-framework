@@ -10,6 +10,17 @@ The following article outlines some of the reasoning for the support of .NET Fra
 
 ## Breaking changes
 
+**18.0.0 -> 19.0.0**
+
+- Tardigrade.Framework
+  - Changed the exception thrown from the ConfigurationExtension.GetAsEnum<TEnum>() method from ArgumentException to FormatException.
+- Tardigrade.Framework.AspNetCore
+  - Updated the signature of the ApplicationSignInManager constructor to reflect NuGet package updates.
+- Tardigrade.Framework.AuditNET.AzureStorageQueue
+  - Updated the signature of the AzureQueueDataProvider.InsertEventAsync() method to reflect NuGet package updates.
+- Tardigrade.Framework.RestSharp
+  - Updated the type of the NewtonsoftJsonSerializer.ContentType property to reflect NuGet package updates.
+
 **16.0.0 -> 17.0.0**
 
 - Tardigrade.Framework

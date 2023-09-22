@@ -24,9 +24,9 @@ public class BlogClassFixture : UnitTestClassFixture
 
     protected override Assembly EntryAssembly => Assembly.GetExecutingAssembly();
 
-    public Blog ReferenceBlog = DataFactory.Blog;
+    public Blog ReferenceBlog { get; } = DataFactory.Blog;
 
-    public Person ReferencePerson = DataFactory.CreatePerson();
+    public Person ReferencePerson { get; } = DataFactory.CreatePerson();
 
     /// <inheritdoc />
     protected override void ConfigureServices(HostBuilderContext context, IServiceCollection services)

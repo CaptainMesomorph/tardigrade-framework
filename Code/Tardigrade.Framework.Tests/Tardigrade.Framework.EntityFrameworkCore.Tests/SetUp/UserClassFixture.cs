@@ -23,7 +23,7 @@ public class UserClassFixture : UnitTestClassFixture
 
     protected override Assembly EntryAssembly => Assembly.GetExecutingAssembly();
 
-    public User ReferenceUser = DataFactory.User;
+    public User ReferenceUser { get; } = DataFactory.User;
 
     /// <inheritdoc />
     protected override void ConfigureServices(HostBuilderContext context, IServiceCollection services)
